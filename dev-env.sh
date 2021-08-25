@@ -143,12 +143,6 @@
 #                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                           | e.g. s3://backups.                                 |
 #                           |                                                    |
-# CLUSTER_BUCKET_NAME       | The optional name of the S3 bucket where cluster   | The string "unused".
-#                           | information is maintained for PF. Only used if     |
-#                           | IS_MULTI_CLUSTER is true. If provided, PF will be  |
-#                           | configured with NATIVE_S3_PING discovery and will  |
-#                           | precede over DNS_PING, which is always configured. |
-#                           |                                                    |
 # EVENT_QUEUE_NAME          | The name of the queue that may be used to notify   | ${USER}_platform_event_queue.fifo
 #                           | PingCloud applications of platform events. This    |
 #                           | is currently only used if the orchestrator for     |
@@ -166,6 +160,14 @@
 #                           |                                                    |
 # NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | The string 'unused'
 #                           | NewRelic account                                   |
+#                           |                                                    |
+# MYSQL_SERVICE_HOST        | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+#                           |                                                    |
+# MYSQL_USER                | The DBA user of the PingCentral MySQL RDS          | The SSM path:
+#                           | database.                                          | ssm://pcpt/ping-central/rds/username
+#                           |                                                    |
+# MYSQL_PASSWORD            | The DBA password of the PingCentral MySQL RDS      | The SSM path:
+#                           | database.                                          | ssm://pcpt/ping-central/rds/password
 ########################################################################################################################
 
 #
@@ -218,8 +220,8 @@ fi
 
 test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
 if "${IS_MULTI_CLUSTER}"; then
-  if test ! "${CLUSTER_BUCKET_NAME}" && test ! "${SECONDARY_TENANT_DOMAINS}"; then
-    echo 'In multi-cluster mode, one or both of CLUSTER_BUCKET_NAME and SECONDARY_TENANT_DOMAINS must be set.'
+  if test ! "${SECONDARY_TENANT_DOMAINS}"; then
+    echo 'In multi-cluster mode SECONDARY_TENANT_DOMAINS must be set.'
     popd > /dev/null 2>&1
     exit 1
   fi
@@ -231,7 +233,6 @@ log "Initial ENVIRONMENT: ${ENVIRONMENT}"
 
 log "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Initial TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
-log "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 log "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 log "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 log "Initial REGION: ${REGION}"
@@ -250,6 +251,10 @@ log "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 log "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Initial BACKUP_URL: ${BACKUP_URL}"
 
+log "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+log "Initial MYSQL_USER: ${MYSQL_USER}"
+log "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 log ---
@@ -258,10 +263,11 @@ log ---
 # current cluster. Must have the GTE devops user and key exported as
 # environment variables.
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
+
 export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
+export BELUGA_ENV_NAME="${ENVIRONMENT#-}"
 
 export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
-export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
 
 export EVENT_QUEUE_NAME="${EVENT_QUEUE_NAME:-${USER}_platform_event_queue.fifo}"
 export ORCH_API_SSM_PATH_PREFIX="${ORCH_API_SSM_PATH_PREFIX:-/${USER}/pcpt/orch-api}"
@@ -283,19 +289,23 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
+export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com}"
+export MYSQL_USER="${MYSQL_USER:-ssm://pcpt/ping-central/rds/username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://pcpt/ping-central/rds/password}"
+
+# MySQL database names cannot have dashes. So transform dashes into underscores.
+ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
+export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
+
 DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 
-ENVIRONMENT_NO_HYPHEN_PREFIX="${ENVIRONMENT#-}"
-export BELUGA_ENV_NAME="${ENVIRONMENT_NO_HYPHEN_PREFIX}"
-
 # Show the values being used for the relevant environment variables.
 log "Using TENANT_NAME: ${TENANT_NAME}"
-log "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
+log "Using ENVIRONMENT: ${BELUGA_ENV_NAME}"
 
 log "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
-log "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 log "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 log "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 log "Using REGION: ${REGION}"
@@ -314,6 +324,11 @@ log "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 log "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Using BACKUP_URL: ${BACKUP_URL}"
 
+log "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+log "Using MYSQL_USER: ${MYSQL_USER}"
+log "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+log "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
+
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log ---
@@ -326,7 +341,7 @@ export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KE
 export CLUSTER_NAME=${TENANT_NAME}
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
-export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
+export NAMESPACE=ping-cloud-${BELUGA_ENV_NAME}
 
 # Set the cluster type based on primary or secondary.
 "${IS_MULTI_CLUSTER}" && test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
@@ -378,7 +393,6 @@ if test "${dryrun}" = 'false'; then
 export CLUSTER_NAME=${TENANT_NAME}
 
 export IS_MULTI_CLUSTER=${IS_MULTI_CLUSTER}
-export CLUSTER_BUCKET_NAME=${CLUSTER_BUCKET_NAME}
 
 export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
@@ -403,6 +417,11 @@ export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 export BACKUP_URL=${BACKUP_URL}
 
+export MYSQL_SERVICE_HOST=${MYSQL_SERVICE_HOST}
+export MYSQL_USER=${MYSQL_USER}
+export MYSQL_PASSWORD=${MYSQL_PASSWORD}
+export MYSQL_DATABASE=${MYSQL_DATABASE}
+
 export PROJECT_DIR=${PWD}
 export AWS_PROFILE=${AWS_PROFILE:-csg}
 
@@ -413,38 +432,7 @@ export SKIP_CONFIGURE_AWS=true
 export DEV_TEST_ENV=true
 EOF
 
-    log "Running unit tests"
-    unit_test_failures=0
-    for unit_test_dir in $(find 'ci-scripts/test/unit' -type d -mindepth 1 -maxdepth 1 -exec basename '{}' \;); do
-      log
-      log "==============================================================================================="
-      log "      Executing unit tests in directory: ${unit_test_dir}            "
-      log "==============================================================================================="
-
-      ci-scripts/test/unit/run-unit-tests.sh "${unit_test_dir}" "${TEST_ENV_VARS_FILE}"
-      test_result=$?
-
-      unit_test_failures=$((${unit_test_failures} + ${test_result}))
-
-      # Exit immediately if there's a test failure
-      if test ${unit_test_failures} -gt 0; then
-        break
-      fi
-    done
-    log
-
-    if test ${unit_test_failures} -ne 0; then
-      RED='\033[0;31m'
-      NO_COLOR='\033[0m'
-      # Use printf to print in color
-      printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
-      printf "Unit Test Failures: ${RED} ${unit_test_failures} Unit test(s) failed.  See details above.  Exiting...${NO_COLOR}\n"
-      printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
-      exit 1
-    fi
-
     log "Waiting for pods in ${NAMESPACE} to be ready..."
-
     for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${NAMESPACE}" -o name --context "${K8S_CONTEXT}"); do
       NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}' \
         -n "${NAMESPACE}" --context "${K8S_CONTEXT}")
@@ -452,7 +440,6 @@ EOF
       time kubectl rollout status --timeout "${TIMEOUT}"s "${DEPLOYMENT}" \
         -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
     done
-
 
     log "Running integration tests"
     for integration_test_dir in $(find 'ci-scripts/test/integration' -type d -mindepth 1 -maxdepth 1 -exec basename '{}' \;); do

@@ -50,7 +50,15 @@ if test -z "${ENV_VARS_FILE}"; then
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
   export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
   export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
-  export CLUSTER_BUCKET_NAME="${CLUSTER_NAME}-cluster-bucket"
+
+
+  export MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+  export MYSQL_USER=ssm://pcpt/ping-central/rds/username
+  export MYSQL_PASSWORD=ssm://pcpt/ping-central/rds/password
+
+  # MySQL database names cannot have dashes. So transform dashes into underscores.
+  ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
+  export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
 
   export EVENT_QUEUE_NAME='platform_event_queue.fifo'
   export ORCH_API_SSM_PATH_PREFIX='/pcpt/orch-api'
@@ -92,6 +100,7 @@ PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 # Pingfederate
 # admin services:
 PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
+PINGFEDERATE_API=https://pingfederate-admin-api${FQDN}/pf-admin-api/v1/version
 
 # The trailing / is required to avoid a 302
 PINGFEDERATE_API_DOCS=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
@@ -114,7 +123,7 @@ PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 # PingAccess WAS
 # admin services:
 # The trailing / is required to avoid a 302
-PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/api-docs/
+PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3/api-docs/
 PINGACCESS_WAS_CONSOLE=https://pingaccess-was-admin${FQDN}
 PINGACCESS_WAS_API=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3
 
@@ -124,8 +133,17 @@ PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
 # Ping Delegated Admin
 PINGDELEGATOR_CONSOLE=https://pingdelegator${FQDN}/delegator
 
+# PingCentral
+MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+MYSQL_SERVICE_PORT=3306
+MYSQL_USER_SSM=/pcpt/ping-central/rds/username
+MYSQL_PASSWORD_SSM=/pcpt/ping-central/rds/password
+
 # Pingcloud-metadata service:
 PINGCLOUD_METADATA_API=https://metadata${FQDN}
+
+# PingCentral service
+PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
 
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
@@ -221,6 +239,26 @@ EOF
   [${AWS_PROFILE}]
   role_arn = ${AWS_ACCOUNT_ROLE_ARN}
 EOF
+}
+
+########################################################################################################################
+# Retrieve the value associated with the provided parameter from AWS parameter store.
+#
+# Arguments
+#   ${1} -> The SSM parameter name.
+#
+# Returns
+#   The value of the parameter name if found, or the error message stating why the command failed.
+########################################################################################################################
+get_ssm_val() {
+  param_name="$1"
+  aws ssm get-parameters \
+        --profile "${AWS_PROFILE}" \
+        --region "${REGION}" \
+        --names "${param_name}" \
+        --query 'Parameters[*].Value' \
+        --with-decryption \
+        --output text
 }
 
 ########################################################################################################################

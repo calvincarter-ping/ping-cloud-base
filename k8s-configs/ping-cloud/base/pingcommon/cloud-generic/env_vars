@@ -12,10 +12,6 @@ USER_BASE_DN=dc=example,dc=com
 # PD Datastore ID from PingFederate
 LDAP_DS_ID=LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552
 
-PF_PD_BIND_PORT=1389
-PF_PD_BIND_PROTOCOL=ldap
-PF_PD_BIND_USESSL=false
-
 # DA common configuration for PF and PD.
 # Note: No spaces are allowed within the ID names below.
 ENABLE_DEL_ADMIN=true
@@ -29,3 +25,4 @@ DA_EXCLUSIVE_SCOPE_NAME=urn:pingidentity:directory-delegated-admin
 DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID=dapingdirectory
 DA_PINGFEDERATE_ATV_NAME=DAPingFederateValidator
 DA_PINGFEDERATE_INSTANCE_NAME=DAPingFederate
+DA_IDENTITY_MAPPER_NAME=DAEntryUUIDMatch

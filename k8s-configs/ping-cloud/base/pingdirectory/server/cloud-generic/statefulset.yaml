@@ -8,7 +8,7 @@ metadata:
     class: pingdirectory-server
 spec:
   serviceName: pingdirectory
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       class: pingdirectory-server
@@ -67,7 +67,7 @@ spec:
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
-          image: pingcloud-mirror.jfrog.io/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           imagePullPolicy: IfNotPresent
           command:
             - /copy-dependencies.sh
@@ -93,12 +93,43 @@ spec:
             - name: pingdirectory-init
               mountPath: /utils.lib.sh
               subPath: utils.lib.sh
+        - name: newrelic-tags-exporter
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+          - configMapRef:
+              name: pingdirectory-environment-variables
+          - secretRef:
+              name: newrelic-license-key
+              optional: false
+          - secretRef:
+              name: devops-secret
+              optional: true
+          env:
+          - name: LICENSE_SERVER_URL
+            value: "https://license.pingidentity.com/devops/license"
+          - name: NEW_RELIC_APP_NAME
+            value: "pingdirectory"
+          - name: METADATA_EP_URL
+            value: "http://metadata:5000"
+          - name: NEW_RELIC_CONFIG_FILEPATH
+            value: "/opt/shared-dir/newrelic.yml"
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          volumeMounts:
+          - name: shared-dir
+            mountPath: /opt/shared-dir
         - name: wait-for-services
           # FIXME: switch to same user as app
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
-          image: pingcloud-mirror.jfrog.io/busybox:1.32
+          image: public.ecr.aws/r2h3l6e4/busybox:1.32
           imagePullPolicy: IfNotPresent
           command:
             - /wait-for-services.sh
@@ -116,7 +147,11 @@ spec:
               subPath: wait-for-services.sh
       containers:
         - name: pingdirectory
-          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
+          # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.9
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1389
@@ -129,10 +164,10 @@ spec:
               name: repl
           resources:
             limits:
-              memory: "2560Mi"
+              memory: "4Gi"
             requests:
-              memory: "2560Mi"
-              cpu: "300m"
+              memory: "4Gi"
+              cpu: "2"
           env:
             - name: P14C_ENVIRONMENT_ID
               valueFrom:
@@ -169,6 +204,8 @@ spec:
                 secretKeyRef:
                   name: pingcommon-passwords
                   key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+            - name: NEW_RELIC_CONFIG_FILE
+              value: "/opt/shared-dir/newrelic.yml"
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
@@ -177,10 +214,15 @@ spec:
             - secretRef:
                 name: devops-secret
                 optional: true
+            - secretRef:
+                name: newrelic-license-key
+                optional: true
           volumeMounts:
             # FIXME: fix home directory when containers run as non-root user
             - name: ssh-dir
               mountPath: /root/.ssh
+            - name: shared-dir
+              mountPath: /opt/shared-dir
             - name: topology-descriptor
               mountPath: /opt/staging/topology/descriptor.json
               subPath: descriptor.json
@@ -193,6 +235,12 @@ spec:
             - name: data-dir
               mountPath: /usr/local/bin/skbn
               subPath: skbn
+            - name: data-dir
+              mountPath: /opt/staging/newrelic.jar
+              subPath: newrelic.jar
+            - name: data-dir
+              mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+              subPath: jmx_prometheus_javaagent-0.14.0.jar
             - name: out-dir
               mountPath: /opt/out
             - name: pingdirectory-passwords
@@ -217,9 +265,10 @@ spec:
             periodSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            exec:
-              command:
-                - /opt/staging/hooks/99-liveness.sh
+            httpGet:
+              path: /available-state
+              port: 1443
+              scheme: HTTPS
             # Health checks will kick in 10 minutes after the pod starts up.
             initialDelaySeconds: 600
             periodSeconds: 30
@@ -230,13 +279,15 @@ spec:
                 command:
                   - /opt/staging/hooks/86-pre-stop.sh
         - name: pingdirectory-statsd-exporter
-          image: pingcloud-mirror.jfrog.io/prom/statsd-exporter:v0.14.1
+          image: public.ecr.aws/r2h3l6e4/prom/statsd-exporter:v0.14.1
           args:
             - "--statsd.mapping-config=/tmp/mapping/pingdirectory-statsd-mapping.yml"
             - "--statsd.listen-udp=:8125"
             - "--web.listen-address=:9102"
           ports:
             - containerPort: 9102
+              protocol: TCP
+            - containerPort: 8080
               protocol: TCP
             - containerPort: 8125
               protocol: UDP
@@ -253,6 +304,8 @@ spec:
               memory: 100Mi
       volumes:
         - name: ssh-dir
+          emptyDir: {}
+        - name: shared-dir
           emptyDir: {}
         - name: data-dir
           emptyDir: {}

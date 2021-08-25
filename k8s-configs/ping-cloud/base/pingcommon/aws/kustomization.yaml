@@ -8,5 +8,11 @@ commonLabels:
 
 resources:
 - ../cloud-generic
-- configmap.yaml
-- pingcloud-p14c-bootstrap
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: discovery-service
+  files:
+  - scripts/get_ssm_env_vars.sh

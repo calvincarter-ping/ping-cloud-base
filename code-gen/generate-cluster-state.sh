@@ -51,6 +51,7 @@
 #   - base64
 #   - envsubst
 #   - git
+#   - rsync
 #
 # ------------------
 # Usage instructions
@@ -116,17 +117,14 @@
 # PRIMARY_REGION           | In multi-cluster environments, the primary region. | Same as REGION.
 #                          | Only used if IS_MULTI_CLUSTER is true.             |
 #                          |                                                    |
-# CLUSTER_BUCKET_NAME      | The optional name of the S3 bucket where cluster   | No default.
-#                          | information is maintained for PF. Only used if     |
-#                          | IS_MULTI_CLUSTER is true. If provided, PF will be  |
-#                          | configured with NATIVE_S3_PING discovery and will  |
-#                          | precede over DNS_PING, which is always configured. |
-#                          |                                                    |
 # SIZE                     | Size of the environment, which pertains to the     | x-small
 #                          | number of user identities. Legal values are        |
 #                          | x-small, small, medium or large.                   |
 #                          |                                                    |
 # CLUSTER_STATE_REPO_URL   | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
+#                          |                                                    |
+# SERVER_PROFILE_URL       | The URL for the server-profiles repo.              | Same as the CLUSTER_STATE_REPO_URL,
+#                          |                                                    | if not provided.
 #                          |                                                    |
 # ARTIFACT_REPO_URL        | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
 #                          | If not provided, the Ping stack will be            |
@@ -195,6 +193,15 @@
 #                          | to the corresponding Kubernetes service account to |
 #                          | enable IRSA (IAM Role for Service Accounts).       |
 #                          |                                                    |
+# NLB_EIP_PATH_PREFIX      | The SSM path prefix which stores comma separated   | The string "unused".
+#                          | AWS Elastic IP allocation IDs that exist in the   |
+#                          | CDE account of the Ping Cloud customers.           |
+#                          | The environment type is appended to the SSM key    | 
+#                          | path before the value is retrieved from the        |
+#                          | AWS SSM endpoint. The EIP allocation IDs must be   |
+#                          | added as an annotation to the corresponding K8s    |
+#                          | service for the AWS NLB to use the AWS Elastic IP. |
+#                          |                                                    |
 # EVENT_QUEUE_NAME         | The name of the queue that may be used to notify   | platform_event_queue.fifo
 #                          | PingCloud applications of platform events. This    |
 #                          | is currently only used if the orchestrator for     |
@@ -204,7 +211,15 @@
 #                          | state data required for the P14C/P1AS integration. |
 #                          |                                                    |
 # NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The string "unused".
-#                          | NewRelic account                                   |
+#                          | NewRelic account.                                  |
+#                          |                                                    |
+# MYSQL_SERVICE_HOST       | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
+#                          |                                                    |
+# MYSQL_USER               | The DBA user of the PingCentral MySQL RDS          | The SSM path:
+#                          | database.                                          | ssm://pcpt/ping-central/rds/username
+#                          |                                                    |
+# MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path:
+#                          | database.                                          | ssm://pcpt/ping-central/rds/password
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -230,15 +245,18 @@ QUIET="${QUIET:-false}"
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted by default.
+# Note: DEFAULT_VARS is a superset of ENV_VARS_TO_SUBST within update-cluster-state.sh. These variables should be kept
+# in sync with the following exceptions: LAST_UPDATE_REASON, PING_IDENTITY_DEVOPS_USER_BASE64,
+# PING_IDENTITY_DEVOPS_KEY_BASE64 and NEW_RELIC_LICENSE_KEY_BASE64 should only be found within DEFAULT_VARS
 # Note: only secret variables are substituted into YAML files. Environments variables are just written to an env_vars
 # file and substituted at runtime by the continuous delivery tool running in cluster.
-DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+DEFAULT_VARS='${LAST_UPDATE_REASON}
+${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${NEW_RELIC_LICENSE_KEY_BASE64}
 ${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
-${CLUSTER_BUCKET_NAME}
 ${EVENT_QUEUE_NAME}
 ${ORCH_API_SSM_PATH_PREFIX}
 ${REGION}
@@ -255,12 +273,12 @@ ${BACKUP_URL}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${REGISTRY_NAME}
+${ECR_REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_PATH_DERIVED}
-${SERVER_PROFILE_URL_DERIVED}
+${SERVER_PROFILE_URL}
 ${SERVER_PROFILE_BRANCH_DERIVED}
 ${SERVER_PROFILE_PATH}
 ${ENV}
@@ -268,6 +286,8 @@ ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
 ${USER_BASE_DN}
+${ADMIN_CONSOLE_BRANDING}
+${ENVIRONMENT_PREFIX}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -285,18 +305,27 @@ ${PA_MAX_HEAP}
 ${PA_MIN_YGEN}
 ${PA_MAX_YGEN}
 ${PA_GCOPTION}
+${MYSQL_SERVICE_HOST}
+${MYSQL_USER}
+${MYSQL_PASSWORD}
+${MYSQL_DATABASE}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
+${METADATA_IMAGE_TAG}
+${P14C_BOOTSTRAP_IMAGE_TAG}
+${P14C_INTEGRATION_IMAGE_TAG}
+${PINGCENTRAL_IMAGE_TAG}
 ${PINGACCESS_IMAGE_TAG}
+${PINGACCESS_WAS_IMAGE_TAG}
 ${PINGFEDERATE_IMAGE_TAG}
 ${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
-${LAST_UPDATE_REASON}
-${IRSA_PING_ANNOTATION_KEY_VALUE}'
+${IRSA_PING_ANNOTATION_KEY_VALUE}
+${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -318,13 +347,29 @@ add_derived_variables() {
   # The directory within the cluster state repo for the region's manifest files.
   export CLUSTER_STATE_REPO_PATH_DERIVED="\${REGION_NICK_NAME}"
 
-  # Server profile URL and branch. The directory is in each app's env_vars file.
-  export SERVER_PROFILE_URL_DERIVED="\${CLUSTER_STATE_REPO_URL}"
+  # Server profile branch. The directory is in each app's env_vars file.
   export SERVER_PROFILE_BRANCH_DERIVED="\${CLUSTER_STATE_REPO_BRANCH}"
 
   # Zone for this region and the primary region.
   export DNS_ZONE_DERIVED="\${DNS_ZONE}"
   export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
+
+  # Zone for this region and the primary region.
+  if "${IS_BELUGA_ENV}" || test "${ENV}" = "${CUSTOMER_HUB}"; then
+    export DNS_ZONE="\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
+  else
+    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+  fi
+
+  # This variable's value will make it onto the branding for all admin consoles and
+  # will include the name of the environment and the region where it's deployed.
+  export ADMIN_CONSOLE_BRANDING="\${ENV}-\${REGION}"
+
+  # This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
+  # single P14C tenant. All of these apps will be created within the "Administrators" environment in the tenant.
+  export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
 }
 
 ########################################################################################################################
@@ -361,8 +406,40 @@ add_irsa_variables() {
   export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
 }
 
+########################################################################################################################
+# Export NLB EIP annotation for the provided environment.
+#
+# Arguments
+#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
+#   ${2} -> The environment name.
+########################################################################################################################
+add_nlb_variables() {
+  local ssm_path_prefix="$1"
+  local env="$2"
+
+  if test "${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"; then
+    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+  else
+    # Default empty string
+    NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=''
+
+    if [ "${ssm_path_prefix}" != "unused" ]; then
+
+      # Getting value from ssm parameter store.
+      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/nginx-public"); then
+        echo "Error: ${ssm_value}"
+        exit 1
+      fi
+
+      NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}"
+    fi
+
+    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+  fi
+}
+
 # Checking required tools and environment variables.
-check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws"
+check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync"
 HAS_REQUIRED_TOOLS=${?}
 
 check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
@@ -378,20 +455,11 @@ if test -z "${IS_MULTI_CLUSTER}"; then
   IS_MULTI_CLUSTER=false
 fi
 
-if "${IS_MULTI_CLUSTER}"; then
-  if test ! "${CLUSTER_BUCKET_NAME}" && test ! "${SECONDARY_TENANT_DOMAINS}"; then
-    echo 'In multi-cluster mode, one or both of CLUSTER_BUCKET_NAME and SECONDARY_TENANT_DOMAINS must be set.'
-    popd >/dev/null 2>&1
-    exit 1
-  fi
-fi
-
 # Print out the values provided used for each variable.
 echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial SIZE: ${SIZE}"
 
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
-echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 echo "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Initial REGION: ${REGION}"
@@ -403,12 +471,17 @@ echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 echo "Initial SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 
 echo "Initial CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
+echo "Initial SERVER_PROFILE_URL: ${SERVER_PROFILE_URL}"
 
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
+
+echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+echo "Initial MYSQL_USER: ${MYSQL_USER}"
+echo "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -432,7 +505,6 @@ export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
 export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 
-export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
 export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME:-platform_event_queue.fifo}
@@ -461,12 +533,21 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
+export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
+export MYSQL_USER="${MYSQL_USER:-ssm://pcpt/ping-central/rds/username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://pcpt/ping-central/rds/password}"
+
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
   CURRENT_GIT_BRANCH=$(git describe --tags --always)
 fi
+
 export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}
+CLUSTER_STATE_REPO_NAME="${CLUSTER_STATE_REPO_URL##*/}"
+
+SERVER_PROFILE_URL_DERIVED="$(echo "${CLUSTER_STATE_REPO_URL}" | sed -e "s/${CLUSTER_STATE_REPO_NAME}/profile-repo/")"
+export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${SERVER_PROFILE_URL_DERIVED}}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
@@ -477,15 +558,15 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
 ### Default environment variables ###
-export REGISTRY_NAME='pingcloud-virtual.jfrog.io'
+export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
+export MYSQL_DATABASE='pingcentral'
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using SIZE: ${SIZE}"
 
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
-echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 echo "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"
@@ -497,10 +578,15 @@ echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 echo "Using SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 
 echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
+echo "Using SERVER_PROFILE_URL: ${SERVER_PROFILE_URL}"
 echo "Using CLUSTER_STATE_REPO_PATH: ${REGION_NICK_NAME}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+
+echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+echo "Using MYSQL_USER: ${MYSQL_USER}"
+echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -520,10 +606,13 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEV
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
-BASE_DIR="${TEMPLATES_HOME}/base"
 BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
 REGION_DIR="${TEMPLATES_HOME}/region"
+
+COMMON_TEMPLATES_DIR="${TEMPLATES_HOME}/common"
+CHUB_TEMPLATES_DIR="${TEMPLATES_HOME}/customer-hub"
+CDE_TEMPLATES_DIR="${TEMPLATES_HOME}/cde"
 
 # Generate an SSH key pair for the CD tool.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -551,47 +640,67 @@ mkdir -p "${TARGET_DIR}"
 # Next build up the directory structure of the cluster-state repo
 BOOTSTRAP_SHORT_DIR='fluxcd'
 BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
-CLUSTER_STATE_DIR="${TARGET_DIR}/cluster-state"
-K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
+
+CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state"
+K8S_CONFIGS_DIR="${CLUSTER_STATE_REPO_DIR}/k8s-configs"
+
+PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
+PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
+
+CUSTOMER_HUB='customer-hub'
+PING_CENTRAL='pingcentral'
 
 mkdir -p "${BOOTSTRAP_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
+mkdir -p "${PROFILE_REPO_DIR}"
 
-cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_DIR}"
-cp ../.gitignore "${CLUSTER_STATE_DIR}"
+cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_REPO_DIR}"
+cp ./update-profile-wrapper.sh "${PROFILE_REPO_DIR}"
+
+cp ../.gitignore "${CLUSTER_STATE_REPO_DIR}"
+cp ../.gitignore "${PROFILE_REPO_DIR}"
+
 cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
-cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
-ALL_ENVIRONMENTS='dev test stage prod'
+ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
-# The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
-# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). We must handle both cases. Note that the 'prod' environment
-# will have a branch name suffix of 'master'.
+# The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
+# or the corresponding branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master, v1.8.0-customer-hub).
+# We must handle both cases. Note that the 'prod' environment will have a branch name suffix of 'master'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 # Run in a sub-shell so the current shell is not polluted with environment variables.
 (
-  test "${ENV_OR_BRANCH}" = 'prod' &&
-      GIT_BRANCH='master' ||
-      GIT_BRANCH="${ENV_OR_BRANCH}"
+  if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
+    GIT_BRANCH="${CUSTOMER_HUB}"
 
-  ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-  test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
-      ENV='prod' ||
-      ENV="${ENV_OR_BRANCH_SUFFIX}"
+    ENV_OR_BRANCH_SUFFIX="${CUSTOMER_HUB}"
+    ENV="${CUSTOMER_HUB}"
+
+    export CLUSTER_STATE_REPO_BRANCH="${CUSTOMER_HUB}"
+  else
+    test "${ENV_OR_BRANCH}" = 'prod' &&
+        GIT_BRANCH='master' ||
+        GIT_BRANCH="${ENV_OR_BRANCH}"
+
+    ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
+    test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+        ENV='prod' ||
+        ENV="${ENV_OR_BRANCH_SUFFIX}"
+
+    # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
+    export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
+  fi
 
   # Export all the environment variables required for envsubst
   export ENV="${ENV}"
-  export ENVIRONMENT_TYPE="${ENV}"
-
-  # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
-  export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
+  export ENVIRONMENT_TYPE="\${ENV}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   # On migrated customers, we must preserve the size of the customers.
@@ -599,7 +708,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     dev | test)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-test}"
       ;;
-    stage | prod)
+    stage | prod | customer-hub)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-prod/${SIZE}}"
       ;;
   esac
@@ -609,7 +718,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     dev | test | stage)
       export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-staging-v02.api.letsencrypt.org/directory}"
       ;;
-    prod)
+    prod | customer-hub)
       export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
       ;;
   esac
@@ -623,7 +732,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       export PF_PD_BIND_PROTOCOL=ldap
       export PF_PD_BIND_USESSL=false
       ;;
-    prod)
+    prod | customer-hub)
       export PF_PD_BIND_PORT=5678
       export PF_PD_BIND_PROTOCOL=ldaps
       export PF_PD_BIND_USESSL=true
@@ -633,12 +742,12 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
     dev | test)
-      export PF_MIN_HEAP=256m
-      export PF_MAX_HEAP=512m
-      export PF_MIN_YGEN=128m
-      export PF_MAX_YGEN=256m
+      export PF_MIN_HEAP=1536m
+      export PF_MAX_HEAP=1536m
+      export PF_MIN_YGEN=768m
+      export PF_MAX_YGEN=768m
       ;;
-    stage | prod)
+    stage | prod | customer-hub)
       export PF_MIN_HEAP=3072m
       export PF_MAX_HEAP=3072m
       export PF_MIN_YGEN=1536m
@@ -654,7 +763,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       export PA_WAS_MIN_YGEN=512m
       export PA_WAS_MAX_YGEN=512m
       ;;
-    stage | prod)
+    stage | prod | customer-hub)
       export PA_WAS_MIN_HEAP=2048m
       export PA_WAS_MAX_HEAP=2048m
       export PA_WAS_MIN_YGEN=1024m
@@ -663,20 +772,11 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   esac
   export PA_WAS_GCOPTION='-XX:+UseParallelGC'
 
-  export PA_MIN_HEAP=512m
-  export PA_MAX_HEAP=512m
-  export PA_MIN_YGEN=256m
-  export PA_MAX_YGEN=256m
+  export PA_MIN_HEAP=1024m
+  export PA_MAX_HEAP=1024m
+  export PA_MIN_YGEN=512m
+  export PA_MAX_YGEN=512m
   export PA_GCOPTION='-XX:+UseParallelGC'
-
-  # Zone for this region and the primary region
-  if "${IS_BELUGA_ENV}"; then
-    export DNS_ZONE="\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
-  else
-    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
-  fi
 
   "${IS_BELUGA_ENV}" &&
       export CLUSTER_NAME="${TENANT_NAME}" ||
@@ -687,6 +787,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   add_derived_variables
   add_irsa_variables "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}"
+  add_nlb_variables "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}"
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
@@ -703,7 +804,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "BACKUP_URL: ${BACKUP_URL}"
 
   # Build the kustomization file for the bootstrap tools for each environment
-  echo "Generating bootstrap yaml"
+  echo "Generating bootstrap yaml for ${ENV}"
 
   # The code for an environment is generated under a directory of the same name as what's provided in ENVIRONMENTS.
   ENV_BOOTSTRAP_DIR="${BOOTSTRAP_DIR}/${ENV_OR_BRANCH}"
@@ -715,13 +816,28 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   substitute_vars "${ENV_BOOTSTRAP_DIR}" "${BOOTSTRAP_VARS}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
-  echo "Generating tools and ping yaml"
+  echo "Generating tools and ping yaml for ${ENV}"
 
   ENV_DIR="${K8S_CONFIGS_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_DIR}"
 
-  cp -r "${BASE_DIR}" "${ENV_DIR}"
-  cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
+  # Copy the common templates first.
+  cd "${COMMON_TEMPLATES_DIR}"
+  rsync -rR * "${ENV_DIR}"
+  cd - >/dev/null 2>&1
+
+  # Overlay the CHUB or CDE specific templates next.
+  if test "${ENV}" = "${CUSTOMER_HUB}"; then
+    cd "${CHUB_TEMPLATES_DIR}"
+  else
+    cd "${CDE_TEMPLATES_DIR}"
+  fi
+
+  rsync -rR * "${ENV_DIR}"
+  cd - >/dev/null 2>&1
+
+  # Rename to the actual region nick name.
+  mv "${ENV_DIR}/region" "${ENV_DIR}/${REGION_NICK_NAME}"
 
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 
@@ -736,6 +852,20 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     BASE_ENV_VARS="${ENV_DIR}/base/env_vars"
     echo >> "${BASE_ENV_VARS}"
     echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
+  fi
+
+  echo "Copying server profiles for environment ${ENV}"
+  ENV_PROFILES_DIR="${PROFILES_DIR}/${ENV_OR_BRANCH}"
+  mkdir -p "${ENV_PROFILES_DIR}"
+
+  cp -pr ../profiles/aws/. "${ENV_PROFILES_DIR}"
+
+  if test "${ENV}" = "${CUSTOMER_HUB}"; then
+    # Retain only the pingcentral profiles
+    find "${ENV_PROFILES_DIR}" -type d -mindepth 1 -maxdepth 1 -not -name "${PING_CENTRAL}" -exec rm -rf {} +
+  else
+    # Remove the pingcentral profiles
+    rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"
   fi
 )
 done

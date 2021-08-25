@@ -1,5 +1,5 @@
 # This yaml file was obtained from:
-# https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md
+# https://github.com/kubernetes-sigs/external-dns/tree/master/kustomize
 
 apiVersion: v1
 kind: ServiceAccount
@@ -12,11 +12,14 @@ metadata:
   name: external-dns
 rules:
 - apiGroups: [ "" ]
-  resources: [ "services", "endpoints", "nodes", "pods" ]
+  resources: [ "services", "endpoints", "pods" ]
   verbs: [ "get", "watch", "list" ]
-- apiGroups: [ "extensions" ]
+- apiGroups: [ "extensions", "networking.k8s.io" ]
   resources: [ "ingresses" ]
-  verbs: [ "get", "watch", "list" ]
+  verbs: [ "get", "watch", "list"]
+- apiGroups: [ "" ]
+  resources: [ "nodes" ]
+  verbs: [ "list", "watch" ]
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -29,7 +32,6 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: external-dns
-  namespace: default
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,9 +49,11 @@ spec:
         app: external-dns
     spec:
       serviceAccountName: external-dns
+      securityContext:
+        fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
       containers:
       - name: external-dns
-        image: registry.opensource.zalan.do/teapot/external-dns:v0.7.2
+        image: public.ecr.aws/r2h3l6e4/external-dns/external-dns:v0.8.0
         resources:
           limits:
             cpu: 500m

@@ -24,6 +24,7 @@ patchesStrategicMerge:
     GRAFANA_PUBLIC_HOSTNAME: monitoring.${TENANT_DOMAIN}
     KIBANA_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
     ARGOCD_PUBLIC_HOSTNAME: argocd.${TENANT_DOMAIN}
+    PC_ADMIN_PUBLIC_HOSTNAME: pingcentral-admin.${TENANT_DOMAIN}
     BACKUP_URL: ${BACKUP_URL}
     REGION: ${REGION}
 - |-
@@ -41,6 +42,26 @@ patchesStrategicMerge:
     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+    REGION: ${REGION}
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+   name: pingcentral-environment-variables
+  data:
+    PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
+    PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
+    PA_WAS_ADMIN_PUBLIC_HOSTNAME: pingaccess-was-admin.${TENANT_DOMAIN}
+    PA_WAS_ENGINE_PUBLIC_HOSTNAME: pingaccess-was.${TENANT_DOMAIN}
+    PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
+    PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
+    PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
+    PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+    PROMETHEUS_PUBLIC_HOSTNAME: prometheus.${TENANT_DOMAIN}
+    GRAFANA_PUBLIC_HOSTNAME: monitoring.${TENANT_DOMAIN}
+    KIBANA_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
+    ARGOCD_PUBLIC_HOSTNAME: argocd.${TENANT_DOMAIN}
+    BACKUP_URL: ${BACKUP_URL}
     REGION: ${REGION}
 - |-
   apiVersion: v1
@@ -99,7 +120,7 @@ patchesStrategicMerge:
 patchesJson6902:
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: metadata-ingress
@@ -112,7 +133,7 @@ patchesJson6902:
       value: metadata.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingdirectory-http-ingress
@@ -125,7 +146,7 @@ patchesJson6902:
       value: pingdirectory.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingdelegator-ingress
@@ -138,7 +159,7 @@ patchesJson6902:
       value: pingdelegator.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingfederate-ingress
@@ -151,7 +172,7 @@ patchesJson6902:
       value: pingfederate.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingfederate-admin-ingress
@@ -164,7 +185,7 @@ patchesJson6902:
       value: pingfederate-admin-api.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-ingress
@@ -177,7 +198,7 @@ patchesJson6902:
       value: pingaccess.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-admin-ingress
@@ -190,7 +211,7 @@ patchesJson6902:
       value: pingaccess-admin-api.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-agent-ingress
@@ -204,7 +225,7 @@ patchesJson6902:
 
 # Ingresses through PA-WAS engines
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-was-ingress
@@ -257,8 +278,16 @@ patchesJson6902:
       path: /spec/rules/5/host
       value: argocd.${TENANT_DOMAIN}
 
+    ### PingCentral ###
+    - op: replace
+      path: /spec/tls/0/hosts/6
+      value: pingcentral-admin.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/6/host
+      value: pingcentral-admin.${TENANT_DOMAIN}
+
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-was-admin-ingress
@@ -269,6 +298,19 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-was-admin.${TENANT_DOMAIN}
+
+- target:
+    group: networking.k8s.io
+    version: v1beta1
+    kind: Ingress
+    name: pingcentral-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingcentral.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingcentral.${TENANT_DOMAIN}
 
 # pingdirectory put ldaps on public and change the host
 - target:
