@@ -61,7 +61,7 @@ _Changes:_
 - [X] PDO-4480 newrelic-license-secret-exporter job not present in newrelic namespace
 - [X] PDO-4491 Run Radius as a sidecar container alongside PingFederate engine
 - [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
-- [X] PDO-4558 Upgrade PingDirectory to v9.0.0.3, allow multiple Pass-Through-Authentication plugin instances
+- [X] PDO-4558 Allow multiple Pass-Through-Authentication plugin instances
 
 ### 1.15.0.0
 
