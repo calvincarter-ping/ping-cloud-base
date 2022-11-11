@@ -61,7 +61,7 @@ _Changes:_
 - [X] PDO-4268 Fix Fluent-bit raw logs sending to S3
 - [X] PDO-4301 Fix secrets sealing
 
-### 1.14.0.2
+### 1.14.1.0
 
 - Backport logstash tolerations fix
 
