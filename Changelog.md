@@ -28,19 +28,29 @@
 - Update ping-cloud-base to use the cluster tools from new ECR repo
 - Configure Argo Redis container to run as nonroot
 - Update applications logs location
+- Refactor offline-enable script to use "dsreplication enable-with-static-topology" subcommand
+- Healthcheck logs now stored in separate index with 7 days retention period
+- Upgrade kubectl to match K8s version and bitnami kubectl image.
+- Mirror our own version of PGO/crunchy images
+- Add pod exec privileges to cluster-healthcheck-serviceaccount
 
 _Changes:_
 
 - [X] PDO-2799 Rewrite CloudWatch log tests
+- [X] PDO-3165 Refactor offline-enable script to use "dsreplication enable-with-static-topology" subcommand
 - [X] PDO-4186 beluga_log is not respecting verbosity levels
 - [X] PDO-4224 Properly propagate SSH key when upgrading CSR
 - [X] PDO-4240 PF Health Check Tests - Certificates
+- [X] PDO-4249 Remove unused networking yaml from PCB
 - [X] PDO-4279 Add Pod Disruption Budgets for PA-WAS Engine, PingDelegator
+- [X] PDO-4291 PF Health Check Tests - connectivity
 - [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
+- [X] PDO-4343 Mirror our own version of PGO/crunchy images
 - [X] PDO-4432 Logstash has broken tolerations
 - [X] PDO-4535 Argo CD non-root user changes
 - [X] PDO-4439 PF Health Check Tests - object creation, authentication
 - [X] PDO-4440 PD Health Check Tests - appintegrations
+- [X] PDO-4481 Upgrade kubectl to match K8s version
 - [X] PDO-4496 Create new global repo for dashboards
 - [X] PDO-4533 Move PCB CI/CD env vars from deploy script to common script
 - [X] PDO-4543 Create K8s serviceAccount for PA, PD and PF
@@ -65,6 +75,25 @@ _Changes:_
 - [X] PDO-4807 Configure Argo Redis container to run as nonroot
 - [X] PDO-4808 Update applications logs location
 - [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
+- [X] PDO-4877: ELK logs for healthcheck pods should be storing for 7 days
+
+### 1.16.1.0
+
+- Added ENVIRONMENT_TYPE to backup failure notification
+- Remove all out-of-the-box IKs from PingFederate base image
+
+_Changes:_
+
+- [X] PDO-4844 Environment Key is missing in Product Backup Failure Alert Message
+- [X] PDO-4893 Remove all out-of-the-box IKs from PingFederate base image
+
+### 1.16.0.1
+
+- Force PingAccess engines to get its certificate ID from the engines endpoint instead of HTTP Listener
+
+_Changes:_
+
+- [X] PDO-4804 Force PingAccess engines to get its certificate ID from the engines endpoint instead of HTTP Listener
 
 ### 1.16.0.0
 
