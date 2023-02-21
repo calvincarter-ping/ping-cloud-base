@@ -27,7 +27,8 @@ spec:
         command:
           - /bin/bash
           - -c
-          - ./robot_wrapper.py --path tests/pingdirectory --include pingDirectory --output pingDirectory.xml
+          # Eval schedule env var to strip any extra quotes from value
+          - eval PINGDIRECTORY_HEALTHCHECK_SCHEDULE="${PINGDIRECTORY_HEALTHCHECK_SCHEDULE}" ./robot_wrapper.py --path tests/pingdirectory --include pingDirectory --output pingDirectory.xml --cron "${PINGDIRECTORY_HEALTHCHECK_SCHEDULE}"
         envFrom:
         - configMapRef:
             name: cluster-health-environment-variables
