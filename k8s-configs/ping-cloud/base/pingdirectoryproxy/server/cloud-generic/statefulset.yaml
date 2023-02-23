@@ -136,7 +136,7 @@ spec:
           emptyDir: {}
         - name: data-dir
           emptyDir: {}
-        - name: pingdatasync-init
+        - name: pingdirectoryproxy-init
           configMap:
             name: pingcommon-init
             defaultMode: 0555

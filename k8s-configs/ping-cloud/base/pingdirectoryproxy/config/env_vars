@@ -1,6 +1,14 @@
 ORCHESTRATION_TYPE=kubernetes
 VERBOSE=false
 
-SERVER_PROFILE_URL=https://git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
+SERVER_PROFILE_URL=https://git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/pingdirectoryproxy
 SERVER_PROFILE_BRANCH=pdo-4979-proxy-poc
+
+REGION=us-west-2
+LOCATION=Austin
+
+# PingDirectoryProxy server information
+ROOT_BIND_DN=cn=administrator
+ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
+SECRETS_DIR=/usr/local/secrets
