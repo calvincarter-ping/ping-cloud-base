@@ -93,6 +93,16 @@ _Changes:_
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
 - [X] PDO-5061 Replace healthcheck jobs with deployments
 
+### 1.16.2.0
+
+- Healthcheck cronjobs replaced with deployments
+- Replace deprecated topologyKey
+
+_Changes:_
+
+- [X] PDO-5014 Replace healthcheck jobs with deployments
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+
 ### 1.16.1.0
 
 - Added ENVIRONMENT_TYPE to backup failure notification
