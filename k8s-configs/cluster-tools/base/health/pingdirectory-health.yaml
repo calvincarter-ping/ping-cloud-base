@@ -38,4 +38,8 @@ spec:
             cpu: "400m"
           requests:
             memory: "400Mi"
+<<<<<<< HEAD
             cpu: "200m"
+=======
+            cpu: "200m"
+>>>>>>> v1.17-release-branch
