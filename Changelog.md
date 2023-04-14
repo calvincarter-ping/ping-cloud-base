@@ -61,7 +61,9 @@
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 - No longer move files into custom-resources directory when upgrading
+- Set 7-day-retention policy to all backup jobs logs
 - Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
+- Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 
 _Changes:_
 
@@ -70,6 +72,7 @@ _Changes:_
 - [X] PDO-3834 Updated StorageClass type to gp3
 - [X] PDO-3908 Clean up P1 artifacts in Admin environment during CI/CD teardown
 - [X] PDO-4009 Update k8s StorageClass provisoner to use CSI driver
+- [X] PDO-4161 [need before EKS 1.25] Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - [X] PDO-4309 Add integration test for PingDirectory Java args 
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4548 Find and destroy file moving to custom-resources code from generate-cluster-state.sh to fix reoccuring issue when upgrading
@@ -90,6 +93,7 @@ _Changes:_
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4774 Update generate-cluster-state script to massage the new code-gen structure files into the new CSR structure
 - [X] PDO-4775 Add new ArgoCD application definition to PCB
+- [X] PDO-4777 Create gitlab-ci for CSR
 - [X] PDO-4780 Move tag-release.sh and PCB ci-scripts to shared location
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
@@ -142,6 +146,7 @@ _Changes:_
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 - [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
+- [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 
 ### 1.17.0.0
 
