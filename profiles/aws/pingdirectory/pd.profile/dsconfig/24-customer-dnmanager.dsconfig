@@ -2,7 +2,7 @@ dsconfig create-root-dn-user \
         --user-name "calvin dnmanager"  \
         --set "alternate-bind-dn:cn=calvin dnmanager" \
         --set "description:Root account for calvin."  \
-        --set password:{DMANAGER_PASSWORD}  \
+        --set password:${DMANAGER_PASSWORD}  \
         --set first-name:calvin  \
         --set last-name:dnmanager  \
         --set inherit-default-root-privileges:false  \
