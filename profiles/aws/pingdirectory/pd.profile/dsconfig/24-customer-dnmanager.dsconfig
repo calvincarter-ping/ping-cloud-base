@@ -17,5 +17,7 @@ dsconfig create-root-dn-user \
         --set privilege:unindexed-search  \
         --set privilege:unindexed-search-with-control  \
         --set require-secure-authentication:true  \
-        --set require-secure-connections:true \
-        --set modify-acl
+        --set require-secure-connections:true
+
+dsconfig set-access-control-handler-prop \
+        --add 'global-aci:(target="ldap:///${USER_BASE_DN}")(targetattr="*||+")(version 3.0; acl "Testing"; allow(all) userdn="ldap:///cn=calvin dnmanager,cn=Root DNs,cn=config";)'
