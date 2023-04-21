@@ -25,7 +25,7 @@ testPingDirectoryCsdUpload() {
 
   sleep 5
 
-  verify_upload_with_timeout "csd-logs/pingdirectory" "PD_MONITOR_BUCKET_URL"
+  verify_upload_with_timeout "csd-logs/pingdirectory"
   assertEquals 0 $?
 }
 
