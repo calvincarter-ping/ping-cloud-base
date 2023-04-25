@@ -1,9 +1,9 @@
 dsconfig create-root-dn-user \
-        --user-name "{customer_name} dnmanager"  \
-        --set "alternate-bind-dn:cn={customer_name} dnmanager"  \
-        --set "description:Root account for {customer_name}."  \
+        --user-name "p1as dnmanager"  \
+        --set "alternate-bind-dn:cn=p1as dnmanager"  \
+        --set "description:Root account for p1as dnmanager."  \
         --set password:${DMANAGER_PASSWORD}  \
-        --set first-name:{customer_name}  \
+        --set first-name:p1as  \
         --set last-name:dnmanager  \
         --set inherit-default-root-privileges:false  \
         --set privilege:audit-data-security  \
@@ -18,4 +18,6 @@ dsconfig create-root-dn-user \
         --set privilege:unindexed-search-with-control  \
         --set require-secure-authentication:true  \
         --set require-secure-connections:true \
-        --set modify-acl
+
+dsconfig set-access-control-handler-prop \
+        --add 'global-aci:(target="ldap:///${USER_BASE_DN}")(targetattr="*||+")(version 3.0; acl "Testing Customer DNManager"; allow(all) userdn="ldap:///cn=p1as dnmanager,cn=Root DNs,cn=config";)'
