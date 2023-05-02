@@ -8,9 +8,20 @@ commonLabels:
   role: pingdirectory
 
 resources:
-- ../cloud-generic
-- periodic-backup.yaml
-- periodic-csd-upload.yaml
+  - ../cloud-generic
+  - periodic-backup.yaml
+  - periodic-csd-upload.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: pingdirectory-backup-ops-template-files
+    files:
+      - backup-ops-template/backup-ops.sh
+      - backup-ops-template/backup-cm.yaml
+      - backup-ops-template/backup-job.yaml
+      - backup-ops-template/backup-pvc.yaml
 
 patchesStrategicMerge:
-- discovery-service.yaml
+  - discovery-service.yaml
