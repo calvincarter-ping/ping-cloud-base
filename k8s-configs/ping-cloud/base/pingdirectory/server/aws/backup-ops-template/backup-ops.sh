@@ -3,7 +3,9 @@
 # Set as a function for this script if kubectl isn't installed.
 # Assume kubectl is available for pod under /tmp/kubectl.
 if ! command -v kubectl >/dev/null 2>&1; then
-  # test -f /tmp/kubectl || echo "kubectl is not installed: exiting" && exit 1
+  # Check and see if kubectl is installed under /tmp.
+  # If so, then source kubectl method which will be used by pod
+  test -f /tmp/kubectl || echo "kubectl is not installed: exiting" && exit 1
   function kubectl() {
     /tmp/kubectl "${@}"
   }
@@ -32,6 +34,6 @@ if [ -z "${PINGDIRECTORY_PVC_SIZE}" ]; then
   export PINGDIRECTORY_PVC_SIZE=$(kubectl get pvc "out-dir-${BACKUP_RESTORE_POD}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
 fi
 
-kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-cm\.yaml}'  -n "${PING_CLOUD_NAMESPACE}" | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
+kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-cm\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
 kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-pvc\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
 kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-job\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"

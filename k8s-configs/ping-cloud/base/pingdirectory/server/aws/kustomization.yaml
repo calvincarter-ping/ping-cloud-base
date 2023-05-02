@@ -17,6 +17,9 @@ generatorOptions:
 
 configMapGenerator:
   - name: pingdirectory-backup-ops-template-files
+    # The following files will be added to cluster as a configmap.
+    # The backup-ops.sh will be called later via cronjob or job which will then create
+    # these resources (backup-cm, backup-job, and backup-pvc) dynamically.
     files:
       - backup-ops-template/backup-ops.sh
       - backup-ops-template/backup-cm.yaml

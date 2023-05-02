@@ -40,7 +40,6 @@ rules:
     resources:
     - "configmaps"
     verbs:
-    - delete
     - create
     - get
     - list
