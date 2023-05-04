@@ -26,7 +26,7 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
 spec:
-  schedule: "30 */6 * * *"
+  schedule: "* * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
