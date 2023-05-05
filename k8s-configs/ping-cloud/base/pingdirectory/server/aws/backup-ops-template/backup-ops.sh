@@ -5,7 +5,7 @@
 if ! command -v kubectl >/dev/null 2>&1; then
   # Check and see if kubectl is installed under /tmp.
   # If so, then source kubectl method which will be used by pod
-  test -f /tmp/kubectl || echo "kubectl is not installed: exiting" && exit 1
+  test -f /tmp/kubectl || (echo "kubectl is not installed: exiting" && exit 1)
   function kubectl() {
     /tmp/kubectl "${@}"
   }
