@@ -60,6 +60,7 @@
 - Add logstash/fluent-bit readiness/liveness probe
 - Add priorityClassName into CWAgent daemonset
 - Fluent-bit pods stuck in pending state
+- Create new folder "Backup-ops" for PD backups
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 - No longer move files into custom-resources directory when upgrading
@@ -147,6 +148,7 @@ _Changes:_
 - [X] PDO-5090 Update default version of pf-pingid-integration-kit to 2.24.0 in PingFederate
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
+- [X] PDO-5123 Create new folder "Backup-ops" for PD backups
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5138 Add a new hook script '02-health-check.sh' to support readiness and liveness probes 

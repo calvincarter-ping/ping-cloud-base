@@ -35,6 +35,8 @@ if [ -z "${PINGDIRECTORY_PVC_SIZE}" ]; then
   export PINGDIRECTORY_PVC_SIZE=$(kubectl get pvc "out-dir-${BACKUP_RESTORE_POD}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
 fi
 
+# Create ConfigMap and PersistentVolumeClaim first as the Job is dependent on these resources during the mounting stage of the pod.
+# However, the configmap and pvc are independent and can be created in any order.
 kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-cm\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
 kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-pvc\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
 kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-job\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
