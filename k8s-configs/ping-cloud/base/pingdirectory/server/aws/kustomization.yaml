@@ -28,4 +28,4 @@ configMapGenerator:
       - backup-ops-template/backup-pvc.yaml
 
 patchesStrategicMerge:
-  - discovery-service.yaml
+- discovery-service.yaml
