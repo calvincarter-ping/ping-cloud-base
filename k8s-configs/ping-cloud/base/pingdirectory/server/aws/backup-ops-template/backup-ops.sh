@@ -30,7 +30,7 @@ if [ -z "${BACKUP_RESTORE_POD}" ]; then
 fi
 
 # Get desired PingDirectory PVC size
-# TODO- Add the link to the ticket (kubemetrics) 
+# TODO- Ticket to dynamically get the PD size using kubemetrics/prometheus https://pingidentity.atlassian.net/browse/PDO-4958
 if [ -z "${PINGDIRECTORY_PVC_SIZE}" ]; then
   export PINGDIRECTORY_PVC_SIZE=$(kubectl get pvc "out-dir-${BACKUP_RESTORE_POD}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
 fi
