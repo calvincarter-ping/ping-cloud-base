@@ -16,18 +16,28 @@ data:
     END=$((${NUM_REPLICAS} - 1))
 
     MONITOR_LOG_FILES=
+    ERROR_MSG=
     for i in $(seq ${START} ${END}); do
       SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
       SCRIPT="${HOOKS_DIR}"/82-upload-monitor-s3.sh
-      CONTAINER_LOG_FILE=/tmp/upload.log
+      MONITOR_LOG_FILE=/tmp/upload.log
 
       echo "Uploading monitor logs on server ${SERVER}"
-      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" > "${CONTAINER_LOG_FILE}"
+      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" > "${MONITOR_LOG_FILE}"
+      monitor_log_status=$?
 
-      if test ${?} -eq 0; then
+      if test ${monitor_log_status} -eq 0; then
         # Sending logs to STDOUT
-        cat ${CONTAINER_LOG_FILE}
+        cat ${MONITOR_LOG_FILE}
       else
-        echo "Upload script not found on server ${SERVER}"
+        # Append last 10 lines to ERROR_MSG
+        MONITOR_LOG_ERROR=$(tail -10 "${MONITOR_LOG_FILE}")
+        ERROR_MSG="${ERROR_MSG} ${MONITOR_LOG_ERROR}"
       fi
     done
+
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
+      exit 1
+    fi
