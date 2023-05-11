@@ -34,7 +34,7 @@ data:
       else
         # Append last 10 lines to ERROR_MSG
         CSD_ERROR=$(tail -10 "${LOG_FILE}")
-        ERROR_MSG="${ERROR_MSG} ${CSD_ERROR}"
+        ERROR_MSG="${ERROR_MSG} ${SERVER} failed - ${CSD_ERROR}"
       fi
     done
 

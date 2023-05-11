@@ -32,7 +32,7 @@ data:
       else
         # Append last 10 lines to ERROR_MSG
         MONITOR_LOG_ERROR=$(tail -10 "${MONITOR_LOG_FILE}")
-        ERROR_MSG="${ERROR_MSG} ${MONITOR_LOG_ERROR}"
+        ERROR_MSG="${ERROR_MSG} ${SERVER} failed - ${MONITOR_LOG_ERROR}"
       fi
     done
 
