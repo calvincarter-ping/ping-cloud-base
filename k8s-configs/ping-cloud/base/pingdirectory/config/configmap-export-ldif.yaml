@@ -11,6 +11,7 @@ data:
     chmod +x /tmp/kubectl
 
     LDIF_FILES=
+    ERROR_MSG=
     SERVER="${K8S_STATEFUL_SET_NAME}-1"
     SCRIPT="${HOOKS_DIR}"/90-export-ldif-s3.sh
     LOG_FILE=/tmp/upload.log
@@ -19,11 +20,19 @@ data:
     /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}">"${LOG_FILE}"
     export_ldif_status=$?
 
-    # Sending success/ or failure logs to STDOUT
-    cat ${LOG_FILE}
+    if test ${export_ldif_status} -eq 0; then
+      # Sending successful logs to STDOUT
+      cat ${LOG_FILE}
+    else
+      # Append last 10 lines to ERROR_MSG
+      EXPORT_LDIF_ERROR=$(tail -10 "${LOG_FILE}")
+      ERROR_MSG="${SERVER} failed - ${EXPORT_LDIF_ERROR}"
+      exit 1
+    fi
 
     # Fail script if the desired server failed during export-ldif upload to S3
-    if test ${export_ldif_status} -ne 0; then
-      echo "Script failed on server ${SERVER} exiting"
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
       exit 1
     fi
