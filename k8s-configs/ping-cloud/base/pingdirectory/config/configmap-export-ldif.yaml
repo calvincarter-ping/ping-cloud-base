@@ -10,13 +10,12 @@ data:
     curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
     chmod +x /tmp/kubectl
 
-    LDIF_FILES=
     ERROR_MSG=
     SERVER="${K8S_STATEFUL_SET_NAME}-1"
     SCRIPT="${HOOKS_DIR}"/90-export-ldif-s3.sh
     LOG_FILE=/tmp/upload.log
 
-    echo "Uploading LDIF_FILES on server ${SERVER}"
+    echo "Uploading LDIF_FILE on server ${SERVER}"
     /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}">"${LOG_FILE}"
     export_ldif_status=$?
 
