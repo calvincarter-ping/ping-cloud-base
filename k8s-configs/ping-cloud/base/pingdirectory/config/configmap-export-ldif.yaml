@@ -22,6 +22,7 @@ data:
     # Sending success/ or failure logs to STDOUT
     cat ${LOG_FILE}
 
+    # Fail script if the desired server failed during export-ldif upload to S3
     if test ${export_ldif_status} -ne 0; then
       echo "Script failed on server ${SERVER} exiting"
       exit 1

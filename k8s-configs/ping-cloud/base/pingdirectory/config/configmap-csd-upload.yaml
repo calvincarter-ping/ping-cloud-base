@@ -38,6 +38,7 @@ data:
       fi
     done
 
+    # Fail script if any of the servers failed during CSD upload to S3
     if [ -n "${ERROR_MSG}" ]; then
       echo "${ERROR_MSG}"
       echo "Script failed exiting"
