@@ -80,6 +80,7 @@
 - Add pingaccess-was-license secret placeholder entry to CHUB
 - Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - Backup monitor history everyday for PingDirectory
+- PA-WAS ext ingress is missing from non-customer-hub environments
 
 _Changes:_
 
@@ -184,6 +185,8 @@ _Changes:_
 - [X] PDO-5377 Patch CA to balance node across all AZs
 - [X] PDO-5390 nri-bundle-nrk8s-kubelet-* pods running by CDE stuck in Pending state
 - [X] PDO-5393 Bugfix - secondary CSR missing app dir
+- [X] PDO-5419 Bugfix - remove monitoring & logging from secondary
+- [X] PDO-5415 Bugfix - PA-WAS ext ingress is missing from non-customer-hub environments
 
 ### 1.17.0.0
 
