@@ -143,3 +143,7 @@ dsconfig set-local-db-index-prop \
     --backend-name userRoot \
     --index-name uid \
     --add index-type:substring
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot \
+    --index-name objectClass
