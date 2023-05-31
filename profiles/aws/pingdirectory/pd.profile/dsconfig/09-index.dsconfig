@@ -148,11 +148,7 @@ dsconfig set-local-db-index-prop \
     --backend-name userRoot \
     --index-name objectClass
 
-dsconfig create-local-db-vlv-index \
-    --index-name employeeType \
+dsconfig create-local-db-index \
     --backend-name userRoot \
-    --set base-dn:ou=people,dc=calvin,dc=com \
-    --set scope:whole-subtree \
-    --set filter:"(&(objectClass=inetOrgPerson)(!(employeeType=Automation)))" \
-    --set "sort-order:+cn" \
-    --no-prompt
+    --index-name userRoles \
+    --set index-type:equality
