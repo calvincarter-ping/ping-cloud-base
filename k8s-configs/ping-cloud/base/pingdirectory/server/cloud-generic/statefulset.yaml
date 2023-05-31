@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       annotations:
-        lastUpdateReason: "Restart PD 2"
+        lastUpdateReason: "NA"
       labels:
         class: pingdirectory-server
         entitled-app: "true"
@@ -165,7 +165,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-5507-default-user-dn
+          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.17-release-branch-latest
           imagePullPolicy: Always
           ports:
             - containerPort: 1389
