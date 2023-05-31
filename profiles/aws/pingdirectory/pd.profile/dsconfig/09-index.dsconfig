@@ -142,5 +142,4 @@ dsconfig set-local-db-index-prop \
 dsconfig set-local-db-index-prop \
     --backend-name userRoot \
     --index-name uid \
-    --set index-entry-limit:4000 \
     --add index-type:substring
