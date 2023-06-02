@@ -144,8 +144,8 @@ dsconfig set-local-db-index-prop \
     --index-name uid \
     --add index-type:substring
 
-dsconfig create-local-db-index \
-  --backend-name userRoot \
-  --type generic \
-  --index-name newAttributeName \
-  --set index-type:equality
+# dsconfig create-local-db-index \
+#  --backend-name userRoot \
+#  --type generic \
+#  --index-name newAttributeName \
+#  --set index-type:equality
