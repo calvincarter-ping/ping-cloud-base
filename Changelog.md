@@ -19,6 +19,7 @@
 - Upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - Add PGO Backups Jobs TTL
 - Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
+- Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
 
 _Changes:_
 
@@ -40,6 +41,7 @@ _Changes:_
 - [X] PDO-5490 policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
 - [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - [X] PDO-5507 Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
+- [X] PDO-5508 Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
 
 ### 1.17.0.0
 
