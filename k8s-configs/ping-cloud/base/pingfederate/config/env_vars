@@ -83,5 +83,5 @@ PF_PROVISIONER_GRACE_PERIOD=600
 # Synchronization frequency in seconds (default: 60)
 PF_PROVISIONER_SYNC_FREQ=60
 
-# Set to true to disable liveness probe
+# Set to true to skip liveness probe.
 SKIP_LIVENESS=false

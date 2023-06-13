@@ -93,5 +93,5 @@ ADMIN_BIND_DN=cn=admin
 SYNC_BIND_DN=cn=sync
 CHANGELOG_SYNC_MAX_AGE=2h
 
-# Set to false to disable liveness probe. Skipping the liveness is the default for PingDirectory.
+# Set to false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
 SKIP_LIVENESS=true
