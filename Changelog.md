@@ -208,14 +208,6 @@ _Changes:_
 - [X] PDO-5648 [PORT PDO-5508] Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
 
-### 1.17.1.0
-
-- Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
-
-_Changes:_
-
-- [X] PDO-5508 Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
-
 ### 1.17.0.0
 
 - Remove logstash tolerations
