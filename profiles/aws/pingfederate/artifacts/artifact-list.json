@@ -4,6 +4,10 @@
     "version": "1.6.1"
   },
   {
+    "name": "pf-pcv-pone",
+    "version": "52.137"
+  },
+  {
     "name": "opentoken-adapter",
     "version": "2.7"
   },
