@@ -12,10 +12,6 @@
     "version": "2.24.0"
   },
   {
-    "name": "pf-x509-certificate-integration-kit",
-    "version": "1.3.1"
-  },
-  {
     "name": "opentoken-adapter",
     "version": "2.7"
   },
