@@ -1,9 +1,5 @@
 [
   {
-    "name": "pf-pingone-mfa-integration-kit",
-    "version": "1.9"
-  },
-  {
     "name": "pf-pingid-integration-kit",
     "version": "2.24.0"
   },
