@@ -114,7 +114,7 @@ ldap.username=uid=pingfederate,ou=devopsaccount,o=platformconfig
 #   Copy complete result into property value, as shown in the example below:
 #     ldap.password=OBF:JWE:eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2Iiwia2lkIjoiVEU0dVZjcU1wayIsInZlcnNpb24iOiI3LjEuMjAwLjQtU05BUFNIT1QifQ..8Zf_xQ4PuXuYkdE0culPpA.E2Lh_zAne5YpaJo9wbl39A.Z8wVd6SFB8lcQbvutU1u-Q
 #
-ldap.password=${PF_LDAP_PASSWORD}
+ldap.password=REPLACED_AND_OBFUSCATED_BY_80-CONFIGURE-LDAP-DS_HOOK
 
 # Enable LDAPS connections Hostname verification.
 #
