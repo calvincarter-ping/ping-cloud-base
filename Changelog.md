@@ -7,6 +7,7 @@
 _Changes:_
 
 - [X] PDO-5955 Create new AES-256 encryption settings for all PingDirectory servers
+- [X] PDO-5979 Fix PingDirectory wrong hostname error during replication
 
 ### 1.17.1.0
 
