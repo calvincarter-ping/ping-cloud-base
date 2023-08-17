@@ -3,6 +3,7 @@
 ### 1.17.2.0
 
 - Create new AES-256 encryption settings for all PingDirectory servers
+- Fix PingDirectory wrong hostname error during replication
 
 _Changes:_
 
