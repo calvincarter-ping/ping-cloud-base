@@ -1,21 +1,14 @@
 dsconfig set-backend-prop \
         --backend-name "userRoot" \
-        --set db-cache-percent:35 \
-        --set import-thread-count:1
+        --set db-cache-percent:35
 
 dsconfig set-backend-prop \
       --backend-name "platformconfig" \
-      --set db-cache-percent:5 \
-      --set import-thread-count:1
+      --set db-cache-percent:5
 
 dsconfig set-backend-prop \
       --backend-name "appintegrations" \
-      --set db-cache-percent:15 \
-      --set import-thread-count:1
-
-dsconfig set-backend-prop \
-        --backend-name userRoot \
-        --set prime-thread-count:1
+      --set db-cache-percent:15
 
 dsconfig set-local-db-index-prop \
         --backend-name userRoot --index-name cn \
