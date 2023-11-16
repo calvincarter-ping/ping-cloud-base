@@ -308,6 +308,9 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: logstash-gp3
+        annotations:
+          volume.autoscaler.kubernetes.io/scale-above-percent: "85"
+          volume.autoscaler.kubernetes.io/scale-up-percent: "25"
         labels:
           app: logstash-elastic
       spec:
