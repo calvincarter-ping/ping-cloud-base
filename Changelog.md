@@ -89,7 +89,7 @@
 - Add PingOne SSO for ArgoCD
 - Remove Grafana from ping-cloud-base image tag list
 - Remove p14c-oauth-service job and pod
-- Remove import-thread-count propertiy from all backends from PingDirectory
+- Remove import-thread-count property from all backends from PingDirectory
 
 _Changes:_
 
@@ -192,7 +192,7 @@ _Changes:_
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - [X] PDO-5928 Configure PA-WAS in P1 for customer hub deployments
-- [X] PDO-5963 Remove import-thread-count propertiy from all backends from PingDirectory
+- [X] PDO-5963 Remove import-thread-count property from all backends from PingDirectory
 - [X] PDO-5972 Karpenter Pods: Verify Logs are sent to CloudWatch
 - [X] PDO-6006 Change Argo CD log to 'ERROR' level
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
