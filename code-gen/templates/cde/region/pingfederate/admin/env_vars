@@ -3,7 +3,10 @@ LAST_UPDATE_REASON="${LAST_UPDATE_REASON}"
 
 SERVER_PROFILE_PATH=profiles/pingfederate
 
+#Set `PF_RUN_PF_RUNTIME_THREADS_MIN` and `PF_JETTY_THREADS_MIN` as the same if you care to override PingFederate min threads.
 PF_JETTY_THREADS_MIN=
 PF_RUN_PF_RUNTIME_THREADS_MIN=
+
+#Set `PF_JETTY_THREADS_MAX` and `PF_RUN_PF_RUNTIME_THREADS_MAX` as the same if you care to override PingFederate max threads.
 PF_JETTY_THREADS_MAX=
 PF_RUN_PF_RUNTIME_THREADS_MAX=
