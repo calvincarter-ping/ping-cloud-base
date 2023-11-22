@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.18.1.0
+
+- Increase PingFederate MaxThreadCount
+
+_Changes:_
+
+- [X] PDO-6780 Increase PingFederate MaxThreadCount
+
 ### 1.18.0.0
 
 - Enable users to download or upload user reports in Delegated Admin
