@@ -224,11 +224,8 @@ _Changes:_
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
 - [X] PDO-6311 Argocd pod resources spec adjusted
-<<<<<<< HEAD
 - [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
-=======
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
->>>>>>> d0067b99e (changelog [skip pipeline])
 
 ### 1.18.0.0
 
