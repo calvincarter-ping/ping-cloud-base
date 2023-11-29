@@ -1274,7 +1274,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     cp -R "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" "${K8S_CONFIGS_DIR}/base/cluster-tools/"
     cp -R "${CHUB_TEMPLATES_DIR}/region/git-ops" "${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/"
 
-    # Append patch to merge base and region env vars for ArgoCD in region customization.yaml
+    # Append patch to merge base and region env vars for ArgoCD in region kustomization.yaml
     export CHUB_REGION_KUST_FILE="${CHUB_TEMPLATES_DIR}/region/kustomization.yaml"
     yq eval -i '.configMapGenerator += (load(strenv(CHUB_REGION_KUST_FILE)).configMapGenerator[] | select(.name == "argocd-bootstrap"))' "${PRIMARY_PING_KUST_FILE}"
 
