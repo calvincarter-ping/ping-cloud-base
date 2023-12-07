@@ -9,7 +9,7 @@ data:
     opensearch.ssl.verificationMode: full
     opensearch.ssl.certificateAuthorities: /usr/share/opensearch-dashboards/config/certs/ca.crt
     opensearch.requestHeadersAllowlist: [authorization, securitytenant]
-    opensearch_security.auth.anonymous_auth_enabled: true
+    opensearch_security.auth.anonymous_auth_enabled: false
     opensearch_security.multitenancy.enabled: false
     opensearch_security.readonly_mode.roles: [kibana_read_only]
     # Use this setting if you are running opensearch-dashboards without https

@@ -4,55 +4,54 @@ _meta:
 
 # Define your roles mapping here
 
-opendistro_security_anonymous_role:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+opendistro_security_role:
+  reserved: false
+  backend_roles: []
 
 alerting_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 anomaly_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 notebooks_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 observability_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 reports_instances_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 reports_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 asynchronous_search_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 ml_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 notifications_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 snapshot_management_read_access:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+  reserved: false
+  backend_roles: []
 
 all_access:
   reserved: false
   backend_roles:
   - "admin"
-  - "opendistro_security_anonymous_backendrole"
   description: "Maps admin to all_access"
 
 logstash:
@@ -85,4 +84,3 @@ bootstrap:
   reserved: true
   users:
   - "bootstrap"
-  

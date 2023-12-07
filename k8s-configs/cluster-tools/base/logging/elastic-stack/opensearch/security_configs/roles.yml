@@ -240,8 +240,7 @@ ml_full_access:
       allowed_actions:
         - 'indices_monitor'
 
-# Anonymous access role
-opendistro_security_anonymous_role:
+opendistro_security_role:
   reserved: true
   cluster_permissions:
     # For using _cat/indices

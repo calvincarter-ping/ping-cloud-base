@@ -17,6 +17,21 @@ spec:
       labels:
         app.kubernetes.io/name: opensearch-dashboards
     spec:
+      initContainers:
+        - name: wait-for-p1as-oauth-completed
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - '-c'
+            - >-
+              kubectl wait --for=condition=ready --timeout=900s -n
+              elastic-stack-logging pod/opensearch-cluster-hot-0
       securityContext:
         {}
       serviceAccountName: opensearch-dashboards
