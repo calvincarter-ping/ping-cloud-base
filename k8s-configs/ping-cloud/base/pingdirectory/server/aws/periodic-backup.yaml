@@ -6,11 +6,6 @@ data:
   backup-cronjob.sh: |-
     #!/bin/sh
 
-    # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
-    -o /tmp/kubectl
-    chmod +x /tmp/kubectl
-
     # Execute backup-ops.sh script (which kicks off the k8s pingdirectory-backup Job)
     SCRIPT="/opt/in/backup-ops.sh"
     test -x ${SCRIPT} && ${SCRIPT} "scheduled-cronjob"
