@@ -96,6 +96,8 @@
 - Logstash: Migrate to AWS EBS gp3 Volumes
 - Newrelic-Prometheus-Agent: Send Kubernetes-volume-Autoscaler Metrics to New Relic
 - Update CreateCluster script to provision Karpenter-ready Cluster.
+- Removed: AWS EFS CSI Driver
+- Prometheus: Migrate to AWS EBS gp3 Volumes
 
 _Changes:_
 
@@ -205,6 +207,7 @@ _Changes:_
 - [X] PDO-6006 Change Argo CD log to 'ERROR' level
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
+- [X] PDO-6027 AWS EFS CSI Driver: Remove it
 - [X] PDO-6033 Configure PingAccess SSO app for Ping internal group access
 - [X] PDO-6034 Configure PingFederate SSO app for Ping internal group access
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
@@ -232,6 +235,7 @@ _Changes:_
 - [X] PDO-6333 Implement: OpenSearch EBS gp3 Storage Class + Kubernetes-Volume-Autoscaler
 - [X] PDO-6335 Newrelic-Prometheus-Agent: Send Kubernetes-volume-Autoscaler Metrics to New Relic
 - [X] PDO-6337 Migrate logstash to the GP3 volumes
+- [X] PDO-6338 Migrate Prometheus to the GP3 volumes
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
 
 ### 1.18.0.0
