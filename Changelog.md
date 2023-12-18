@@ -100,6 +100,7 @@
 - Removed: AWS EFS CSI Driver
 - Prometheus: Migrate to AWS EBS gp3 Volumes
 - Update alert rules for PGO
+- Nginx logs include request hostname
 
 _Changes:_
 
@@ -241,6 +242,7 @@ _Changes:_
 - [X] PDO-6337 Migrate logstash to the GP3 volumes
 - [X] PDO-6338 Migrate Prometheus to the GP3 volumes
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
+- [X] PDO-6482 Update nginx logs to include hostname
 
 ### 1.18.0.0
 
