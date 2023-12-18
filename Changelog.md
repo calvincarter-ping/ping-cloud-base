@@ -87,6 +87,7 @@
 - Set Karpenter defaultInstanceProfile via Environment Variable
 - Add entry in base values.yaml for disabling subchart dependencies
 - Add PingOne SSO for ArgoCD
+- Modify appintegrations cache config within PingDirectory
 - Remove Grafana from ping-cloud-base image tag list
 - Remove p14c-oauth-service job and pod
 - Remove prime-thread-count setting from userRoot backend within PingDirectory
@@ -98,6 +99,8 @@
 - Update CreateCluster script to provision Karpenter-ready Cluster.
 - Removed: AWS EFS CSI Driver
 - Prometheus: Migrate to AWS EBS gp3 Volumes
+- Update alert rules for PGO
+- Update integration tests to be able to run locally
 - Update to P1AS to use ARN instead of name for IRSA roles
 
 _Changes:_
@@ -223,6 +226,7 @@ _Changes:_
 - [X] PDO-6166 Add PingFederate periodic backup limits
 - [X] PDO-6167 Add PodDisruptionBudget for ingress-nginx-public
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
+- [X] PDO-6188 Update alert rules for PGO
 - [X] PDO-6189 Fluentbit: Performance degradation under high load
 - [X] PDO-6190 Logstash: Readiness probe fails under high load
 - [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
@@ -231,6 +235,7 @@ _Changes:_
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
 - [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - [X] PDO-6267 Update to enable detailed monitoring on instances
+- [X] PDO-6282 Modify appintegrations cache config within PingDirectory
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
 - [X] PDO-6311 Argocd pod resources spec adjusted
 - [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
@@ -239,6 +244,7 @@ _Changes:_
 - [X] PDO-6337 Migrate logstash to the GP3 volumes
 - [X] PDO-6338 Migrate Prometheus to the GP3 volumes
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
+- [X] PDO-6526 Update integration tests to be able to run locally
 
 ### 1.18.0.0
 
