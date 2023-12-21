@@ -88,6 +88,7 @@
 - Set Karpenter defaultInstanceProfile via Environment Variable
 - Add entry in base values.yaml for disabling subchart dependencies
 - Add PingOne SSO for ArgoCD
+- Add PingOne SSO for Opensearch Dashboards
 - Modify appintegrations cache config within PingDirectory
 - Remove Grafana from ping-cloud-base image tag list
 - Remove p14c-oauth-service job and pod
@@ -246,6 +247,7 @@ _Changes:_
 - [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 - [X] PDO-6282 Modify appintegrations cache config within PingDirectory
+- [X] PDO-6287 OpenSearch Post-Migration: Security: Dashboard SSO - Update p14c-oauth-service
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
 - [X] PDO-6311 Argocd pod resources spec adjusted
 - [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
