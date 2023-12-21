@@ -7,50 +7,6 @@ customer_role:
   reserved: false
   backend_roles: []
 
-opendistro_security_role:
-  reserved: false
-  backend_roles: []
-
-alerting_read_access:
-  reserved: false
-  backend_roles: []
-
-anomaly_read_access:
-  reserved: false
-  backend_roles: []
-
-notebooks_read_access:
-  reserved: false
-  backend_roles: []
-
-observability_read_access:
-  reserved: false
-  backend_roles: []
-
-reports_instances_read_access:
-  reserved: false
-  backend_roles: []
-
-reports_read_access:
-  reserved: false
-  backend_roles: []
-
-asynchronous_search_read_access:
-  reserved: false
-  backend_roles: []
-
-ml_read_access:
-  reserved: false
-  backend_roles: []
-
-notifications_read_access:
-  reserved: false
-  backend_roles: []
-
-snapshot_management_read_access:
-  reserved: false
-  backend_roles: []
-
 all_access:
   reserved: false
   backend_roles:
