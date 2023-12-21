@@ -342,3 +342,21 @@ bootstrap:
       allowed_actions:
         - 'crud'
         - 'create_index'
+
+customer_role:
+  reserved: false
+  hidden: false
+  cluster_permissions:
+  - "cluster_composite_ops_ro"
+  - "kibana_all_read"
+  index_permissions:
+  - index_patterns:
+    - "*"
+    allowed_actions:
+    - "read"
+    - "kibana_all_read"
+  tenant_permissions:
+  - tenant_patterns:
+    - "global_tenant"
+    allowed_actions:
+    - "kibana_all_read"

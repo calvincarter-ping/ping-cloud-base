@@ -3,6 +3,9 @@ _meta:
   config_version: 2
 
 # Define your roles mapping here
+customer_role:
+  reserved: false
+  backend_roles: []
 
 opendistro_security_role:
   reserved: false
