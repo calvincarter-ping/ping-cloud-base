@@ -18,4 +18,5 @@ secretGenerator:
       - whitelist.yml
 generatorOptions:
   annotations:
-    sealedsecrets.bitnami.com/managed: "true"  
+    sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false
