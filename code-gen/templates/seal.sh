@@ -116,6 +116,8 @@ rm -f "${SEALED_SECRETS_FILE}"
 SECRETS_FILE=/tmp/ping-secrets.yaml
 rm -f "${SECRETS_FILE}"
 
+# Seal all secrets, even if empty, this allows for ArgoCD to manage the corresponding secrets correctly
+# Once ArgoCD sees a SealedSecret with a corresponding Secret, it is able to stop managing the Secret resource properly
 for FILE in ${YAML_FILES}; do
   NAME=$(grep '^  name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
   NAMESPACE=$(grep '^  namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
@@ -132,20 +134,15 @@ metadata:
 
 EOF
 
-  # Only seal secrets that have data in them.
-  if grep '^data' "${FILE}" &> /dev/null; then
-    echo "Creating sealed secret for \"${NAMESPACE}:${NAME}\""
+  echo "Creating sealed secret for \"${NAMESPACE}:${NAME}\""
 
-    # Append the sealed secret to the sealed secrets file.
-    kubeseal --cert "${CERT_FILE}" -o yaml --allow-empty-data < "${FILE}" >> "${SEALED_SECRETS_FILE}"
-    echo --- >> "${SEALED_SECRETS_FILE}"
-    echo >> "${SEALED_SECRETS_FILE}"
+  # Append the sealed secret to the sealed secrets file.
+  kubeseal --cert "${CERT_FILE}" -o yaml --allow-empty-data < "${FILE}" >> "${SEALED_SECRETS_FILE}"
+  echo --- >> "${SEALED_SECRETS_FILE}"
+  echo >> "${SEALED_SECRETS_FILE}"
 
-    # Replace ping-cloud-* namespace to just ping-cloud because it is the default in the kustomization base.
-    echo -n "${NAMESPACE}" | grep '^ping-cloud' &> /dev/null && NAMESPACE=ping-cloud
-  else
-    echo "Not creating sealed secret for \"${NAMESPACE}:${NAME}\" because it doesn't have any data"
-  fi
+  # Replace ping-cloud-* namespace to just ping-cloud because it is the default in the kustomization base.
+  echo -n "${NAMESPACE}" | grep '^ping-cloud' &> /dev/null && NAMESPACE=ping-cloud
 done
 
 if "${UPDATE_MANIFESTS}"; then
