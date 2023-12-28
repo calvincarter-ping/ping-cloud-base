@@ -21,8 +21,8 @@ test_seal_sh() {
     # SELECTED_KUBE_NAME comes from gitlab ci/cd - set manually if testing locally
     BRANCH="dev"
     export LOCAL="true"
-    # If PCB_PATH provided use it, otherwise use PROJECT_DIR set by Gitlab, since this pipeline is PCB's
-    PCB_PATH=${PCB_PATH:-$PROJECT_DIR}
+    # If PCB_PATH provided use it, otherwise use CI_PROJECT_DIR set by Gitlab, since this pipeline is PCB's
+    PCB_PATH=${PCB_PATH:-$CI_PROJECT_DIR}
     pushd /tmp
     git clone -b "${BRANCH}" codecommit://${SELECTED_KUBE_NAME}-cluster-state-repo
     pushd /tmp/${SELECTED_KUBE_NAME}-cluster-state-repo/k8s-configs
