@@ -5,7 +5,7 @@ metadata:
   name: nr-license-key
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
-    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
 
 ---
 apiVersion: apps/v1
@@ -401,7 +401,7 @@ metadata:
   name: os-logstash-creds
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
-    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
 data:
   username: bG9nc3Rhc2g=
   password: bWk3ZWl0ZTJvb25vbzhFa3UxdWZvbzRlZ2gxamFpajI=
