@@ -10,29 +10,40 @@ fi
 
 ## Running locally
 # To run locally see the following example to set env vars and run the test:
-# SELECTED_KUBE_NAME=ci-cd-9 \
-#   SHARED_CI_SCRIPTS_DIR=/Users/jackminer/git/k8s-deploy-tools/ci-scripts \
-#   SHUNIT_PATH=/Users/jackminer/Downloads/shunit2-2.1.8/shunit2 \
-#   PCB_PATH=/Users/jackminer/git/ping-cloud-base \
+# SELECTED_KUBE_NAME=ci-cd-SOME_NUM \
+#   LOCAL="true"
+#   ENV_TYPE="dev"
+#   SHARED_CI_SCRIPTS_DIR=/PATH/TO/k8s-deploy-tools/ci-scripts \
+#   SHUNIT_PATH=/PATH/TO/shunit2-2.1.8/shunit2 \
+#   PCB_PATH=/PATH/TO/ping-cloud-base \
 #   ./tests/common/01-test-csr.sh
 
 test_seal_sh() {
-    # TODO: dupe some env vars from k8s-deploy-tools
-    # SELECTED_KUBE_NAME comes from gitlab ci/cd - set manually if testing locally
-    BRANCH="dev"
+    # TODO: copy this logic from k8s-deployt-ools/ci-scripts/k8s-deploy/deploy.sh
+    local branch_name=""
+    if [[ ${ENV_TYPE} == "prod" ]]; then
+        branch_name="master"
+    else
+        branch_name="${ENV_TYPE}"
+    fi
+    # Set LOCAL to true for seal.sh to pull the PCB_PATH properly
     export LOCAL="true"
-    # If PCB_PATH provided use it, otherwise use CI_PROJECT_DIR set by Gitlab, since this pipeline is PCB's
-    PCB_PATH=${PCB_PATH:-$CI_PROJECT_DIR}
+    # If PCB_PATH is provided use it, otherwise use CI_PROJECT_DIR set by Gitlab, since PCB will already be checked out
+    export PCB_PATH=${PCB_PATH:-$CI_PROJECT_DIR}
+
     pushd /tmp
-    git clone -b "${BRANCH}" codecommit://${SELECTED_KUBE_NAME}-cluster-state-repo
+    git clone -b "${branch_name}" codecommit://${SELECTED_KUBE_NAME}-cluster-state-repo
     pushd /tmp/${SELECTED_KUBE_NAME}-cluster-state-repo/k8s-configs
     ./seal.sh
-    #cp /tmp/ping-secrets.yaml base/secrets.yaml
-    #cp /tmp/sealed-secrets.yaml base/sealed-secrets.yaml
+
     num_secrets=$(grep -c "kind: Secret" /tmp/ping-secrets.yaml)
     num_sealed_secrets=$(grep -c "kind: SealedSecret" /tmp/sealed-secrets.yaml)
     assertEquals "Checking secret and sealed secret counts match" "${num_secrets}" "${num_sealed_secrets}"
-    # DEBUG=true ./git-ops-command.sh us-west-2
+
+    # cp /tmp/ping-secrets.yaml base/secrets.yaml
+    # cp /tmp/sealed-secrets.yaml base/sealed-secrets.yaml
+    # ./git-ops-command.sh us-west-2 > /tmp/test-uber-output.yaml
+
     # grep "kind: Secret"
     popd
     popd
