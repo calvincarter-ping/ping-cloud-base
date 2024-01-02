@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2164
+# shellcheck disable=SC2164,SC1090,SC1091,SC2086
 
 CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
 . "${CI_SCRIPTS_DIR}"/common.sh "${1}"
@@ -42,13 +42,14 @@ tearDown() {
     rm -rf /tmp/${SELECTED_KUBE_NAME}-cluster-state-repo
 }
 
+# Test that the counts match of the secrets sealed vs the secrets which weren't sealed previously
 test_seal_secret_count_match() {
-    # Test that the counts match of the secrets sealed vs the secrets which weren't sealed previously
     num_secrets=$(grep -c "kind: Secret" /tmp/ping-secrets.yaml)
     num_sealed_secrets=$(grep -c "kind: SealedSecret" /tmp/sealed-secrets.yaml)
     assertEquals "Checking secret and sealed secret counts match" "${num_secrets}" "${num_sealed_secrets}"
 }
 
+# Test that there are no unexpected secrets in the uber yaml output
 test_no_secret_in_uber_yaml() {
     # Copy the sealed secrets into the cluster-state-repo directory
     cp /tmp/ping-secrets.yaml base/secrets.yaml
@@ -59,7 +60,6 @@ test_no_secret_in_uber_yaml() {
     echo "Generating uber yaml..."
     ./git-ops-command.sh us-west-2 > ${uber_yaml_output}
 
-    # Test that there are no secrets in the uber yaml output
     # Find all kind: Secrets at the top level, ignoring karpenter-cert as it's managed by karpenter
     yq 'select(.kind == "Secret") | select(.metadata.name != "karpenter-cert")' ${uber_yaml_output} -e
     assertEquals "yq exit code should be 1 as no matches are found" 1 $?
