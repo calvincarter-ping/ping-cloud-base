@@ -107,6 +107,7 @@
 - Replace healthcheck & metadata related manifests & configs with p1as-beluga-tools microservice
 - Increase OpenSearch warm replicas to 3 to make it HA
 - Renaming installP1asSubcharts value to isMicroserviceDeploy for microservices
+- Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
 
 _Changes:_
 
@@ -256,6 +257,7 @@ _Changes:_
 - [X] PDO-6482 Update nginx logs to include hostname
 - [X] PDO-6506 Update to fix karpenter provisoner config
 - [X] PDO-6526 Update integration tests to be able to run locally
+- [X] PDO-6585:Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
 
 ### 1.18.0.0
 
