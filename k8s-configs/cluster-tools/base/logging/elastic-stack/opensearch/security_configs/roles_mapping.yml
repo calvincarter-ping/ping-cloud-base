@@ -2,11 +2,9 @@ _meta:
   type: "rolesmapping"
   config_version: 2
 
-# Define your roles mapping here
-customer_role:
-  reserved: false
-  backend_roles: []
+# Role mappings for OIDC groups are added by the p1as-oauth init container in the opensearch pods
 
+# Role mappings for internal users are defined here
 all_access:
   reserved: false
   backend_roles:
