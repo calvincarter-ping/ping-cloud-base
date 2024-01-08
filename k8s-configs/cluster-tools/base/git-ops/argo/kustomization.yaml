@@ -162,11 +162,11 @@ patches:
           - name: argocd-repo-server
             resources:
               requests:
-                memory: "50Mi"
-                cpu: "50m"
+                memory: "150Mi"
+                cpu: "150m"
               limits:
-                memory: "100Mi"
-                cpu: "100m"
+                memory: "250Mi"
+                cpu: "250m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -329,10 +329,10 @@ patches:
             resources:
               requests:
                 memory: "100Mi"
-                cpu: "100m"
+                cpu: "300m"
               limits:
-                memory: "200Mi"
-                cpu: "500m"
+                memory: "300Mi"
+                cpu: "700m"
           volumes:
           - configMap:
               name: git-ops-command-plugin-cm
