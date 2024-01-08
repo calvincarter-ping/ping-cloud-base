@@ -179,10 +179,10 @@ patches:
           - name: argocd-server
             resources:
               requests:
-                memory: "125Mi"
+                memory: "250Mi"
                 cpu: "500m"
               limits:
-                memory: "250Mi"
+                memory: "500Mi"
                 cpu: "1000m"
 - patch: |-
     apiVersion: apps/v1
@@ -319,6 +319,13 @@ patches:
               - name: tools-dir
                 mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
                 subPath: __init__.py
+            resources:
+              requests:
+                memory: "100Mi"
+                cpu: "100m"
+              limits:
+                memory: "200Mi"
+                cpu: "200m"
           volumes:
           - configMap:
               name: git-ops-command-plugin-cm
