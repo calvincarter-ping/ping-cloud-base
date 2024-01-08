@@ -180,10 +180,10 @@ patches:
             resources:
               requests:
                 memory: "125Mi"
-                cpu: "125m"
+                cpu: "500m"
               limits:
                 memory: "250Mi"
-                cpu: "250m"
+                cpu: "1000m"
 - patch: |-
     apiVersion: apps/v1
     kind: StatefulSet
