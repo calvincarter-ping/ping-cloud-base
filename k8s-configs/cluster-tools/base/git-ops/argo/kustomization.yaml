@@ -79,6 +79,9 @@ patches:
               requests:
                 memory: "500Mi"
                 cpu: "1000m"
+              limits:
+                memory: "1000Mi"
+                cpu: "2000m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -93,6 +96,9 @@ patches:
               requests:
                 memory: "125Mi"
                 cpu: "250m"
+              limits:
+                memory: "250Mi"
+                cpu: "500m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -107,6 +113,9 @@ patches:
               requests:
                 memory: "40Mi"
                 cpu: "10m"
+              limits:
+                memory: "80Mi"
+                cpu: "30m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -121,6 +130,9 @@ patches:
               requests:
                 memory: "50Mi"
                 cpu: "10m"
+              limits:
+                memory: "100Mi"
+                cpu: "30m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -135,6 +147,9 @@ patches:
               requests:
                 memory: "125Mi"
                 cpu: "250m"
+              limits:
+                memory: "250Mi"
+                cpu: "500m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -149,6 +164,9 @@ patches:
               requests:
                 memory: "500Mi"
                 cpu: "500m"
+              limits:
+                memory: "1000Mi"
+                cpu: "1000m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -163,6 +181,9 @@ patches:
               requests:
                 memory: "125Mi"
                 cpu: "125m"
+              limits:
+                memory: "250Mi"
+                cpu: "250m"
 - patch: |-
     apiVersion: apps/v1
     kind: StatefulSet
@@ -177,6 +198,9 @@ patches:
               requests:
                 memory: "1000Mi"
                 cpu: "1000m"
+              limits:
+                memory: "2000Mi"
+                cpu: "2000m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -404,6 +428,9 @@ patches:
               requests:
                 memory: "256Mi"
                 cpu: "300m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
             env:
             - name: NAMESPACE
               valueFrom:
