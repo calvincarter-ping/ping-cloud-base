@@ -26,6 +26,9 @@ config:
         ###### and here https://tools.ietf.org/html/rfc7239
         ###### and https://tomcat.apache.org/tomcat-8.0-doc/config/valve.html#Remote_IP_Valve
     authc:
+      # OpenSearch Dashboards requires that the internal OpenSearch Dashboards server user can authenticate through
+      # HTTP basic authentication, so we must configure two authentication domains. For OpenID Connect, the HTTP basic
+      # domain has to be placed first in the chain. (HTTP is set to `order: 0`, and OIDC is `order: 1`)
       basic_internal_auth_domain:
         description: "Authenticate via HTTP Basic against internal users database"
         http_enabled: true
@@ -36,3 +39,5 @@ config:
           challenge: false
         authentication_backend:
           type: internal
+      # OIDC authentication configuration is added by the p1as-oauth init container in opensearch pods, because
+      # we don't know the OIDC URL until after p1as-bootstrap pulls environment values from the SSMs
