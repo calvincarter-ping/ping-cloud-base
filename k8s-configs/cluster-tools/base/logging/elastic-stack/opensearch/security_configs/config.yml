@@ -36,16 +36,3 @@ config:
           challenge: false
         authentication_backend:
           type: internal
-      openid_auth_domain:
-        http_enabled: true
-        transport_enabled: true
-        order: 1
-        http_authenticator:
-          type: openid
-          challenge: false
-          config:
-            subject_key: name
-            roles_key: groups
-            openid_connect_url: https://auth-staging.pingone.com/b9b5b6f5-3440-4adc-8dc4-46593f1263f7/as/.well-known/openid-configuration
-        authentication_backend:
-          type: noop
