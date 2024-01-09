@@ -16,15 +16,6 @@ APP_INTEGRATIONS_BACKEND_ID=appintegrations
 APP_INTEGRATIONS_BASE_DN=o=appintegrations
 
 ########################################################################################################################
-#  PingDirectory Shared Cache Settings :
-########################################################################################################################
-#Set this to 'false' to not use shared cache for the local backends
-PD_USE_SHARED_CACHE=true
-
-#Set this to define overall cache size .This would to be shared across all local backends
-SHARED_CACHE_PERCENT=55
-
-########################################################################################################################
 #  Multiple Backend IDs :
 #
 #  NOTE : Currently 5 multiple backends(userRoot, userRoot_2, 3 ..userRoot_5) are supported.
