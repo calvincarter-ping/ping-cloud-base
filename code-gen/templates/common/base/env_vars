@@ -123,12 +123,6 @@ USER_BACKEND_ID_5=userRoot_5
 
 ECR_ENV=/dev
 
-#Set this to 'false' to not use shared cache for the local backends
-PD_USE_SHARED_CACHE=true
-
-#Set this to define overall cache size .This would to be shared across all local backends
-SHARED_CACHE_PERCENT=55
-
 ############################################################
 # PingFederate variables for environment
 ############################################################
