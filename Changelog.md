@@ -251,6 +251,7 @@ _Changes:_
 - [X] PDO-6338 Migrate Prometheus to the GP3 volumes
 - [X] PDO-6411 Increase OpenSearch warm replicas to 3 to make it HA
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
+- [X] PDO-6453 Use cache-keys-only and thread count of 1 when multiple backends are enabled for PingDirectory
 - [X] PDO-6457 Set PingDataSync OOTB connection to JVM-Default
 - [X] PDO-6476 Update and implement dependency helm chart conditional value
 - [X] PDO-6482 Update nginx logs to include hostname
