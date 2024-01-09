@@ -106,7 +106,7 @@ class TestCloudWatchLogs(unittest.TestCase):
         )
         self.assertNotEqual(len(pod_logs), 0, f"No pod logs found: {pod_name}")
 
-    @unittest.skip
+    @test_retry
     def test_cw_logs_equal_pod_logs(self):
         pod_name = self.k8s.get_first_matching_pod_name(self.pod_namespace, self.pod_labels)
         pod_logs = self.k8s.get_latest_pod_logs(
