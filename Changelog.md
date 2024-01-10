@@ -252,7 +252,7 @@ _Changes:_
 - [X] PDO-6337 Migrate logstash to the GP3 volumes
 - [X] PDO-6338 Migrate Prometheus to the GP3 volumes
 - [X] PDO-6411 Increase OpenSearch warm replicas to 3 to make it HA
-- [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PC
+- [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
 - [X] PDO-6429 Create password for pf.cluster.auth.pwd property within run.properties for PingFederate
 - [X] PDO-6453 Use cache-keys-only and thread count of 1 when multiple backends are enabled for PingDirectory
 - [X] PDO-6457 Set PingDataSync OOTB connection to JVM-Default
