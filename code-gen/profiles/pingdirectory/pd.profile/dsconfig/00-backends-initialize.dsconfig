@@ -11,6 +11,11 @@ dsconfig set-global-configuration-prop \
 
 # If you continue to leave the variable PD_USE_SHARED_CACHE as 'false', then the 'db-cache-percent' property
 # will be enforced for every backend below.
+
+# Also, important to note. If you are using multiple backends (userRoot_2, userRoot_3, userRoot_4, userRoot_5)
+# and PD_USE_SHARED_CACHE=false you will need to add your own 'db-cache-percent' for your additional backends.
+# Add this configuration to 08-backends.dsconfig file. See 08-backends.dsconfig for more details.
+
 dsconfig create-backend \
         --type local-db \
         --backend-name "${PLATFORM_CONFIG_BACKEND_ID}" \

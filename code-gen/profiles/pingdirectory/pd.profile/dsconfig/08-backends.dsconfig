@@ -1,3 +1,8 @@
+# If you are using multiple backends (userRoot_2, userRoot_3, userRoot_4, userRoot_5)
+# and PD_USE_SHARED_CACHE=false you will need to add your own 'db-cache-percent' for your additional backends.
+# Add this configuration here. For example:
+# dsconfig set-backend-prop -backend-name "userRoot_3" -set db-cache-percent:20
+
 dsconfig set-local-db-index-prop \
         --backend-name userRoot --index-name cn \
         --remove index-type:substring
