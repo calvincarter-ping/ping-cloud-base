@@ -2,6 +2,15 @@ dsconfig set-global-configuration-prop \
         --set use-shared-database-cache-across-all-local-db-backends:"${PD_USE_SHARED_CACHE}" \
         --set shared-local-db-backend-database-cache-percent:"${SHARED_CACHE_PERCENT}"
 
+# To ignore specific backend cache property 'db-cache-percent' for every backend listed below use
+# the global configuration above 'use-shared-database-cache-across-all-local-db-backends' be setting
+# PD_USE_SHARED_CACHE=true and setting your desired 'shared-local-db-backend-database-cache-percent'.
+# The property 'shared-local-db-backend-database-cache-percent' will allow the cache percent to be shared across all
+# backends. By default PD_USE_SHARED_CACHE is set to 'false'. Therefore this global configuration is disabled by default.
+# These 2 variables are located within cluster state repo under pingdirectory/env_vars.
+
+# If you continue to leave the variable PD_USE_SHARED_CACHE as 'false', then the 'db-cache-percent' property
+# will be enforced for every backend below.
 dsconfig create-backend \
         --type local-db \
         --backend-name "${PLATFORM_CONFIG_BACKEND_ID}" \
