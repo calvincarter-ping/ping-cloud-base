@@ -110,6 +110,7 @@
 - Renaming installP1asSubcharts value to isMicroserviceDeploy for microservices
 - Implement Shared db cache to enhance support of multiple backends
 - Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
+- Improve Logstash parsing of nginx ingress-access logs
 
 _Changes:_
 
@@ -258,6 +259,7 @@ _Changes:_
 - [X] PDO-6429 Create password for pf.cluster.auth.pwd property within run.properties for PingFederate
 - [X] PDO-6453 Use cache-keys-only and thread count of 1 when multiple backends are enabled for PingDirectory
 - [X] PDO-6457 Set PingDataSync OOTB connection to JVM-Default
+- [X] PDO-6470 [Support P1ASSD-8982] Seeing NULL character "\x00" throughout logs nginx-ingress-controller container
 - [X] PDO-6476 Update and implement dependency helm chart conditional value
 - [X] PDO-6482 Update nginx logs to include hostname
 - [X] PDO-6494 Implement Shared db cache to enhance support of multiple backends
