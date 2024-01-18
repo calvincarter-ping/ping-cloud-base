@@ -362,7 +362,8 @@ metadata:
   labels:
     app: logstash-elastic
   annotations:
-    purpose: service-account-for-logstash
+    # Add IRSA role annotation to logstash-elastic service account
+    purpose: service-account-for-logstash-elastic
     ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}
 
 ---

@@ -3,6 +3,7 @@ kind: ServiceAccount
 metadata:
   name: "opensearch"
   annotations:
+    # Add IRSA role annotation to opensearch service account
     purpose: service-account-for-opensearch
     ${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE}
 ---
