@@ -67,7 +67,7 @@ patchesStrategicMerge:
   apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: logstash-elastic
+    name: opensearch
     namespace: elastic-stack-logging
     annotations:
       purpose: service-account-for-opensearch
