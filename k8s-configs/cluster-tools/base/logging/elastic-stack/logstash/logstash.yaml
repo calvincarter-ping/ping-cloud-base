@@ -362,8 +362,8 @@ metadata:
   labels:
     app: logstash-elastic
   annotations:
-      purpose: service-account-for-logstash
-      ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}
+    purpose: service-account-for-logstash
+    ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
