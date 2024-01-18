@@ -361,11 +361,6 @@ metadata:
   name: logstash-elastic
   labels:
     app: logstash-elastic
-  annotations:
-    # Add IRSA role annotation to logstash-elastic service account
-    purpose: service-account-for-logstash-elastic
-    ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

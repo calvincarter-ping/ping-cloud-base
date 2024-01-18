@@ -18,3 +18,16 @@ resources:
 - notifications
 - bootstrap.yaml
 
+patchesStrategicMerge:
+
+- |-
+  # Add IRSA role annotation to opensearch service account
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: logstash-elastic
+    namespace: elastic-stack-logging
+    annotations:
+      purpose: service-account-for-opensearch
+      ${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE}
+
