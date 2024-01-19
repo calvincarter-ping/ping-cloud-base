@@ -13,7 +13,6 @@ data:
     else
         curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
         -o /tmp/kubectl
-    fi
 
     chmod +x /tmp/kubectl
 
@@ -23,7 +22,7 @@ data:
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingaccess backup data on server ${SERVER}"
-    /tmp/kubectl exec "${SERVER}" -- sh -c \
+    /tmp/kubectl exec "${SERVER}" -c pingaccess-admin -- sh -c \
             "test -x ${SCRIPT} && \
             ${SCRIPT}"> "${LOG_FILE}"
 
