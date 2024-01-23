@@ -5,6 +5,7 @@ namespace: elastic-stack-logging
 
 resources:
   - os-dashboard-secret.yaml
+  - os-dash-oidc.yaml
 
 # The secret values for config.yml and roles_mapping.yml are managed by the p1as-oauth init container, and
 # can be found in the p14c-integration image.

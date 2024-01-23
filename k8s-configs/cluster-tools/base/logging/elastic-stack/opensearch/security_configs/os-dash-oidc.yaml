@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: opensearch-dashboard-oidc
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false
+data:
+  connect_url: aHR0cHM6Ly9hdXRoLXN0YWdpbmcucGluZ29uZS5jb20vYjliNWI2ZjUtMzQ0MC00YWRjLThkYzQtNDY1OTNmMTI2M2Y3L2FzLy53ZWxsLWtub3duL29wZW5pZC1jb25maWd1cmF0aW9u
+  client_id: YWRtaW4K
+  client_secret: YWRtaW4K
