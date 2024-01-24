@@ -269,6 +269,7 @@ _Changes:_
 - [X] PDO-6494 Implement Shared db cache to enhance support of multiple backends
 - [X] PDO-6506 Update to fix karpenter provisoner config
 - [X] PDO-6526 Update integration tests to be able to run locally
+- [X] PDO-6543 Disbale PD File-Based debug logger
 - [X] PDO-6558 Implement IRSA role for Logstash
 - [X] PDO-6559 Implement IRSA role for OpenSearch
 - [X] PDO-6560 Upgrade grafana-operator, grafana-folders
