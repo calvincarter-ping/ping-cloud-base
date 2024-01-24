@@ -2,13 +2,6 @@ _meta:
   type: "internalusers"
   config_version: 2
 
-admin:
-  hash: "$2y$12$iqKXNBvoxmfL1NELMtEaWeuvsp08lSbQy/B.GQ9zt.yhbhfDbHbl."
-  reserved: true
-  backend_roles:
-  - "admin"
-  description: "Admin user"
-
 kibanaserver:
   hash: "$2a$12$juEkCORqAAsHzrb62bGjiubmjpRCJXqb9WeMU1QSB53Xu7O8Ie18K"
   reserved: true
