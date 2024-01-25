@@ -8,7 +8,6 @@ resources:
 - enrichment-resources.yaml
 - logging-bootstrap.yaml
 - p1as-bootstrap.yaml
-#- p1as-oauth.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
