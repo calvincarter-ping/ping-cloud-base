@@ -115,6 +115,7 @@
 - Implement IRSA role for Logstash
 - Implement IRSA role for OpenSearch
 - Upgrade grafana-operator to 5.6.0
+- PF Heap Value: CSR upgrade-wrapper script should maintain edited values
 
 _Changes:_
 
