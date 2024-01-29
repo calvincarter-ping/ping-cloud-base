@@ -1,3 +1,10 @@
+v1.18.1.0
+
+**Ping Identity Products**
+
+_[Key Features]_
+- Patch PF admin test environment memory and cpu limits to 4Gi
+
 v1.18.0.0
 
 **Ping Identity Products**
