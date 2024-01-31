@@ -23,7 +23,7 @@ data:
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingaccess backup data on server ${SERVER}"
-    /tmp/kubectl exec "${SERVER}" -c pingaccess-admin -- sh -c \
+    /tmp/kubectl exec "${SERVER}" -c "${K8S_STATEFUL_SET_NAME_PINGACCESS}" -- sh -c \
             "test -x ${SCRIPT} && \
             ${SCRIPT}"> "${LOG_FILE}"
 
@@ -34,6 +34,7 @@ data:
       test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
     else
       echo "Upload script not found on server ${SERVER}"
+      exit 1
     fi
     
     # Print the names of the uploaded files so callers know exactly what was uploaded
@@ -47,7 +48,7 @@ kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
 spec:
-  schedule: "30 * * * *"
+  schedule: "* * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
