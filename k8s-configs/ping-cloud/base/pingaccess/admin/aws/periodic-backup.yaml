@@ -23,7 +23,7 @@ data:
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingaccess backup data on server ${SERVER}"
-    /tmp/kubectl exec "${SERVER}" -c "${K8S_STATEFUL_SET_NAME_PINGACCESS}" -- sh -c \
+    /tmp/kubectl exec "${SERVER}" -c pingaccess-admin -- sh -c \
             "test -x ${SCRIPT} && \
             ${SCRIPT}"> "${LOG_FILE}"
 
@@ -49,7 +49,7 @@ kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
 spec:
-  schedule: "* * * * *"
+  schedule: "30 * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid

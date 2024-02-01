@@ -31,12 +31,26 @@ get_actual_files() {
   sort
 }
 
+oneTimeSetUp(){
+  # Save off backup file in case test does not complete and leaves it with 1 or more 'exit 1' statements inserted into it
+  kubectl exec pingaccess-admin-0 -c pingaccess-admin -n ping-cloud -- sh -c 'cp /opt/staging/hooks/90-upload-backup-s3.sh /tmp/90-upload-backup-s3.sh'
+}
+
+oneTimeTearDown(){
+  # Revert the original file back when tests are done execting
+  kubectl exec pingaccess-admin-0 -c pingaccess-admin -n ping-cloud -- sh -c 'cp /tmp/90-upload-backup-s3.sh /opt/staging/hooks/90-upload-backup-s3.sh'
+  # Delete lingering backup jobs and their associated pods
+  log "Deleting backup job(teardown)"
+  kubectl delete -f "${UPLOAD_JOB}" -n "${PING_CLOUD_NAMESPACE}"
+}
+
 testPingAccessBackup() {
   UPLOAD_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/backup.yaml
 
-  log "Applying backup job"
+  log "Deleting backup job"
   kubectl delete -f "${UPLOAD_JOB}" -n "${PING_CLOUD_NAMESPACE}"
 
+  log "Applying backup job"
   kubectl apply -f "${UPLOAD_JOB}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl apply command to create the PingAccess upload job should have succeeded" 0 $?
 
@@ -55,6 +69,28 @@ testPingAccessBackup() {
   echo "${actual_results}"
 
   assertContains "The expected_files were not contained within the actual_files" "${actual_results}" "${expected_results}"
+}
+
+testPingAccessBackupCaptureFailure() {
+  UPLOAD_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/backup.yaml
+
+  log "Deleting backup job(setup)"
+  kubectl delete -f "${UPLOAD_JOB}" -n "${PING_CLOUD_NAMESPACE}"
+
+  log "Disabling upload backup hook script"
+  kubectl exec pingaccess-admin-0 -c pingaccess-admin -n ping-cloud -- sh -c "sed -i '1i exit 1' /opt/staging/hooks/90-upload-backup-s3.sh"
+
+  log "Applying backup job"
+  kubectl apply -f "${UPLOAD_JOB}" -n "${PING_CLOUD_NAMESPACE}"
+  assertEquals "The kubectl apply command to create the PingAccess upload job should have succeeded" 0 $?
+
+  log "Waiting for backup job to complete"
+  sleep 10
+  job_pod_status=$(kubectl get pod -l job-name=pingaccess-backup -n ping-cloud -o=jsonpath='{.items[0].status.phase}')
+  assertEquals "The job's pod should have a status of 'failed'" "Failed" "${job_pod_status}" 
+
+  log "Re-enabling backup hook script"
+  kubectl exec pingaccess-admin-0 -c pingaccess-admin -n ping-cloud -- sh -c "sed -i '1d' /opt/staging/hooks/90-upload-backup-s3.sh"
 }
 
 # When arguments are passed to a script you must
