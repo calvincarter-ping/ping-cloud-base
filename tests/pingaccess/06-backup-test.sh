@@ -2,6 +2,7 @@
 
 CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
 . "${CI_SCRIPTS_DIR}"/common.sh "${1}"
+. "${CI_SCRIPTS_DIR}"/test/test_utils.sh
 
 if skipTest "${0}"; then
   log "Skipping test ${0}"
@@ -86,8 +87,8 @@ testPingAccessBackupCapturesFailure() {
 
   log "Waiting for backup job to fail"
   sleep 10
-  job_pod_status=$(kubectl get pod -l job-name=pingaccess-backup -n ${PING_CLOUD_NAMESPACE} -o=jsonpath='{.items[0].status.phase}')
-  assertEquals "The job's pod should have a status of 'Failed'" "Failed" "${job_pod_status}" 
+  verify_resource "job" "${PING_CLOUD_NAMESPACE}" "pingaccess-backup"
+  assertEquals "Backup job should not have succeded" 1 $? 
 
   log "Re-enabling backup hook script"
   kubectl exec pingaccess-admin-0 -c pingaccess-admin -n "${PING_CLOUD_NAMESPACE}" -- sh -c "sed -i '1d' /opt/staging/hooks/90-upload-backup-s3.sh"

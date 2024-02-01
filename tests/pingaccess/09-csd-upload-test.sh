@@ -10,37 +10,35 @@ if skipTest "${0}"; then
 fi
 
 oneTimeSetUp(){
-  # Save off backup file in case test does not complete and leaves it with 1 or more 'exit 1' statements inserted into it
+  # Save off CSD upload file in case test does not complete and leaves it with 1 or more 'exit 1' statements inserted into it
   kubectl exec pingaccess-admin-0 -c pingaccess-admin -n ping-cloud -- sh -c 'cp /opt/staging/hooks/82-upload-csd-s3.sh /tmp/82-upload-csd-s3.sh'
   kubectl exec pingaccess-0 -c pingaccess -n ping-cloud -- sh -c 'cp /opt/staging/hooks/82-upload-csd-s3.sh /tmp/82-upload-csd-s3.sh'
 
 }
 oneTimeTearDown(){
+  # Revert the original file back when tests are done execting
   kubectl exec pingaccess-admin-0 -c pingaccess-admin -n ping-cloud -- sh -c 'cp /tmp/82-upload-csd-s3.sh /opt/staging/hooks/82-upload-csd-s3.sh'
   kubectl exec pingaccess-0 -c pingaccess -n ping-cloud -- sh -c 'cp /tmp/82-upload-csd-s3.sh /opt/staging/hooks/82-upload-csd-s3.sh'
-
-  # runtime_upload_job="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/engine/aws/periodic-csd-upload.yaml
-  # admin_upload_job="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/periodic-csd-upload.yaml
-  # kubectl delete -f "${runtime_upload_job}" -n "${PING_CLOUD_NAMESPACE}"
-  # kubectl delete -f "${admin_upload_job}" -n "${PING_CLOUD_NAMESPACE}"
 }
 
-# testPingAccessRuntimeCsdUpload() {
-#   csd_upload "pingaccess" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/engine/aws/periodic-csd-upload.yaml
-#   assertEquals 0 $?
-# }
+testPingAccessRuntimeCsdUpload() {
+  csd_upload "pingaccess" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/engine/aws/periodic-csd-upload.yaml
+  assertEquals 0 $?
+}
 
-# testPingAccessAdminCsdUpload() {
-#   csd_upload "pingaccess-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/periodic-csd-upload.yaml
-#   assertEquals 0 $?
-# }
+testPingAccessAdminCsdUpload() {
+  csd_upload "pingaccess-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/periodic-csd-upload.yaml
+  assertEquals 0 $?
+}
 
 testPingAccessRuntimeCsdUploadCapturesFailure(){
   csd_upload_failure "pingaccess" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/engine/aws/periodic-csd-upload.yaml
+  assertEquals "CSD upload job should not have succeded" 1 $?
 }
 
 testPingAccessAdminRuntimeCsdUploadCapturesFailure(){
   csd_upload_failure "pingaccess-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/periodic-csd-upload.yaml
+  assertEquals "CSD upload job should not have succeded" 1 $?
 }
 
 csd_upload_failure(){
@@ -48,7 +46,6 @@ csd_upload_failure(){
   local upload_csd_job_name="${1}-periodic-csd-upload"
   local upload_job="${2}"
 
-  log "Applying the CSD upload job"
   log "Checking if there is an existing csd-upload-job"  
   kubectl delete -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
 
@@ -65,14 +62,16 @@ csd_upload_failure(){
 
   log "Waiting for upload job to fail"
   sleep 5
-  job_pod_restarts=$(kubectl get pod -l job-name="${upload_csd_job_name}" -n "${PING_CLOUD_NAMESPACE}" -o=jsonpath='{.items[0].status.containerStatuses[0].restartCount}')
-  assertNotEquals "The job's pod should have a restart count greater than 0" "0" "${job_pod_restarts}" 
+  verify_resource "job" "${PING_CLOUD_NAMESPACE}" "${upload_csd_job_name}"
+  job_succeded=${?}
 
   log "Re-enabling CSD upload hook script"
   kubectl exec "${pod_name}-0" -c "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -- sh -c "sed -i '1d' /opt/staging/hooks/82-upload-csd-s3.sh"
   
   log "Deleting CSD upload cronjob"
   kubectl delete -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
+
+  return "${job_succeded}"
 }
 
 csd_upload() {

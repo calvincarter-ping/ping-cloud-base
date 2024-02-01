@@ -9,19 +9,74 @@ if skipTest "${0}"; then
   exit 0
 fi
 
+oneTimeSetUp(){
+  # Save off CSD upload file in case test does not complete and leaves it with 1 or more 'exit 1' statements inserted into it
+  kubectl exec pingaccess-was-admin-0 -c pingaccess-was-admin -n ping-cloud -- sh -c 'cp /opt/staging/hooks/82-upload-csd-s3.sh /tmp/82-upload-csd-s3.sh'
+  kubectl exec pingaccess-was-0 -c pingaccess-was -n ping-cloud -- sh -c 'cp /opt/staging/hooks/82-upload-csd-s3.sh /tmp/82-upload-csd-s3.sh'
+
+}
+oneTimeTearDown(){
+  # Revert the original file back when tests are done execting
+  kubectl exec pingaccess-was-admin-0 -c pingaccess-was-admin -n ping-cloud -- sh -c 'cp /tmp/82-upload-csd-s3.sh /opt/staging/hooks/82-upload-csd-s3.sh'
+  kubectl exec pingaccess-was-0 -c pingaccess-was -n ping-cloud -- sh -c 'cp /tmp/82-upload-csd-s3.sh /opt/staging/hooks/82-upload-csd-s3.sh'
+}
+
 testPingAccessWasRuntimeCsdUpload() {
-  csd_upload "pingaccess-was-periodic-csd-upload" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/engine/aws/periodic-csd-upload.yaml
+  csd_upload "pingaccess-was" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/engine/aws/periodic-csd-upload.yaml
   assertEquals 0 $?
 }
 
 testPingAccessWasAdminCsdUpload() {
-  csd_upload "pingaccess-was-admin-periodic-csd-upload" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml
+  csd_upload "pingaccess-was-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml
   assertEquals 0 $?
+}
+
+testPingAccessWasRuntimeCsdUploadCapturesFailure(){
+  csd_upload_failure "pingaccess-was" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/engine/aws/periodic-csd-upload.yaml
+  assertEquals "CSD upload job should not have succeded" 1 $?
+}
+
+testPingAccessWasAdminCsdUploadCapturesFailure(){
+  csd_upload_failure "pingaccess-was-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml
+  assertEquals "CSD upload job should not have succeded" 1 $?
+}
+
+csd_upload_failure(){
+  local pod_name="${1}"
+  local upload_csd_job_name="${1}-periodic-csd-upload"
+  local upload_job="${2}"
+
+  log "Checking if there is an existing csd-upload-job"  
+  kubectl delete -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
+
+  log "Disabling CSD upload job script"
+  kubectl exec "${pod_name}-0" -c "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -- sh -c "sed -i '1i exit 1' /opt/staging/hooks/82-upload-csd-s3.sh"
+
+  log "Applying CSD upload cronjob"
+  kubectl apply -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
+  assertEquals "The kubectl apply command to create the ${upload_csd_job_name} should have succeeded" 0 $?
+
+  log "Creating ad-hoc job from cronjob"
+  kubectl create job --from=cronjob/${upload_csd_job_name} ${upload_csd_job_name} -n "${PING_CLOUD_NAMESPACE}"
+  assertEquals "The kubectl create command to create the job should have succeeded" 0 $?
+
+  log "Waiting for upload job to fail"
+  sleep 5
+  verify_resource "job" "${PING_CLOUD_NAMESPACE}" "${upload_csd_job_name}"
+  job_succeded=${?}
+
+  log "Re-enabling CSD upload hook script"
+  kubectl exec "${pod_name}-0" -c "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -- sh -c "sed -i '1d' /opt/staging/hooks/82-upload-csd-s3.sh"
+  
+  log "Deleting CSD upload cronjob"
+  kubectl delete -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
+
+  return "${job_succeded}"
 }
 
 
 csd_upload() {
-  local upload_csd_job_name="${1}"
+  local upload_csd_job_name="${1}-periodic-csd-upload"
   local upload_job="${2}"
 
   log "Applying the CSD upload job"
