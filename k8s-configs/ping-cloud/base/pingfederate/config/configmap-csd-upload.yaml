@@ -28,10 +28,9 @@ data:
       echo "Uploading CSD on server ${SERVER}"
       /tmp/kubectl exec "${SERVER}" -c "${CSD_CONTAINER_NAME}" -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" >"${LOG_FILE}"
 
-      # Sending logs to STDOUT
-      cat ${LOG_FILE}
-
       if test ${?} -eq 0; then
+        # Sending logs to STDOUT
+        cat ${LOG_FILE}
         CSD_FILE=$(tail -1 "${LOG_FILE}")
         test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
 
@@ -44,5 +43,6 @@ data:
         echo "This may be because: "
         echo "1) The ${SCRIPT} script is not currently available on the ${SERVER}.  This is expected if ${SERVER} is not running yet."
         echo "2) The ${SCRIPT} script exited with an error.  Please review the logs above to determine if this is the case."
+        exit 1
       fi
     done

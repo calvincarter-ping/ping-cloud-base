@@ -22,6 +22,11 @@ data:
       # Execute backup script if user has the permissions
       echo "Running backup script for PingDirectory"
       ${SCRIPT}
+
+      if test ${?} -ne 0; then
+        echo "Backup script exited with code '${?}'"
+        exit 1
+      fi
     else
       echo "You don't have permissions to execute ${SCRIPT}. If you are overriding script be sure to give it execute permissions"
       exit 1
