@@ -23,12 +23,12 @@ metadata:
   name: os-pa-audit
 spec:
   valuesFrom:
-    - targetPath: "user"
+    - targetPath: "basicAuthUser"
       valueFrom:
         secretKeyRef:
           name: "opensearch-grafana-credentials"
           key: "username"
-    - targetPath: "secureJsonData.password"
+    - targetPath: "secureJsonData.basicAuthPassword"
       valueFrom:
         secretKeyRef:
           name: "opensearch-grafana-credentials"
@@ -40,11 +40,11 @@ spec:
     name: OS-PA-Audit
     type: grafana-opensearch-datasource
     access: proxy
-    user: ${username}
     url: https://opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local:9200
     isDefault: false
     uid: muQHLUs4k
     basicAuth: true
+    basicAuthUser: ${username}
     jsonData:
       database: "pa-audit-ro"
       esVersion: 8.0.0
@@ -54,7 +54,7 @@ spec:
       version: 2.8.0
       tlsSkipVerify: true
     secureJsonData:
-      "password": ${password}
+      basicAuthPassword: ${password}
 
 ---
 apiVersion: grafana.integreatly.org/v1beta1
@@ -63,12 +63,12 @@ metadata:
   name: os-pf-audit
 spec:
   valuesFrom:
-    - targetPath: "user"
+    - targetPath: "basicAuthUser"
       valueFrom:
         secretKeyRef:
           name: "opensearch-grafana-credentials"
           key: "username"
-    - targetPath: "secureJsonData.password"
+    - targetPath: "secureJsonData.basicAuthPassword"
       valueFrom:
         secretKeyRef:
           name: "opensearch-grafana-credentials"
@@ -80,11 +80,11 @@ spec:
     name: OS-PF-Audit
     type: grafana-opensearch-datasource
     access: proxy
-    user: ${username}
     url: https://opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local:9200
     isDefault: false
     uid: xCysL8y4z
     basicAuth: true
+    basicAuthUser: ${username}
     jsonData:
       database: "pf-audit-*"
       esVersion: 8.0.0
@@ -94,4 +94,4 @@ spec:
       version: 2.8.0
       tlsSkipVerify: true
     secureJsonData:
-      "password": ${password}
+      basicAuthPassword: ${password}
