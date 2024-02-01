@@ -19,6 +19,16 @@ testPingFederateAdminCsdUpload() {
   assertEquals 0 $?
 }
 
+testPingFederateRuntimeCSDUploadCapturesFailure(){
+  csd_upload_failure "pingfederate" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingfederate/engine/aws/periodic-csd-upload.yaml "true" 
+  assertEquals "CSD upload job should not have succeded" 1 $?
+}
+
+testPingFederateRuntimeCSDUploadCapturesFailure(){
+  csd_upload_failure "pingfederate-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingfederate/admin/aws/periodic-csd-upload.yaml "true" 
+  assertEquals "CSD upload job should not have succeded" 1 $?
+}
+
 csd_upload() {
   local upload_csd_job_name="${1}"
   local upload_job="${2}"
