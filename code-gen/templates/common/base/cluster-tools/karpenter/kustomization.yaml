@@ -30,6 +30,8 @@ patchesStrategicMerge:
               value: "8001"
             - name: FEATURE_GATES
               value: "Drift=false"
+            - name: INTERRUPTION_QUEUE
+              value: "interruption-${CLUSTER_NAME}"
 - |-
   apiVersion: v1
   kind: ServiceAccount
