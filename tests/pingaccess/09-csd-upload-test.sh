@@ -33,12 +33,12 @@ testPingAccessAdminCsdUpload() {
 
 testPingAccessRuntimeCsdUploadCapturesFailure(){
   csd_upload_failure "pingaccess" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/engine/aws/periodic-csd-upload.yaml "true"
-  assertEquals "CSD upload job should not have succeded" 1 $?
+  assertEquals "CSD upload job should not have succeeded" 1 $?
 }
 
 testPingAccessAdminRuntimeCsdUploadCapturesFailure(){
   csd_upload_failure "pingaccess-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/periodic-csd-upload.yaml "true"
-  assertEquals "CSD upload job should not have succeded" 1 $?
+  assertEquals "CSD upload job should not have succeeded" 1 $?
 }
 
 csd_upload() {

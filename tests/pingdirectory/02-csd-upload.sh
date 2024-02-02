@@ -21,7 +21,7 @@ oneTimeTearDown(){
 
 testPingDirectoryCsdUploadFailure(){
   csd_upload_failure "pingdirectory" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/upload-csd.yaml "false" "15"
-  assertEquals "CSD upload job should not have succeded" 1 $?
+  assertEquals "CSD upload job should not have succeeded" 1 $?
 }
 
 testPingDirectoryCsdUpload() {

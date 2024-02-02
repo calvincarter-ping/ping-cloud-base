@@ -2,6 +2,7 @@
 
 CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
 . "${CI_SCRIPTS_DIR}"/common.sh "${1}"
+. "${CI_SCRIPTS_DIR}"/test/test_utils.sh
 
 if skipTest "${0}"; then
   log "Skipping test ${0}"
@@ -55,6 +56,11 @@ testPingFederateBackup() {
   echo "${actual_results}"
 
   assertContains "The expected_files were not contained within the actual_files" "${actual_results}" "${expected_results}"
+}
+
+testPingFederateBackupCapturesFailures() {
+  init_backup_job_failure "pingfederate-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingfederate/admin/aws/backup.yaml "false"
+  assertEquals "Backup job should not have succeeded" 1 $?
 }
 
 # When arguments are passed to a script you must

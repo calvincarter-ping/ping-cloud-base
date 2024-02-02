@@ -23,7 +23,7 @@ data:
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingaccess backup data on server ${SERVER}"
-    /tmp/kubectl exec "${SERVER}" -- sh -c \
+    /tmp/kubectl exec "${SERVER}" -c pingaccess-was-admin -- sh -c \
             "test -x ${SCRIPT} && \
             ${SCRIPT}"> "${LOG_FILE}"
 
