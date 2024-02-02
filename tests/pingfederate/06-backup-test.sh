@@ -40,7 +40,6 @@ oneTimeSetUp(){
 oneTimeTearDown(){
   # Revert the original file back when tests are done execting
   kubectl exec pingfederate-admin-0 -c pingfederate-admin -n ping-cloud -- sh -c 'cp /tmp/90-upload-backup-s3.sh /opt/staging/hooks/90-upload-backup-s3.sh'
-  # Delete lingering backup jobs and their associated pods
 }
 
 testPingFederateBackup() {
