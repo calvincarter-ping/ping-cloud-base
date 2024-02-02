@@ -32,6 +32,17 @@ get_actual_files() {
   sort
 }
 
+oneTimeSetUp(){
+  # Save off backup file in case test does not complete and leaves it with 1 or more 'exit 1' statements inserted into it
+  kubectl exec pingfederate-admin-0 -c pingfederate-admin -n ping-cloud -- sh -c 'cp /opt/staging/hooks/90-upload-backup-s3.sh /tmp/90-upload-backup-s3.sh'
+}
+
+oneTimeTearDown(){
+  # Revert the original file back when tests are done execting
+  kubectl exec pingfederate-admin-0 -c pingfederate-admin -n ping-cloud -- sh -c 'cp /tmp/90-upload-backup-s3.sh /opt/staging/hooks/90-upload-backup-s3.sh'
+  # Delete lingering backup jobs and their associated pods
+}
+
 testPingFederateBackup() {
   UPLOAD_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingfederate/admin/aws/backup.yaml
 

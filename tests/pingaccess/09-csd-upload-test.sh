@@ -59,7 +59,7 @@ csd_upload() {
   kubectl wait --for=condition=complete --timeout=900s job.batch/${upload_csd_job_name} -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl wait command for the job should have succeeded" 0 $?
 
-  sleep 3
+  sleep 5
 
   log "Expected CSD files:"
   expected_csd_files "${upload_csd_job_name}" "^2.*support-data.zip$" | tee /tmp/expected.txt
