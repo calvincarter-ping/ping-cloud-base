@@ -35,7 +35,7 @@ metadata:
     app.kubernetes.io/name: opensearch
     app.kubernetes.io/instance: opensearch-cluster-hot
 spec:
-  type: ClusterIP
+  clusterIP: None
   selector:
     opster.io/opensearch-cluster: opensearch-cluster
     opster.io/opensearch-nodepool: hot
