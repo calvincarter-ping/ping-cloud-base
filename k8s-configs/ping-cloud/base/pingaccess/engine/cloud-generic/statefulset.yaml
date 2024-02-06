@@ -7,6 +7,11 @@ metadata:
   labels:
     cluster: pingaccess-cluster
     role: pingaccess-engine
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8080"
+    newrelic.io/scrape: "true"
 spec:
   selector:
     matchLabels:
