@@ -69,7 +69,7 @@ testPingFederateBackup() {
 }
 
 testPingFederateBackupCapturesFailures() {
-  init_backup_job_failure "pingfederate-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingfederate/admin/aws/backup.yaml "false"
+  init_backup_job_failure "pingfederate-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingfederate/admin/aws/backup.yaml
   assertEquals "Backup job should not have succeeded" 1 $?
 }
 

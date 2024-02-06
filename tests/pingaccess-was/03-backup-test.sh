@@ -70,7 +70,7 @@ testPingAccessBackup() {
 }
 
 testPingAccessBackupCapturesFailure() {
-  init_backup_job_failure "pingaccess-was-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/backup.yaml "false"
+  init_backup_job_failure "pingaccess-was-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/backup.yaml
   assertEquals "Backup job should not have succeeded" 1 $?
 }
 
