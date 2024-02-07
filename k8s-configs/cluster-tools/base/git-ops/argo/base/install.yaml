@@ -18938,11 +18938,6 @@ metadata:
     app.kubernetes.io/name: argocd-applicationset-controller
     app.kubernetes.io/part-of: argocd
   name: argocd-applicationset-controller
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: "/metrics"
-    prometheus.io/port: "8080"
-    newrelic.io/scrape: "true"
 spec:
   ports:
   - name: webhook
@@ -18989,11 +18984,6 @@ metadata:
     app.kubernetes.io/name: argocd-metrics
     app.kubernetes.io/part-of: argocd
   name: argocd-metrics
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: "/metrics"
-    prometheus.io/port: "8082"
-    newrelic.io/scrape: "true"
 spec:
   ports:
   - name: metrics
@@ -19011,11 +19001,6 @@ metadata:
     app.kubernetes.io/name: argocd-notifications-controller-metrics
     app.kubernetes.io/part-of: argocd
   name: argocd-notifications-controller-metrics
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: "/metrics"
-    prometheus.io/port: "9001"
-    newrelic.io/scrape: "true"
 spec:
   ports:
   - name: metrics
@@ -19049,11 +19034,6 @@ metadata:
     app.kubernetes.io/name: argocd-repo-server
     app.kubernetes.io/part-of: argocd
   name: argocd-repo-server
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: "/metrics"
-    prometheus.io/port: "8084"
-    newrelic.io/scrape: "true"
 spec:
   ports:
   - name: server

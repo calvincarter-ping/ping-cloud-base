@@ -33,6 +33,7 @@ images:
 
 patches:
 - path: argo-notifications-cm.yaml
+- path: argo-metrics-prom.yaml
 - patch: |-
     # Set the several log values to "error"
     apiVersion: v1
