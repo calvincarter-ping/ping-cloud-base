@@ -19076,11 +19076,6 @@ metadata:
     app.kubernetes.io/name: argocd-server-metrics
     app.kubernetes.io/part-of: argocd
   name: argocd-server-metrics
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: "/metrics"
-    prometheus.io/port: "8083"
-    newrelic.io/scrape: "true"
 spec:
   ports:
   - name: metrics
