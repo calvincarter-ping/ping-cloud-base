@@ -32,7 +32,6 @@ images:
   newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/dexidp/dex
 
 patches:
-- path: argo-metrics-prom.yaml
 - path: argo-notifications-cm.yaml
 - patch: |-
     # Set the several log values to "error"
@@ -605,4 +604,54 @@ patches:
               operator: Equal
               value: core
               effect: NoSchedule
-              
+# Add prometheus annotations
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-applicationset-controller
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8080"
+        newrelic.io/scrape: "true"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-metrics
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8082"
+        newrelic.io/scrape: "true"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-notifications-controller-metrics
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "9001"
+        newrelic.io/scrape: "true"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-repo-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8084"
+        newrelic.io/scrape: "true"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-server-metrics
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8083"
+        newrelic.io/scrape: "true"
