@@ -326,3 +326,7 @@ customer_role:
     - "global_tenant"
     allowed_actions:
     - "kibana_all_read"
+  - tenant_patterns:
+    - "customer"
+    allowed_actions:
+    - "*"
