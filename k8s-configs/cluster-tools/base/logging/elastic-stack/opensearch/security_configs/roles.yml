@@ -293,6 +293,11 @@ bootstrap:
       allowed_actions:
         - 'crud'
         - 'create_index'
+  tenant_permissions:
+  - tenant_patterns:
+    - "global_tenant"
+    allowed_actions:
+    - "kibana_all_write"
 
 read_prometheus:
   reserved: true
