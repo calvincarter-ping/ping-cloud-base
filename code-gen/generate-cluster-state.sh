@@ -964,10 +964,10 @@ export USER_BASE_DN_4="${USER_BASE_DN_4}"
 export USER_BASE_DN_5="${USER_BASE_DN_5}"
 
 export PA_WAS_GCOPTION='-XX:+UseParallelGC'
-export PA_MIN_HEAP=1024m
-export PA_MAX_HEAP=1024m
-export PA_MIN_YGEN=512m
-export PA_MAX_YGEN=512m
+export PA_MIN_HEAP=${PA_MIN_HEAP:-"1024m"}
+export PA_MAX_HEAP=${PA_MAX_HEAP:-"1024m"}
+export PA_MIN_YGEN=${PA_MIN_YGEN:-"512m"}
+export PA_MAX_YGEN=${PA_MAX_YGEN:-"512m"}
 export PA_GCOPTION='-XX:+UseParallelGC'
 
 export APP_RESYNC_SECONDS="${APP_RESYNC_SECONDS:-60}"
@@ -1189,29 +1189,29 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   case "${ENV}" in
     dev | test)
       # Set PF variables
-      export PF_MIN_HEAP=1536m
-      export PF_MAX_HEAP=1536m
-      export PF_MIN_YGEN=768m
-      export PF_MAX_YGEN=768m
+      export PF_MIN_HEAP=${PF_MIN_HEAP:-"1536m"}
+      export PF_MAX_HEAP=${PF_MAX_HEAP:-"1536m"}
+      export PF_MIN_YGEN=${PF_MIN_YGEN:-"768m"}
+      export PF_MAX_YGEN=${PF_MAX_YGEN:-"768m"}
 
       # Set PA variables
-      export PA_WAS_MIN_HEAP=1024m
-      export PA_WAS_MAX_HEAP=1024m
-      export PA_WAS_MIN_YGEN=512m
-      export PA_WAS_MAX_YGEN=512m
+      export PA_WAS_MIN_HEAP=${PA_WAS_MIN_HEAP:-"1024m"}
+      export PA_WAS_MAX_HEAP=${PA_WAS_MAX_HEAP:-"1024m"}
+      export PA_WAS_MIN_YGEN=${PA_WAS_MIN_YGEN:-"512m"}
+      export PA_WAS_MAX_YGEN=${PA_WAS_MAX_YGEN:-"512m"}
       ;;
     stage | prod | customer-hub)
       # Set PF variables
-      export PF_MIN_HEAP=3072m
-      export PF_MAX_HEAP=3072m
-      export PF_MIN_YGEN=1536m
-      export PF_MAX_YGEN=1536m
+      export PF_MIN_HEAP=${PF_MIN_HEAP:-"3072m"}
+      export PF_MAX_HEAP=${PF_MAX_HEAP:-"3072m"}
+      export PF_MIN_YGEN=${PF_MIN_YGEN:-"1536m"}
+      export PF_MAX_YGEN=${PF_MAX_YGEN:-"1536m"}
 
       # Set PA variables
-      export PA_WAS_MIN_HEAP=2048m
-      export PA_WAS_MAX_HEAP=2048m
-      export PA_WAS_MIN_YGEN=1024m
-      export PA_WAS_MAX_YGEN=1024m
+      export PA_WAS_MIN_HEAP=${PA_WAS_MIN_HEAP:-"2048m"}
+      export PA_WAS_MAX_HEAP=${PA_WAS_MAX_HEAP:-"2048m"}
+      export PA_WAS_MIN_YGEN=${PA_WAS_MIN_YGEN:-"1024m"}
+      export PA_WAS_MAX_YGEN=${PA_WAS_MAX_YGEN:-"1024m"}
       ;;
   esac
 
@@ -1230,7 +1230,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
   set_var "IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/cert-manager/arn" "${IRSA_TEMPLATE}"
   set_var "IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/external-dns/arn" "${IRSA_TEMPLATE}"
-  set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-ping"
+  set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/irsa-ping/arn" "${IRSA_TEMPLATE}"
   set_var "IRSA_PA_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/pingaccess/arn" "${IRSA_TEMPLATE}"
   set_var "IRSA_PD_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/pingdirectory/arn" "${IRSA_TEMPLATE}"
   set_var "IRSA_PF_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/pingfederate/arn" "${IRSA_TEMPLATE}"
