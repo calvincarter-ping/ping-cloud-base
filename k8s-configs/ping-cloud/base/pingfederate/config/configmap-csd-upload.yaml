@@ -29,9 +29,9 @@ data:
       /tmp/kubectl exec "${SERVER}" -c "${CSD_CONTAINER_NAME}" -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" >"${LOG_FILE}"
 
       exit_code=${?}
+      # Sending logs to STDOUT
+      cat ${LOG_FILE}    
       if test ${exit_code} -eq 0; then
-        # Sending logs to STDOUT
-        cat ${LOG_FILE}
         CSD_FILE=$(tail -1 "${LOG_FILE}")
         test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
 
