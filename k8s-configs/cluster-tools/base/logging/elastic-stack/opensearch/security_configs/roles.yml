@@ -318,8 +318,8 @@ customer_role:
   reserved: false
   hidden: false
   cluster_permissions:
-  - "cluster_composite_ops_ro"
-  - "kibana_all_read"
+  - "kibana_all_read" # action group
+  - "cluster:admin/opensearch/notifications/*" # direct permissions attach
   index_permissions:
   - index_patterns:
     - "*"
@@ -334,4 +334,4 @@ customer_role:
   - tenant_patterns:
     - "customer"
     allowed_actions:
-    - "*"
+    - "kibana_all_write"
