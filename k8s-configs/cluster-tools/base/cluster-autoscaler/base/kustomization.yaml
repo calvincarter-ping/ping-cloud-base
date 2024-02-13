@@ -20,14 +20,6 @@ patches:
 
       # Add multiple commands using YAML-style array
 
-      - op: remove
-        path: /spec/template/spec/containers/0/command/3
-        value: --cloud-provider=aws
-
-      - op: remove
-        path: /spec/template/spec/containers/0/command/5
-        value: --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/<YOUR CLUSTER NAME>
-
       - op: replace
         path: /spec/template/spec/containers/0/command/1
         value: --v=1
