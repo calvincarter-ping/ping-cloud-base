@@ -20,6 +20,10 @@ patches:
 
       # Add multiple commands using YAML-style array
 
+      - op: remove
+        path: /spec/template/spec/containers/0/command/3
+        value: --cloud-provider=aws
+
       - op: replace
         path: /spec/template/spec/containers/0/command/1
         value: --v=1
