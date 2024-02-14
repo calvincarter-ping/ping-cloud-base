@@ -14,7 +14,7 @@ patchesJson6902:
     name: cluster-autoscaler
     namespace: kube-system
   patch: |-
-    - op: replace
+    - op: add
       path: /spec/template/spec/containers/0/command/-
       value:
         --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/${CLUSTER_NAME}
