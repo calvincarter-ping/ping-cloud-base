@@ -127,6 +127,7 @@
 - Increase PA, PF, PD logs ingestion into ELK
 - Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
 - Newrelic-Prometheus-Agent: Sending Ping apps, ArgoCD and Karpenter metrics to NR
+- Logstash statefulSet: added AZ specific scheduling
 
 _Changes:_
 
@@ -301,6 +302,7 @@ _Changes:_
 - [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
 - [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
+- [X] PDO-6731 Logstash statefulSet needs AZ specific scheduling
 
 ### 1.18.0.0
 
