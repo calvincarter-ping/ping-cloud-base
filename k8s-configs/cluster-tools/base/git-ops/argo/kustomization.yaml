@@ -412,19 +412,37 @@ patches:
             configMap:
               name: install-custom-tools
               defaultMode: 0555
-# - patch: |-
-#     # Add init container to create Argo clusters for all CDEs from customer-hub
-#     apiVersion: apps/v1
-#     kind: Deployment
-#     metadata:
-#       name: argocd-server
-#     spec:
-#       template:
-#         spec:
-#           initContainers:
-#           - name: argocd-bootstrap
-#             image: public.ecr.aws/r2h3l6e4/pingcloud-services/argocd-bootstrap/dev:v1.18-release-branch-latest
-#             imagePullPolicy: Always
-#             envFrom:
-#               - configMapRef:
-#                   name: argocd-bootstrap
+- patch: |-
+    # Add the "sealedsecrets.bitnami.com/managed: true" annotation to secrets so they are manageable by Bitnami
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: argocd-notifications-secret
+      annotations:
+        sealedsecrets.bitnami.com/managed: "true"
+        argocd.argoproj.io/sync-options: Prune=false
+- patch: |-
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: argocd-secret
+      annotations:
+        sealedsecrets.bitnami.com/managed: "true"
+        sealedsecrets.bitnami.com/patch: "true"
+        argocd.argoproj.io/sync-options: Prune=false
+- patch: |-
+    # Add init container to create Argo clusters for all CDEs from customer-hub
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-server
+    spec:
+      template:
+        spec:
+          initContainers:
+          - name: argocd-bootstrap
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/argocd-bootstrap/dev:v1.18-release-branch-latest
+            imagePullPolicy: Always
+            envFrom:
+              - configMapRef:
+                  name: argocd-bootstrap
