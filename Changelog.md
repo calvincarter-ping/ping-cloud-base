@@ -10,14 +10,22 @@
 - Update kubectl to 1.27.10 for EKS 1.28
 - Update cluster-autoscaler v1.28.0 or higher for eks 1.28
 - Fix the "pingfederate-cluster" service label selector
+- [EKS 1.28] service.alpha.kubernetes.io/tolerate-unready-endpoints (deprecated)
+- [EKS 1.28]  Freeze k8s.gcr.io image registry
+- ArgoCD Partner and PS Access via config-team
+- Add manual healthchecks feature flag
 
 _Changes:_
 
 - [X] Patch PF admin test environment memory and cpu limits to 4Gi
+- [X] PDO-6602 Healthcheck feature is available when the feature flag is turned on
 - [X] PDO-6608 Add logstash Disruption Budget
 - [X] PDO-6628 Add pod-reaper annotations to the fluentbit DS
+- [X] PDO-6668 ArgoCD Partner and PS Access via config-team
 - [X] PDO-6712 Metadata is missing in NewRelic pod logs
 - [X] PDO-6715 [EKS 1.28] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served
+- [X] pdo-6716 [EKS 1.28]  Freeze k8s.gcr.io image registry
+- [X] PDO-6717 [EKS 1.28] service.alpha.kubernetes.io/tolerate-unready-endpoints (deprecated)
 - [X] PDO-6720 Update kube-state-metrics cluster tool to v2.10.1
 - [X] PDO-6721 Update kubectl to 1.27.10 for EKS 1.28
 - [X] PDO-6723 Update cluster-autoscaler v1.28.0 or higher for eks 1.28
