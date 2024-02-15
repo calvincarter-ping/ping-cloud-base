@@ -75,6 +75,7 @@
 - Fix common integration tests
 - Add Request and Limit resources to PingAccess/PingAccess-WAS Upgrade Init Container
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
+- Add ACIs for PingDataSync
 - Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - Metrics-Server : Refactoring with Third-Party Manifest Policy
 - Add PingOne ArgoCD groups integration tests
@@ -122,12 +123,16 @@
 - CronJob created for doing cleanup of unclaimed Logstash PVs which stay in cluster after resources scaling down
 - [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
 - Ingress Failed to watch *v1.Secret: unknown (get secrets)
+- Fix the "pingfederate-cluster" service label selector
 - PF Heap Value: CSR upgrade-wrapper script should maintain edited values
 - Newrelic-Prometheus-Agent: Sending OpenSearch Metrics to New Relic
 - Increase PA, PF, PD logs ingestion into ELK
 - Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
 - Newrelic-Prometheus-Agent: Sending Ping apps, ArgoCD and Karpenter metrics to NR
 - Logstash statefulSet: added AZ specific scheduling
+- HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
+- Update backup and CSD upload jobs to properly report failures
+- Add customer tenant to the Opensearch
 
 _Changes:_
 
@@ -243,6 +248,7 @@ _Changes:_
 - [X] PDO-6027 AWS EFS CSI Driver: Remove it
 - [X] PDO-6033 Configure PingAccess SSO app for Ping internal group access
 - [X] PDO-6034 Configure PingFederate SSO app for Ping internal group access
+- [X] PDO-6058 Add ACIs for PingDataSync
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 - [X] PDO-6074 Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
@@ -265,6 +271,7 @@ _Changes:_
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 - [X] PDO-6282 Modify appintegrations cache config within PingDirectory
 - [X] PDO-6287 OpenSearch Post-Migration: Security: Dashboard SSO - Update p14c-oauth-service
+- [X] PDO-6290 OpenSearch Post-Migration: Security: Dashboard SSO - Configure Customer tenant
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
 - [X] PDO-6311 Argocd pod resources spec adjusted
 - [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
@@ -286,6 +293,7 @@ _Changes:_
 - [X] PDO-6494 Implement Shared db cache to enhance support of multiple backends
 - [X] PDO-6506 Update to fix karpenter provisoner config
 - [X] PDO-6526 Update integration tests to be able to run locally
+- [X] PDO-6533 Refactor backup job scripts to make sure it return exit code in case backup was failed
 - [X] PDO-6536 Update irsa-ping to use arn
 - [X] PDO-6543 Disable PD File-Based debug logger
 - [X] PDO-6549 [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
@@ -295,12 +303,16 @@ _Changes:_
 - [X] PDO-6570 Nginx ingress-access logs are sent to the logstash index pattern instead of ingress-access index pattern
 - [X] PDO-6585 Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
 - [X] PDO-6599 Migrate opensearch from plain yaml to the operator
+- [X] PDO-6615 Fix the "pingfederate-cluster" service label selector
 - [X] PDO-6615 Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
 - [X] PDO-6655 Implement the scaling pvc down once the number of logstash pods are scaled down
 - [X] PDO-6662 [STAGING-21964] P1AS New Relic Prometheus Agent Config Change
 - [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
 - [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
+- [X] PDO-6676 Identify and map numeric fields in OpenSearch
+- [X] PDO-6677 indexmigration user does not have correct roles or access assigned
+- [X] PDO-6685 HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
 - [X] PDO-6731 Logstash statefulSet needs AZ specific scheduling
 
