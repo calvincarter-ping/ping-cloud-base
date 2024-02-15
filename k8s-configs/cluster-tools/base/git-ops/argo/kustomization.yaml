@@ -7,7 +7,6 @@ resources:
 - base
 - argocd-image-updater.yaml
 - custom-resources.yaml
-- argocd-p1as-bootstrap.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
