@@ -7,6 +7,11 @@ resources:
 patchesStrategicMerge:
 
 ### Lets encrypt ACME certificate issuer for the cluster ###
+
+# PDO-6441: Disable Cert Manager ClusterIssuer preferredChain
+# The preferredChain will deploy as an empty string
+# This workaround is for the cert-manager defect: https://github.com/cert-manager/cert-manager/pull/6755#issuecomment-1944231410
+# Cert manager is still working on a formal fix. Once this is resolved we can revert and will need to upgrade cert-manager
 - |-
   apiVersion: cert-manager.io/v1
   kind: ClusterIssuer
@@ -16,6 +21,7 @@ patchesStrategicMerge:
     acme:
       server: ${LETS_ENCRYPT_SERVER}
       email: ${CLUSTER_NAME_LC}@${DNS_ZONE}
+      preferredChain: null
       solvers:
       - dns01:
           route53:
@@ -41,20 +47,6 @@ patchesStrategicMerge:
         passwordSecretRef:
           name: pingcommon-passwords
           key: ACME_CERT_KEYSTORE_PASSWORD
-
-- |-
-  # PDO-6441: Disable Cert Manager ClusterIssuer preferredChain
-  # The preferredChain will deploy as an empty string
-  # This workaround is for the cert-manager defect: https://github.com/cert-manager/cert-manager/pull/6755#issuecomment-1944231410
-  # Cert manager is still working on a formal fix. Once this is resolved we can revert and will need to upgrade cert-manager
-  apiVersion: cert-manager.io/v1
-  kind: ClusterIssuer
-  metadata:
-    name: letsencrypt-prod
-    namespace: default
-  spec:
-    acme:
-      preferredChain: null
 
 patchesJson6902:
 
