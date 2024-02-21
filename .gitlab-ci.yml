@@ -141,3 +141,6 @@ cleanup:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
   dependencies:
     - find-cluster
+  rules:
+    - when: on_success # Run automatically when all previous jobs succeed
+    - when: manual # Give developers the option to trigger manual clean when a previous jab failed
