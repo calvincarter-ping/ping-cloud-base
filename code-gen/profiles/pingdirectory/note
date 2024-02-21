@@ -1,0 +1,18 @@
+Audit PD server consumption in production  after v1.19 due to cache key changes
+
+Remove console instead of reset 01-remove-console.dsconfig file
+
+Consider to turn off gauge of DB cache usage
+
+
+
+Revisit
+
+  08-virtualattributes.dsconfig
+  Some indexes may not be used in 09-index.dsconfig - Ryan mentioned
+  Before removing consult on the flags "index-entry-limit" "exploded-index-entry-threshold"
+  08-virtualattributes-admin.dsconfig
+
+  Chat w/ Ryan about Gauges
+
+
