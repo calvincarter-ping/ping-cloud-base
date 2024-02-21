@@ -276,6 +276,7 @@ bootstrap:
     - "cluster:admin/reroute"
     - "kibana_all_write"
     - "kibana_all_read"
+    - "indices:admin/create"
     - 'indices:data/write/bulk'
     - "indices:data/read/mget"
     - 'indices:data/write/index'
