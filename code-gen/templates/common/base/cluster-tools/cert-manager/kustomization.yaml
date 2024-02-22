@@ -56,17 +56,3 @@ patchesJson6902:
     - op: replace
       path: /metadata/namespace
       value: ${PING_CLOUD_NAMESPACE}
-
-# PDO-6441: Disable Cert Manager ClusterIssuer preferredChain
-# The preferredChain will deploy as an empty string
-# This workaround is for the cert-manager defect: https://github.com/cert-manager/cert-manager/pull/6755#issuecomment-1944231410
-# Cert manager is still working on a formal fix. Once this is resolved we can revert and will need to upgrade cert-manager
-- target:
-    group: cert-manager.io
-    version: v1
-    kind: ClusterIssuer
-    name: letsencrypt-prod
-  patch: |-
-    - op: replace
-      path: /spec/acme/preferredChain
-      value: ""

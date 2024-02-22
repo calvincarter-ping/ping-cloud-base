@@ -15,7 +15,6 @@ stages:
 - integration-test
 - chaos
 - cleanup
-- manually-cleanup
 
 ## Global environment variables ##
 variables:
@@ -144,7 +143,6 @@ cleanup:
     - find-cluster
 
 manually-cleanup:
-  stage: manually-cleanup
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
