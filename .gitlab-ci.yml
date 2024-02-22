@@ -143,6 +143,7 @@ cleanup:
     - find-cluster
 
 manually-cleanup:
+  stage: cleanup
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -151,3 +152,5 @@ manually-cleanup:
   dependencies:
     - find-cluster
   when: manual # Give developers the option to trigger manual clean when a previous jab failed
+  rules:
+    - when: always
