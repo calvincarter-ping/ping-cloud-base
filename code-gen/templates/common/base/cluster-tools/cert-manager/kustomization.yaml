@@ -69,4 +69,4 @@ patchesJson6902:
   patch: |-
     - op: replace
       path: /spec/acme/preferredChain
-      value: null
+      value: ""
