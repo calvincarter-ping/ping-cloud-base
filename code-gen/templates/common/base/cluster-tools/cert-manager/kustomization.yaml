@@ -19,7 +19,7 @@ patchesStrategicMerge:
     name: letsencrypt-prod
   spec:
     acme:
-      server: ${LETS_ENCRYPT_SERVER}
+      server: "https://acme-v02.api.letsencrypt.org/directory"
       email: ${CLUSTER_NAME_LC}@${DNS_ZONE}
       preferredChain: null
       solvers:

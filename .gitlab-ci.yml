@@ -142,5 +142,7 @@ cleanup:
   dependencies:
     - find-cluster
   rules:
-    - when: on_success # Run automatically when all previous jobs succeed
-    - when: manual # Give developers the option to trigger manual clean when a previous jab failed
+    - if: '$CI_JOB_STATUS == "success"'
+      when: always # Run automatically when all previous jobs succeed
+    - if: '$CI_JOB_STATUS != "success"'
+      when: manual # Give developers the option to trigger manual clean when a previous jab failed, skipped, or cancelled
