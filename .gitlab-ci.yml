@@ -89,7 +89,6 @@ pa-was-integration-tests:
   - common
   - monitoring
   - health
-  - cert-manager
   # Turning off P1 pipeline testing for v1.18 since it is off for Customers
   # It is turned back on in v1.19 when it will become available for Customers
   #- pingone
@@ -141,13 +140,3 @@ cleanup:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
   dependencies:
     - find-cluster
-
-manually-cleanup:
-  stage: cleanup
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
-  when: manual
-  allow_failure: false
