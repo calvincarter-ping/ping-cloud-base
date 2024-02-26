@@ -173,9 +173,6 @@
 # NEW_RELIC_LICENSE_KEY            | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                                  | NewRelic account.                                  |
 #                                  |                                                    |
-# NOTIFICATION_ENABLED             | Flag indicating if alerts should be sent to the    | True
-#                                  | endpoint configured in the argo-events             |
-#                                  |                                                    |
 # NLB_EIP_PATH_PREFIX              | The SSM path prefix which stores comma separated   | The string "unused".
 #                                  | AWS Elastic IP allocation IDs that exist in the    |
 #                                  | CDE account of the Ping Cloud customers.           |
@@ -247,16 +244,6 @@
 #                                  |                                                    |
 # SERVICE_SSM_PATH_PREFIX          | The prefix of the SSM path that contains service   | /pcpt/service
 #                                  | state data required for the cluster.               |
-#                                  |                                                    |
-# SLACK_CHANNEL                    | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
-#                                  | notification.                                      |
-#                                  |                                                    |
-# NON_GA_SLACK_CHANNEL             | The Slack channel name for argo-events to send     | CDE environment: nowhere
-#                                  | notification in case of IS_GA set to 'false' to    | Dev environment: nowhere
-#                                  | reduce amount of unnecessary notifications sent    |
-#                                  | to on-call channel. Overrides SLACK_CHANNEL        |
-#                                  | variable value if IS_GA=false. By default, set     |
-#                                  | to non-existent channel name to prevent flooding.  |
 #                                  |                                                    |
 # SIZE                             | Size of the environment, which pertains to the     | x-small
 #                                  | number of user identities. Legal values are        |
@@ -435,8 +422,6 @@ ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}
 ${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE}
 ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
-${NOTIFICATION_ENABLED}
-${NOTIFICATION_ENDPOINT}
 ${PF_PROVISIONING_ENABLED}
 ${RADIUS_PROXY_ENABLED}
 ${EXTERNAL_INGRESS_ENABLED}
@@ -446,7 +431,6 @@ ${ARGOCD_BOOTSTRAP_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_CDE_URL_SSM_TEMPLATE}
 ${ARGOCD_ENVIRONMENTS}
-${SLACK_CHANNEL}
 ${OPSGENIE_API_KEY_BASE64}
 ${DASH_REPO_URL}
 ${DASH_REPO_BRANCH}
@@ -477,7 +461,6 @@ ${PGO_BACKUP_BUCKET_NAME}
 ${PING_CLOUD_NAMESPACE}
 ${REGION_NICK_NAME}
 ${REGION}
-${SLACK_CHANNEL}
 ${SSH_ID_KEY_BASE64}
 ${TENANT_DOMAIN}
 ${TENANT_NAME}'
@@ -739,9 +722,6 @@ echo "Initial KARPENTER_INSTANCE_PROFILE: ${KARPENTER_INSTANCE_PROFILE}"
 echo "Initial KARPENTER_CONTROLLER_IAM_ROLE: ${KARPENTER_CONTROLLER_IAM_ROLE}"
 echo "Initial DEFAULT_CLUSTER_UPTIME: ${DEFAULT_CLUSTER_UPTIME}"
 
-echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
-echo "Initial NON_GA_SLACK_CHANNEL: ${NON_GA_SLACK_CHANNEL}"
-
 echo "Initial IMAGE_LIST: ${IMAGE_LIST}"
 echo "Initial IMAGE_TAG_PREFIX: ${IMAGE_TAG_PREFIX}"
 
@@ -900,14 +880,6 @@ else
   export ACCOUNT_TYPE='non-ga'
 fi
 
-export NON_GA_SLACK_CHANNEL="${NON_GA_SLACK_CHANNEL:-nowhere}"
-# If IS_GA=true, use default Slack channel; if IS_GA=false, use NON_GA_SLACK_CHANNEL value as Slack channel.
-if "${IS_GA}"; then
-  export SLACK_CHANNEL="${SLACK_CHANNEL:-p1as-application-oncall}"
-else
-  export SLACK_CHANNEL="${SLACK_CHANNEL:-${NON_GA_SLACK_CHANNEL}}"
-fi
-
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
 if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
   if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY#ssm:/}"); then
@@ -1037,8 +1009,6 @@ echo "Using DEFAULT_CLUSTER_UPTIME: ${DEFAULT_CLUSTER_UPTIME}"
 echo "Using KARPENTER_ROLE_ANNOTATION_KEY_VALUE: ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}"
 
 echo "Using NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
-
-echo "Using SLACK_CHANNEL: ${SLACK_CHANNEL}"
 
 echo "Using APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
 
