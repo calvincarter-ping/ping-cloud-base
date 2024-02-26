@@ -216,8 +216,6 @@
 # PRIMARY_TENANT_DOMAIN            | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
 #                                  | Only used if IS_MULTI_CLUSTER is true.             |
 #                                  |                                                    |
-# OPSGENIE_API_KEY                 | API key for OpsGenie to send alerts from Prometheus| PLACEHOLDER
-#                                  |                                                    |
 # RADIUS_PROXY_ENABLED             | Feature Flag - Indicates if the radius proxy       | False
 #                                  | feature for PingFederate engines is enabled        |
 #                                  |                                                    |
@@ -431,7 +429,6 @@ ${ARGOCD_BOOTSTRAP_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_CDE_URL_SSM_TEMPLATE}
 ${ARGOCD_ENVIRONMENTS}
-${OPSGENIE_API_KEY_BASE64}
 ${DASH_REPO_URL}
 ${DASH_REPO_BRANCH}
 ${APP_RESYNC_SECONDS}
@@ -890,9 +887,6 @@ if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
     NEW_RELIC_LICENSE_KEY="${ssm_value}"
   fi
 fi
-
-OPSGENIE_API_KEY="${OPSGENIE_API_KEY:-PLACEHOLDER}"
-export OPSGENIE_API_KEY_BASE64=$(base64_no_newlines "${OPSGENIE_API_KEY}")
 
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
