@@ -898,7 +898,7 @@ export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KE
 ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH:-ssm://pcpt/argocd/notification/slack/access_token}"
 if ! ssm_value=$(get_ssm_value "${ARGOCD_SLACK_TOKEN_SSM_PATH#ssm:/}"); then
   echo "Warn: ${ssm_value}"
-  echo "ARGOCD_SLACK_TOKEN is unset, slack notification and argo-events will not work"
+  echo "ARGOCD_SLACK_TOKEN is unset, slack notifications will not work"
   echo "Using default invalid token"
   ARGOCD_SLACK_TOKEN="using_default_invalid_token"
 else
