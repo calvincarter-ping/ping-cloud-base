@@ -73,7 +73,10 @@
 #                                  |                                                    |
 # ACCOUNT_TYPE                     | The variable denotes the type of account based on  | No defaults
 #                                  | the IS_GA flag: either 'ga' or 'non-ga'.           |                               
-#                                  |                                                    |                                
+#                                  |                                                    |
+# ARGOCD_SLACK_TOKEN_SSM_PATH      | SSM path to secret token for ArgoCD slack          | The SSM path:
+#                                  | notifications                                      | ssm://pcpt/argocd/notification/slack/access_token
+#                                  |                                                    |
 # ARGOCD_CDE_ROLE_SSM_TEMPLATE     | SSM template path for the ArgoCD Chub -> CDE roles | The SSM template (to be rendered in python script) path:
 #                                  |                                                    | '/pcpt/config/k8s-config/accounts/{env}/argo/role/arn'
 #                                  |                                                    |
@@ -444,6 +447,7 @@ ${ARGOCD_BOOTSTRAP_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_CDE_URL_SSM_TEMPLATE}
 ${ARGOCD_ENVIRONMENTS}
+${ARGOCD_SLACK_TOKEN_BASE64}
 ${CLUSTER_ENDPOINT}
 ${KARPENTER_INSTANCE_PROFILE}
 ${CLUSTER_STATE_REPO_BRANCH}
@@ -889,6 +893,19 @@ if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
 fi
 
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
+
+# Adding an ArgoCD notification slack token
+ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH:-ssm://pcpt/argocd/notification/slack/access_token}"
+if ! ssm_value=$(get_ssm_value "${ARGOCD_SLACK_TOKEN_SSM_PATH#ssm:/}"); then
+  echo "Warn: ${ssm_value}"
+  echo "ARGOCD_SLACK_TOKEN is unset, slack notification and argo-events will not work"
+  echo "Using default invalid token"
+  ARGOCD_SLACK_TOKEN="using_default_invalid_token"
+else
+  ARGOCD_SLACK_TOKEN="${ssm_value}"
+fi
+
+export ARGOCD_SLACK_TOKEN_BASE64=$(base64_no_newlines "${ARGOCD_SLACK_TOKEN}")
 
 set_ssh_key_pair
 
