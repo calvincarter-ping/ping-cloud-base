@@ -255,6 +255,9 @@ EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 HEALTHCHECKS_ENABLED=${HEALTHCHECKS_ENABLED}
 ########################################################################################################################
 
+# For ArgoCD-status slack notifications (notifications.argoproj.io/subscribe.on-sync-failed.slack)
+SLACK_CHANNEL=${SLACK_CHANNEL}
+
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
 DASH_REPO_BRANCH=v1.19-dev-branch
