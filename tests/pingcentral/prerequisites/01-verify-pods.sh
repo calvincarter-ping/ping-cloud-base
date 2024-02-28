@@ -2,6 +2,7 @@
 
 CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
 . "${CI_SCRIPTS_DIR}"/common.sh "${1}"
+. "${CI_SCRIPTS_DIR}"/test/test_utils.sh
 
 if skipTest "${0}"; then
   log "Skipping test ${0}"
