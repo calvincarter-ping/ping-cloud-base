@@ -8,13 +8,11 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testPodConnection() {
-
-  expected_ready_state="1/1"
-
-  pingdatasync_ready_state=$(kubectl get pods "pingdatasync-0" \
-                            -n "${PING_CLOUD_NAMESPACE}" | tail -n +2 | awk '{print $2}' | tr -s '[[:space:]]')
-  assertEquals "Failed to get pingdatasync running state 1/1" "${expected_ready_state}" "${pingdatasync_ready_state}"
+testPDSPodReady() {
+  resource_name="pingdatasync"
+  resource_kind="statefulset"
+  verify_resource_with_sleep "${resource_kind}" "${PING_CLOUD_NAMESPACE}" "${resource_name}"
+  assertEquals 0 $?
 }
 
 

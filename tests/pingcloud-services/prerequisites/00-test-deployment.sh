@@ -10,10 +10,10 @@ if skipTest "${0}"; then
 fi
 
 testP14CBootstrapDeploymentAvailability() {
-
-  status=$(kubectl get deployment p14c-bootstrap -n ${PING_CLOUD_NAMESPACE} -o json | jq -r '.status.conditions[] | select(.type == "Available") | .status')
+  resource_name="p14c-bootstrap"
+  resource_kind="deployment"
+  verify_resource_with_sleep "${resource_kind}" "${PING_CLOUD_NAMESPACE}" "${resource_name}"
   assertEquals 0 $?
-  assertEquals "The Available status of the p14c-bootstrap deployment should be True but was: ${status}" 'True' ${status}
 }
 
 # When arguments are passed to a script you must
