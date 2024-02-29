@@ -13,7 +13,9 @@ testPodConnection() {
   resource_name="pingcentral"
   resource_kind="deployment"
   verify_resource_with_sleep "${resource_kind}" "${PING_CLOUD_NAMESPACE}" "${resource_name}"
-  assertEquals 0 $?
+  status=$?
+
+  assertEquals "Failed to get pingcentral running state 1/1" 0 ${status}
 }
 
 

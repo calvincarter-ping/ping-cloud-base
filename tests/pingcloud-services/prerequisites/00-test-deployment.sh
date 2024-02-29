@@ -13,7 +13,9 @@ testP14CBootstrapDeploymentAvailability() {
   resource_name="p14c-bootstrap"
   resource_kind="deployment"
   verify_resource_with_sleep "${resource_kind}" "${PING_CLOUD_NAMESPACE}" "${resource_name}"
-  assertEquals 0 $?
+  status=$?
+
+  assertEquals "The Available status of the p14c-bootstrap deployment should be 0 but was: ${status}" 0 ${status}
 }
 
 # When arguments are passed to a script you must

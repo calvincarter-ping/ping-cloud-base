@@ -8,7 +8,6 @@
 _Changes:_
 
 - [X] PDO-5729 Update version regexes
-- [X] PDO-5980 Refactor PCB Tests to use new test_utils methods
 
 ### 1.19.0.0
 
