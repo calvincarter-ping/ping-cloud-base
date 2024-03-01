@@ -30,6 +30,7 @@ variables:
     pingdirectory/03-backup-restore.sh
     pingdirectory/08-test-http-connection-handler.sh
     monitoring/03-nri-kubernetes.sh
+    pingcloud-services/05-test-csr-image-tags.sh
 
 ## Compile stage ##
 compile:
