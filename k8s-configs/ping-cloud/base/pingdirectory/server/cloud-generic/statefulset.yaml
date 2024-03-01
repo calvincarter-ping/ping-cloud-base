@@ -169,7 +169,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:PDO-6626-belugacommon-notyfy
+          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
           imagePullPolicy: Always
           # Todo - Add script here for pulling the KMS keys from DB and pushing to S3
           command: [ 'sh', '-c', 'echo "kms init container"' ]
@@ -202,7 +202,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:PDO-6626-belugacommon-notyfy
+          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
           imagePullPolicy: Always
           ports:
             - containerPort: 1389
