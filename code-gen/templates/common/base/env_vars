@@ -255,7 +255,7 @@ EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 HEALTHCHECKS_ENABLED=${HEALTHCHECKS_ENABLED}
 ########################################################################################################################
 
-# ArgoCD-Slack notifications (notifications.argoproj.io/subscribe.on-sync-failed.slack)
+# For ArgoCD-status slack notifications (notifications.argoproj.io/subscribe.on-sync-failed.slack)
 SLACK_CHANNEL=${SLACK_CHANNEL}
 
 # Dashboards repo variables
