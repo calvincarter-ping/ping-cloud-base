@@ -68,4 +68,7 @@ DA_PINGFEDERATE_ATV_NAME=DAPingFederateValidator
 DA_PINGFEDERATE_INSTANCE_NAME=DAPingFederate
 DA_IDENTITY_MAPPER_NAME=DAEntryUUIDMatch
 
+# ArgoCD-Slack notifications (notifications.argoproj.io/subscribe.on-sync-failed.slack)
+SLACK_CHANNEL=p1as-application-oncall
+
 KUBECTL_VERSION=v1.24.0
