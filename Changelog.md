@@ -135,9 +135,13 @@
 - Patch PF admin test environment memory and cpu limits to 4Gi
 - Add healthcheck feature flag
 - Update cluster-autoscaler v1.29.0 for eks 1.28
+- [EKS 1.28]-Update/fix before deprecated annotation is removed
 - Add customer tenant to the Opensearch
 - Add nginx ingress signal 9 alert
-- [EKS 1.28]-Update/fix before deprecated annotation is removed
+- Update nginx-ingress-controller to v1.9.6 to support EKS 1.28
+- No data on Karpenter Grafana dashboards
+- Update pod memory limits for PingDirectory
+- Update pod cpu limits for PingDirectory
 
 _Changes:_
 
@@ -230,6 +234,7 @@ _Changes:_
 - [X] PDO-5803 Update EBS Driver to 1.21.0 for EKS 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
 - [X] PDO-5835 Create PD init container for KMS
+- [X] PDO-5850 Enable interruption handling for spot instances
 - [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
 - [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
 - [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
@@ -317,6 +322,7 @@ _Changes:_
 - [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
 - [X] PDO-6676 Identify and map numeric fields in OpenSearch
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
+- [X] PDO-6683 Update nginx-ingress-controller to v1.9.6 to support EKS 1.28
 - [X] PDO-6685 HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
 - [X] PDO-6724 Patch PF admin test environment memory and cpu limits to 4Gi
@@ -329,6 +335,8 @@ _Changes:_
 - [X] PDO-6689 [EKS 1.28]-Update/fix before deprecated annotation is removed
 - [X] PDO-6788 Remove Karpenter logging to NewRelic
 - [X] PDO-6674 Logstash: Parsing issue with pd-errors logs
+- [X] PDO-6694 Update pod memory limits for PingDirectory
+- [X] PDO-6695 Update pod cpu limits for PingDirectory
 
 ### 1.18.0.0
 
