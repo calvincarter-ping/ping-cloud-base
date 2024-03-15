@@ -349,6 +349,7 @@ _Changes:_
 - [X] PDO-6695 Update pod cpu limits for PingDirectory
 - [X] PDO-6810 Remove argocd-image-updater k8s resources from ping-cloud-base
 - [X] PDO-6873 Remove kube-rbac-proxy logs
+- [X] PDO-6880 Fluent-Bit: TLS error: unexpected EOF
 
 ### 1.18.0.0
 
