@@ -73,7 +73,7 @@ spec:
         options:
          - --type=full
       jobs:
-        ttlSecondsAfterFinished: 300 # Keep jobs around for a short time to allow for debugging
+        ttlSecondsAfterFinished: 60 # Minimum is 60
       repos:
       - name: repo1
         # S3 configuration & schedule set via patches
