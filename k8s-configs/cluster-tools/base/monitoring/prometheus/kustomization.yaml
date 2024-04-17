@@ -11,6 +11,7 @@ resources:
   - namespace.yaml
   - nodes-scrape-config.yaml
   - opsgenie-key.yaml
+  - pgo-pod-monitor.yaml
   - prometheus.yaml
   - prometheus-agent.yaml
   - prometheus-scrape-config.yaml
