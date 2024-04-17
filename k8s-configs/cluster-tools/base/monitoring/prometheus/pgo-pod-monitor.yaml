@@ -16,7 +16,7 @@ spec:
       relabelings:
         - sourceLabels: [ __meta_kubernetes_pod_label_postgres_operator_crunchydata_com_crunchy_postgres_exporter,__meta_kubernetes_pod_label_crunchy_postgres_exporter ]
           action: keep
-          regex: true
+          regex: "true"
           separator: ""
         - sourceLabels: [ __meta_kubernetes_pod_container_port_number ]
           action: drop
@@ -32,7 +32,7 @@ spec:
           regex: 2022
         - sourceLabels: [ __meta_kubernetes_pod_container_port_number ]
           action: drop
-          regex: ^$
+          regex: "^$"
         - sourceLabels: [ __meta_kubernetes_namespace ]
           targetLabel: kubernetes_namespace
         - sourceLabels: [ __meta_kubernetes_pod_name ]
