@@ -155,7 +155,7 @@ disable_os_operator_crds() {
 ########################################################################################################################
 disable_prom_operator_crds() {
   cd "${TMP_DIR}"
-  search_term="prometheus-operator\/base\/crds"
+  search_term="prometheus-operator\/base"
   for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
       log "Commenting prometheus operator ${kust_file}"
       sed -i.bak \
