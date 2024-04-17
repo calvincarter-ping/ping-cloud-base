@@ -16,13 +16,6 @@ metadata:
   name: prometheus
   namespace: prometheus
 $patch: delete
-#---
-#apiVersion: apps/v1
-#kind: PrometheusAgent
-#metadata:
-#  name: prometheus-agent
-#  namespace: prometheus
-#$patch: delete
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
@@ -133,20 +126,6 @@ apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaFolder
 metadata:
   name: pingdashboards
-  namespace: prometheus
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: prometheus-config
-  namespace: prometheus
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: prometheus-agent-config
   namespace: prometheus
 $patch: delete
 ---

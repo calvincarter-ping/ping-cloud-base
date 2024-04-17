@@ -4,12 +4,12 @@ namespace: prometheus
 
 resources:
   - apiservers-service-monitor.yaml
-  - cadvisor-scrape-config.yaml
+  - cadvisor-service-monitor.yaml
   - generic-pod-monitor.yaml
   - generic-service-monitor.yaml
   - ksm-service-monitor.yaml
   - namespace.yaml
-  - nodes-scrape-config.yaml
+  - nodes-service-monitor.yaml
   - opsgenie-key.yaml
   - pgo-pod-monitor.yaml
   - prometheus.yaml
@@ -17,9 +17,9 @@ resources:
   - prometheus-scrape-config.yaml
   - prometheus-service.yaml
   - rbac.yaml
-  - secret.yaml
   - storage.yaml
   - volume-autoscaler
+  - prometheus-job-exporter.yaml
 
 configMapGenerator:
 - name: prometheus-environment-variables

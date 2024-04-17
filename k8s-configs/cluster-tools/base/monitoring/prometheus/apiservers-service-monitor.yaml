@@ -15,13 +15,7 @@ spec:
         action: keep
         regex: default;kubernetes;https
       scheme: https
-      authorization:
-        credentials:
-          name: prometheus-token
-          key: token
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
-        ca:
-          secret:
-            name: prometheus-token
-            key: ca.crt
+        caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
   selector: {}
