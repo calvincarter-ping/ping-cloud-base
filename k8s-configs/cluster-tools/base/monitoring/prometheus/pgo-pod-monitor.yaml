@@ -20,16 +20,16 @@ spec:
           separator: ""
         - sourceLabels: [ __meta_kubernetes_pod_container_port_number ]
           action: drop
-          regex: 5432
+          regex: "5432"
         - sourceLabels: [ __meta_kubernetes_pod_container_port_number ]
           action: drop
-          regex: 10000
+          regex: "10000"
         - sourceLabels: [ __meta_kubernetes_pod_container_port_number ]
           action: drop
-          regex: 8009
+          regex: "8009"
         - sourceLabels: [ __meta_kubernetes_pod_container_port_number ]
           action: drop
-          regex: 2022
+          regex: "2022"
         - sourceLabels: [ __meta_kubernetes_pod_container_port_number ]
           action: drop
           regex: "^$"
