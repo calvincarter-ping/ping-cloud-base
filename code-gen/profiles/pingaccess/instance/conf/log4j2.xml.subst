@@ -456,7 +456,7 @@
                       <KeyValuePair key="AUDIT.http-client-request-method" value="POST"/>
                       <KeyValuePair key="AUDIT.http-client-request-method" value="PATCH"/>
                  </ContextMapFilter>
-                 <!-- Only allow application/json content-type which will filter out APIs that has binaries such as /pa-admin-api/v3/backup -->
+                 <!-- Very important filter below: only allow application/json content-type which will filter out APIs that has binaries included in its response -->
                  <ContextMapFilter onMatch="ACCEPT" onMismatch="DENY" operator="or">
                       <KeyValuePair key="AUDIT.http-client-response-header-content-type" value="application/json"/>
                  </ContextMapFilter>
