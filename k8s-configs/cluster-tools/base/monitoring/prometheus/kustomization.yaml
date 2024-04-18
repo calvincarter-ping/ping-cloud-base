@@ -8,7 +8,6 @@ resources:
   - generic-pod-monitor.yaml
   - generic-service-monitor.yaml
   - ksm-service-monitor.yaml
-  - namespace.yaml
   - nodes-service-monitor.yaml
   - opsgenie-key.yaml
   - pgo-pod-monitor.yaml

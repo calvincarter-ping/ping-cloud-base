@@ -2,7 +2,6 @@ apiVersion: grafana.integreatly.org/v1beta1
 kind: Grafana
 metadata:
   name: grafana
-  namespace: prometheus
 spec:
   deployment:
     spec:
@@ -12,8 +11,8 @@ spec:
             - name: grafana
               resources:
                 limits:
-                  cpu: "500m"
-                  memory: "2500Mi"
+                  cpu: 500m
+                  memory: 2500Mi
                 requests:
-                  cpu: "250m"
-                  memory: "1500Mi"
+                  cpu: 250m
+                  memory: 1500Mi
