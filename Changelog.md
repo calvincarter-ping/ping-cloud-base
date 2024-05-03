@@ -7,13 +7,14 @@ v1.19.0.0
 - PingDirectory Improvements
 - Support PingDirectory multiple backends to share database cache
 
-**_[Version Upgrades]_**
+**_[Deploys With]_**
 
-- Upgraded PingAccess to v8.0.1
-- Upgraded PingCentral to v2.0.1
-- Upgraded PingDataSync to v10.0.0.1
-- Upgraded PingDelegator to v5.0.0
-- Upgraded PingDirectory to v10.0.0.2
+- PingAccess to v8.0.1
+- PingCentral to v2.0.1
+- PingDataSync to v10.0.0.1
+- PingDelegator to v5.0.0
+- PingDirectory to v10.0.0.2
+- PingFederate to v11.3.5
 
 # Observability and Monitoring
 
