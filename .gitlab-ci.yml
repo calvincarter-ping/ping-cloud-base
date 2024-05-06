@@ -80,13 +80,10 @@ check-ext-images:
     - compile
   variables:
     UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
-  allow_failure: true
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/check_ext_images.sh $UBER_YAML
   tags:
-    - platform-publish-docker
-  only:
-    - /^.*-release-branch$/
+    - default-gitlab-runner-ping-cloud
 
 scan:
   stage: security
@@ -109,7 +106,6 @@ scan:
     expire_in: 1 year
   only:
     - /^.*-release-branch$/
-
 ## end security stage ##
 
 ## Find cluster stage ##
@@ -124,7 +120,7 @@ find-cluster:
     reports:
       dotenv: cluster.env
 
-# Deploy stage ##
+## Deploy stage ##
 deploy:
   stage: deploy
   tags:
