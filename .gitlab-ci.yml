@@ -85,6 +85,8 @@ check-ext-images:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/check_ext_images.sh $UBER_YAML
   tags:
     - platform-publish-docker
+  only:
+    - /^.*-release-branch$/
 
 scan:
   stage: security
