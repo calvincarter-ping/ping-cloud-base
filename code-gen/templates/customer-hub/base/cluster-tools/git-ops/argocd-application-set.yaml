@@ -7,6 +7,9 @@ metadata:
   name: "ping-cloud-all-cdes"
   namespace: argocd
 spec:
+  ignoreApplicationDifferences:
+    - jsonPointers:
+        - /spec/template/spec/syncPolicy
   syncPolicy:
     preserveResourcesOnDeletion: true
   generators:
@@ -29,7 +32,6 @@ spec:
           kind: Job
           jsonPointers:
             - /spec/ttlSecondsAfterFinished
-            - /spec/syncPolicy
       syncPolicy:
         automated:
           prune: true
