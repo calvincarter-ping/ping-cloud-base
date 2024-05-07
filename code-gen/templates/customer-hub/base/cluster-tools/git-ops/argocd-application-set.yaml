@@ -33,6 +33,8 @@ spec:
           jsonPointers:
             - /spec/ttlSecondsAfterFinished
       syncPolicy:
+        automated:
+          prune: true
         syncOptions:
           # Only apply changes which are out of sync, since the uber yaml is so large
           - ApplyOutOfSyncOnly=true
