@@ -29,7 +29,6 @@ spec:
           kind: Job
           jsonPointers:
             - /spec/ttlSecondsAfterFinished
-        - jsonPointers:
             - /spec/syncPolicy
       syncPolicy:
         automated:
