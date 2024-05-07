@@ -29,6 +29,9 @@ spec:
           kind: Job
           jsonPointers:
             - /spec/ttlSecondsAfterFinished
+      ignoreApplicationDifferences:
+        - jsonPointers:
+            - /spec/syncPolicy
       syncPolicy:
         automated:
           prune: true
