@@ -1,0 +1,7 @@
+type: S3
+config:
+  bucket: "antonklyba-primary-test-thanos  "
+  endpoint: "s3.us-west-2.amazonaws.com"
+  region: "us-west-2"
+  aws_sdk_auth: True
+prefix: "antonkluba-primary"

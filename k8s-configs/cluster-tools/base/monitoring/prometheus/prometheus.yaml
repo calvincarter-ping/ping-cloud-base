@@ -3,6 +3,11 @@ kind: Prometheus
 metadata:
   name: prometheus
 spec:
+  replicas: 2
+  thanos:
+    objectStorageConfig:
+      key: thanos-objstore-config.yaml
+      name: thanos-objstore-config
   containers:
     - name: prometheus
       envFrom:

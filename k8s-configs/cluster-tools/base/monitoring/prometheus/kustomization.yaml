@@ -26,3 +26,9 @@ configMapGenerator:
     disableNameSuffixHash: true
   envs:
     - env_vars
+
+secretGenerator:
+  - name: thanos-objstore-config
+    type: Opaque
+    files:
+      - thanos-objstore-config.yaml
