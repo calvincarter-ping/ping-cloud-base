@@ -33,4 +33,4 @@ secretGenerator:
   - name: thanos-objstore-config
     type: Opaque
     files:
-      - thanos-objstore-config.yaml
+      - objstore.yml

@@ -6,7 +6,7 @@ spec:
   replicas: 2
   thanos:
     objectStorageConfig:
-      key: thanos-objstore-config.yaml
+      key: objstore.yml
       name: thanos-objstore-config
   containers:
     - name: prometheus
