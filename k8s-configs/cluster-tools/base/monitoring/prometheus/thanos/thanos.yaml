@@ -1015,13 +1015,13 @@ spec:
               scheme: HTTP
           resources:
             limits:
-              cpu: 750m
+              cpu: '1'
               ephemeral-storage: 1024Mi
-              memory: 1536Mi
+              memory: 4096Mi
             requests:
               cpu: 500m
               ephemeral-storage: 50Mi
-              memory: 1024Mi
+              memory: 2048Mi
           volumeMounts:
             - name: hashring-config
               mountPath: /var/lib/thanos-receive
