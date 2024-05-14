@@ -22,7 +22,7 @@ stages:
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
   CLUSTER_POSTFIXES: '_9 _10 _11'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v1.19-release-branch
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v2.0-release-branch
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
@@ -70,6 +70,20 @@ copy-images:
     - platform-publish-docker
   only:
     - /^.*-release-branch$/
+
+check-ext-images:
+  stage: security
+  image: ${K8S_DEPLOY_TOOLS}
+  needs:
+    - compile
+  dependencies:
+    - compile
+  variables:
+    UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/check_ext_images.sh $UBER_YAML
+  tags:
+    - default-gitlab-runner-ping-cloud
 
 scan:
   stage: security

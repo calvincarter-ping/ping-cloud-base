@@ -72,7 +72,11 @@
 # ACCOUNT_BASE_PATH                | The account's SSM base path                        | The SSM path: /pcpt/config/k8s-config/accounts/
 #                                  |                                                    |
 # ACCOUNT_TYPE                     | The variable denotes the type of account based on  | No defaults
+<<<<<<< HEAD
 #                                  | the IS_GA flag: either 'ga' or 'non-ga'.           |                               
+=======
+#                                  | the IS_GA flag: either 'ga' or 'non-ga'.           |
+>>>>>>> v2.0-release-branch
 #                                  |                                                    |
 # ARGOCD_SLACK_TOKEN_SSM_PATH      | SSM path to secret token for ArgoCD slack          | The SSM path:
 #                                  | notifications                                      | ssm://pcpt/argocd/notification/slack/access_token
@@ -247,8 +251,8 @@
 #                                  | state data required for the cluster.               |
 #                                  |                                                    |
 # SLACK_CHANNEL                    | The Slack channel name for ArgoCD-Status Slack     | CDE environment: p1as-application-oncall                                  |                                                    |
-#                                  | notifications.                                     |             
-#                                  |                                                    |                                                                                  
+#                                  | notifications.                                     |
+#                                  |                                                    |
 # NON_GA_SLACK_CHANNEL             | The Slack channel name for ArgoCD-Status Slack     | CDE environment: nowhere
 #                                  | notifications.                                     | Dev environment: nowhere
 #                                  | Overrides SLACK_CHANNEL                            |

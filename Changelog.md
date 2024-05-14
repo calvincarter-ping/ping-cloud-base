@@ -1,5 +1,15 @@
 # Changelog
 
+### 2.0.0
+
+- Update version regexes from v*.*.*.* to v*.*.*
+- Update csd upload tests for products to support removal of ad-hoc PD jobs
+
+_Changes:_
+
+- [X] PDO-5729 Update version regexes
+- [X] PDO-5888 Implement p1as-pingdirectory pipeline deploy stage
+
 ### 1.19.0.0
 
 - Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful

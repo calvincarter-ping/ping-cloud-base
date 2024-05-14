@@ -615,7 +615,7 @@ spec:
 # argocd-dex-server
 # argocd-repo-server (only git-ops-command container)
 
-# Added a patch for the above pods in k8s-configs/cluster-tools/base/git-ops/argo/kustomization.yaml file. 
+# Added a patch for the above pods in k8s-configs/cluster-tools/base/git-ops/argo/kustomization.yaml file.
 # If we want to change the logging level change the inline in command to one of  debug|info|warn|error
 apiVersion: apps/v1
 kind: Deployment
@@ -641,7 +641,7 @@ spec:
     spec:
       containers:
       - name: git-ops-command
-        command: 
+        command:
         - sh
         - -c
         - /var/run/argocd/argocd-cmp-server --loglevel error
