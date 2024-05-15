@@ -22,7 +22,7 @@ stages:
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
   CLUSTER_POSTFIXES: '_9 _10 _11'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@sha256:2f63dff8cc515c104e50e0044db408e428df6fcd30a2f10839fd8ebf0aa1e2c9
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@sha256:d43182f4d02dde27c2b4eabbb4410e599df6868e43d79bf0bd897af380640578
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
