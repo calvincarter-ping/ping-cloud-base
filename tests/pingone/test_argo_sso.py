@@ -44,6 +44,18 @@ class TestArgoSSO(p1_test_base.P1TestBase):
         p1_app = self.get(self.cluster_env_endpoints.applications, self.app_name)
         self.assertTrue(p1_app, f"Application '{self.app_name}' not created")
 
+    def test_authentication_policy_created(self):
+        p1_auth_policy = self.get(self.cluster_env_endpoints.sign_on_policies, self.tenant_name)
+        self.assertTrue(p1_auth_policy, f"Authentication policy '{self.tenant_name}' not created")
+
+    def test_authentication_policy_added_to_app(self):
+        p1_auth_policy = self.get(self.cluster_env_endpoints.sign_on_policies, self.tenant_name)
+        p1_app = self.get(self.cluster_env_endpoints.applications, self.app_name)
+        res = self.worker_app_token_session.get(f"{self.cluster_env_endpoints.applications}/{p1_app.get('id')}/signOnPolicyAssignments")
+        res.raise_for_status()
+        p1_app_policy_ids = [policy.get("signOnPolicy").get("id") for policy in res.json()["_embedded"]["signOnPolicyAssignments"]]
+        self.assertTrue(p1_auth_policy.get("id") in p1_app_policy_ids, f"Authentication policy '{self.tenant_name}' not added to application '{self.app_name}'")
+
     def test_sso_configmap_created(self):
         sso_configmap_data = self.k8s.get_configmap_values(namespace="argocd", configmap_name="argocd-sso-status")
         self.assertTrue(json.loads(sso_configmap_data["sso.configured"].lower()))
