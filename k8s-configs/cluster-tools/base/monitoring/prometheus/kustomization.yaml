@@ -20,16 +20,6 @@ resources:
   - thanos/thanos.yaml
   - thanos/thanos-objstore-config.yaml
 
-patches:
-  - target:
-      kind: Service
-      name: thanos-receive
-      version: v1
-    patch: |-
-      - op: add
-        path: /metadata/annotations/external-dns.alpha.kubernetes.io/hostname
-        value: thanos-central-dev.ping-demo.com
-
 images:
   - name: docker.io/bitnami/thanos
     newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/thanos
