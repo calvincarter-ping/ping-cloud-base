@@ -1,17 +1,17 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: prometheus
+  name: thanos-receive
   namespace: prometheus
   annotations:
     $patch: delete
 spec:
   type: ExternalName
-  externalName: prometheus-central.${PRIMARY_DNS_ZONE}
+  externalName: thanos-central.${PRIMARY_DNS_ZONE}
   $patch: replace
 ---
-apiVersion: apps/v1
-kind: Prometheus
+kind: Service
+apiVersion: v1
 metadata:
   name: prometheus
   namespace: prometheus
