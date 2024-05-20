@@ -218,6 +218,8 @@ kind: ServiceAccount
 metadata:
   name: thanos-compactor
   namespace: prometheus
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::865329940309:role/pcpt/irsa-roles/irsa-thanos
   labels:
     app.kubernetes.io/instance: thanos
     app.kubernetes.io/managed-by: Helm
@@ -263,6 +265,8 @@ kind: ServiceAccount
 metadata:
   name: thanos-receive
   namespace: prometheus
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::865329940309:role/pcpt/irsa-roles/irsa-thanos
   labels:
     app.kubernetes.io/instance: thanos
     app.kubernetes.io/managed-by: Helm
@@ -278,6 +282,8 @@ kind: ServiceAccount
 metadata:
   name: thanos-storegateway
   namespace: prometheus
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::865329940309:role/pcpt/irsa-roles/irsa-thanos
   labels:
     app.kubernetes.io/instance: thanos
     app.kubernetes.io/managed-by: Helm
