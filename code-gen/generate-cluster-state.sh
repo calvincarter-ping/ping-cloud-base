@@ -830,6 +830,7 @@ export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accou
 export ACCOUNT_PATH_PREFIX=${ACCOUNT_BASE_PATH#ssm:/}
 export IRSA_BASE_PATH=${IRSA_BASE_PATH:-ssm://pcpt/irsa-role/}
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
+export THANOS_BUCKET_URI_SUFFIX=${THANOS_BUCKET_URI_SUFFIX:-/thanos/uri}
 
 # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
 export IRSA_PING_ANNOTATION_KEY_VALUE=${IRSA_PING_ANNOTATION_KEY_VALUE:-''}
@@ -922,16 +923,6 @@ else
 fi
 
 export ARGOCD_SLACK_TOKEN_BASE64=$(base64_no_newlines "${ARGOCD_SLACK_TOKEN}")
-
-THANOS_S3_BUCKET_SSM_PATH="${THANOS_S3_BUCKET_SSM_PATH:-ssm://pcpt/config/k8s-config/accounts/customer-hub/service/storage/thanos/uri}"
-if ! ssm_value=$(get_ssm_value "${THANOS_S3_BUCKET_SSM_PATH#ssm:/}"); then
-  echo "Warn: ${ssm_value}"
-  echo "THANOS_S3_BUCKET_NAME is unset, thanos will not work"
-  echo "Using empty string"
-  THANOS_S3_BUCKET_NAME=""
-else
-  THANOS_S3_BUCKET_NAME="${ssm_value#s3://}"
-fi
 
 set_ssh_key_pair
 
@@ -1251,6 +1242,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   set_var "PGO_BACKUP_BUCKET_NAME" "not_set" "${ACCOUNT_BASE_PATH}${ENV}" "${PGO_BUCKET_URI_SUFFIX}"
   # Remove s3:// prefix if present
   export PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME#s3://}
+
+  set_var "THANOS_S3_BUCKET_NAME" "" "${ACCOUNT_BASE_PATH}customer-hub" "${THANOS_BUCKET_URI_SUFFIX}"
+  export THANOS_S3_BUCKET_NAME="${THANOS_S3_BUCKET_NAME#s3://}"
 
   ######################################################################################################################
   # Print out the final value being used for each environment specific variable.
