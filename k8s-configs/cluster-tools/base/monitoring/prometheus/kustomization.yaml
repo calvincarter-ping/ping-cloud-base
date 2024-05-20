@@ -24,6 +24,9 @@ images:
   - name: docker.io/bitnami/thanos
     newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/thanos
 
+generatorOptions:
+  disableNameSuffixHash: true
+
 configMapGenerator:
   - name: prometheus-environment-variables
     envs:
