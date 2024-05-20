@@ -1,0 +1,16 @@
+existingObjstoreSecret: "thanos-objstore-config"
+query:
+  enabled: true
+  replicaLabel: [ "k8s_cluster_name","prometheus_replica", "replica" ]
+compactor:
+  enabled: true
+  retentionResolutionRaw: 15d
+  retentionResolution5m: 15d
+  retentionResolution1h: 15d
+storegateway:
+  enabled: true
+receive:
+  enabled: true
+  replicaLabel: replica
+  resourcesPreset: "xlarge"
+  tsdbRetention: 8h
