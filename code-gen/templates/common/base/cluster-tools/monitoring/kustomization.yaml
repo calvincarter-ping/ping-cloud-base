@@ -287,6 +287,7 @@ patchesStrategicMerge:
     namespace: prometheus
     name: thanos-compactor
     annotations:
+      purpose: thanos-compactor
       ${IRSA_THANOS_ANNOTATION_KEY_VALUE}
 
 - |-
@@ -297,6 +298,7 @@ patchesStrategicMerge:
     name: thanos-receive
     annotations:
       external-dns.alpha.kubernetes.io/hostname: thanos-central.${DNS_ZONE}
+      purpose: thanos-receiver
       ${IRSA_THANOS_ANNOTATION_KEY_VALUE}
 
 - |-
@@ -306,7 +308,9 @@ patchesStrategicMerge:
     namespace: prometheus
     name: thanos-storegateway
     annotations:
-      ${IRSA_THANOS_ANNOTATION_KEY_VALUE}    
+      purpose: thanos-storegateway
+      ${IRSA_THANOS_ANNOTATION_KEY_VALUE}
+    
 
 patchesJson6902:
 
