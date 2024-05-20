@@ -23,3 +23,8 @@ resources:
 images:
   - name: docker.io/bitnami/thanos
     newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/thanos
+
+configMapGenerator:
+  - name: prometheus-environment-variables
+    envs:
+      - env_vars
