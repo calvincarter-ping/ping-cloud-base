@@ -17,3 +17,6 @@ receive:
   replicaLabel: replica
   resourcesPreset: "xlarge"
   tsdbRetention: 8h
+receiveDistributor:
+  enabled: true
+  replicationFactor: 3

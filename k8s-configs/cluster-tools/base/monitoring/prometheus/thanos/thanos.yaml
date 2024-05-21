@@ -257,6 +257,21 @@ metadata:
     app.kubernetes.io/component: query
 automountServiceAccountToken: false
 ---
+# Source: thanos/templates/receive-distributor/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: thanos-receive-distributor
+  namespace: prometheus
+  labels:
+    app.kubernetes.io/instance: thanos
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: thanos
+    app.kubernetes.io/version: 0.35.0
+    helm.sh/chart: thanos-15.4.7
+    app.kubernetes.io/component: receive-distributor
+automountServiceAccountToken: false
+---
 # Source: thanos/templates/receive/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -961,7 +976,7 @@ spec:
             - --label=replica="$(NAME)"
             - --label=receive="true"
             - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
-            - --receive.replication-factor=1
+            - --receive.replication-factor=3
           env:
             - name: NAME
               valueFrom:
