@@ -19,7 +19,6 @@ resources:
   - prometheus-job-exporter.yaml
   - thanos/thanos.yaml
   - thanos/thanos-objstore-config.yaml
-  - thanos/thanos-reveive-headless.yaml
 
 images:
   - name: docker.io/bitnami/thanos
