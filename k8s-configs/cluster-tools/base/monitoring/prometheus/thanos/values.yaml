@@ -12,15 +12,15 @@ compactor:
 storegateway:
   enabled: true
   persistence:
-    storageClass: "prometheus-gp3"
+    enabled: false
 receive:
   enabled: true
   replicaCount: 3
   config:
     - endpoints:
-        - "thanos-receive-0.thanos-receive:10901"
-        - "thanos-receive-1.thanos-receive:10901"
-        - "thanos-receive-2.thanos-receive:10901"
+        - "thanos-receive-0.thanos-receive-headless.prometheus.svc.cluster.local:10901"
+        - "thanos-receive-1.thanos-receive-headless.prometheus.svc.cluster.local:10901"
+        - "thanos-receive-2.thanos-receive-headless.prometheus.svc.cluster.local:10901"
   replicationFactor: 3
   replicaLabel: replica
   podManagementPolicy: Parallel
@@ -28,3 +28,5 @@ receive:
   tsdbRetention: 8h
   persistence:
     storageClass: "prometheus-gp3"
+  service:
+    additionalHeadless: true

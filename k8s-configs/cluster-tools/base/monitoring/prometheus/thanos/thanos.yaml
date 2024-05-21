@@ -305,9 +305,9 @@ data:
     [
       {
         "endpoints": [
-          "thanos-receive-0.thanos-receive:10901",
-          "thanos-receive-1.thanos-receive:10901",
-          "thanos-receive-2.thanos-receive:10901"
+          "thanos-receive-0.thanos-receive-headless.prometheus.svc.cluster.local:10901",
+          "thanos-receive-1.thanos-receive-headless.prometheus.svc.cluster.local:10901",
+          "thanos-receive-2.thanos-receive-headless.prometheus.svc.cluster.local:10901"
         ]
       }
     ]
@@ -439,6 +439,36 @@ spec:
     app.kubernetes.io/instance: thanos
     app.kubernetes.io/name: thanos
     app.kubernetes.io/component: query
+---
+# Source: thanos/templates/receive/service-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: thanos-receive-headless
+  namespace: prometheus
+  labels:
+    app.kubernetes.io/instance: thanos
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: thanos
+    app.kubernetes.io/version: 0.35.0
+    helm.sh/chart: thanos-15.4.7
+    app.kubernetes.io/component: receive
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 10902
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 10901
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+  selector:
+    app.kubernetes.io/instance: thanos
+    app.kubernetes.io/name: thanos
+    app.kubernetes.io/component: receive
 ---
 # Source: thanos/templates/receive/service.yaml
 apiVersion: v1
@@ -838,7 +868,7 @@ spec:
             - --query.replica-label=prometheus_replica
             - --query.replica-label=replica
             - --endpoint=dnssrv+_grpc._tcp.thanos-storegateway.prometheus.svc.cluster.local
-            - --endpoint=dnssrv+_grpc._tcp.thanos-receive.prometheus.svc.cluster.local
+            - --endpoint=dnssrv+_grpc._tcp.thanos-receive-headless.prometheus.svc.cluster.local
             - --alert.query-url=http://thanos-query.prometheus.svc.cluster.local:9090
           ports:
             - name: http
@@ -915,7 +945,7 @@ spec:
         helm.sh/chart: thanos-15.4.7
         app.kubernetes.io/component: receive
       annotations:
-        checksum/receive-configuration: a85c54b5812c6f4abc1ce51d1a9025341c253ca49ef4987008f2ee814b08b8df
+        checksum/receive-configuration: 7599a212542718382719555619c160ff5f799fb3b0e9576197507ba4dc693d2b
     spec:
       
       serviceAccountName: thanos-receive
@@ -969,7 +999,7 @@ spec:
             - --label=replica="$(NAME)"
             - --label=receive="true"
             - --tsdb.retention=8h
-            - --receive.local-endpoint=127.0.0.1:10901
+            - --receive.local-endpoint=$(NAME).thanos-receive-headless.$(NAMESPACE).svc.cluster.local:10901
             - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
             - --receive.replication-factor=3
           env:
@@ -1173,13 +1203,5 @@ spec:
         - name: objstore-config
           secret:
             secretName: thanos-objstore-config
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes:
-          - "ReadWriteOnce"
-        resources:
-          requests:
-            storage: "8Gi"
-        storageClassName: prometheus-gp3
+        - name: data
+          emptyDir: {}
