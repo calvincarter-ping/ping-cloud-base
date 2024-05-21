@@ -12,6 +12,9 @@ storegateway:
 receive:
   enabled: true
   mode: dual-mode
+  config:
+    - endpoints:
+        - "thanos-receive-headless:10901"
   replicaCount: 3
   replicationFactor: 3
   replicaLabel: replica

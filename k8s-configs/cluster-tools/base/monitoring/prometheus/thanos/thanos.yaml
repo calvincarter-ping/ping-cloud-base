@@ -320,7 +320,7 @@ data:
     [
       {
         "endpoints": [
-            "127.0.0.1:10901"
+          "thanos-receive-headless:10901"
         ]
       }
     ]
@@ -924,7 +924,7 @@ spec:
         helm.sh/chart: thanos-15.4.7
         app.kubernetes.io/component: receive-distributor
       annotations:
-        checksum/receive-configuration: ec0ff6cb1622ed2c9da20a0f6caf183f4c7e45c46cecaa20e195b7603dce3f5e
+        checksum/receive-configuration: 29185355ff51d1bbf342938a742f713cc8e5d018710bec4fd80615aa4b3d9a4f
     spec:
       
       serviceAccountName: thanos-receive-distributor
@@ -1074,7 +1074,7 @@ spec:
         helm.sh/chart: thanos-15.4.7
         app.kubernetes.io/component: receive
       annotations:
-        checksum/receive-configuration: ec0ff6cb1622ed2c9da20a0f6caf183f4c7e45c46cecaa20e195b7603dce3f5e
+        checksum/receive-configuration: 29185355ff51d1bbf342938a742f713cc8e5d018710bec4fd80615aa4b3d9a4f
     spec:
       
       serviceAccountName: thanos-receive
