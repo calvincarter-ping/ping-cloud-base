@@ -112,6 +112,7 @@ scan:
 ## Find cluster stage ##
 find-cluster:
   stage: find-cluster
+  needs: []
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -124,6 +125,8 @@ find-cluster:
 ## Deploy stage ##
 deploy:
   stage: deploy
+  needs:
+    - find-cluster
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -137,6 +140,8 @@ deploy:
 # Common pre-check tests
 pre-check:
   stage: pre-check-test
+  needs:
+    - deploy
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -148,6 +153,9 @@ pre-check:
 ## PA-WAS stage ##
 pa-was-integration-tests:
   stage: pa-was-test
+  retry: 1
+  needs:
+    - pre-check
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -206,6 +214,7 @@ pa-was-integration-tests:
   variables:
     TEST: ""
   stage: integration-test
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -253,6 +262,7 @@ integration-tests-chub:
 ## Chaos testing stage ##
 chaos-tests:
   stage: chaos
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -261,13 +271,23 @@ chaos-tests:
   dependencies:
     - find-cluster
 
-## Cleanup stage ##
-cleanup:
+.cleanup-base:
   stage: cleanup
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
   dependencies:
     - find-cluster
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
+
+## Cleanup stage that runs when everything has succeeded ##
+cleanup_on_success:
+  extends: .cleanup-base
+
+cleanup_on_compile_failure:
+  extends: .cleanup-base
+  needs:
+    - find-cluster
+    - compile
+  when: on_failure
