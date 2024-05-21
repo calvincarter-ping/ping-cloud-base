@@ -1054,7 +1054,7 @@ metadata:
 spec:
   replicas: 3
   revisionHistoryLimit: 10
-  podManagementPolicy: OrderedReady
+  podManagementPolicy: Parallel
   serviceName: thanos-receive-headless
   updateStrategy:
     type: RollingUpdate

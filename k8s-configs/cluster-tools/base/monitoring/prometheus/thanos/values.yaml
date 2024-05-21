@@ -18,6 +18,7 @@ receive:
   replicaCount: 3
   replicationFactor: 3
   replicaLabel: replica
+  podManagementPolicy: Parallel
   resourcesPreset: "xlarge"
   tsdbRetention: 8h
 receiveDistributor:
