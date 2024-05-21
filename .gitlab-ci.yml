@@ -96,6 +96,7 @@ scan:
 ## Find cluster stage ##
 find-cluster:
   stage: find-cluster
+  needs: []
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -108,6 +109,8 @@ find-cluster:
 ## Deploy stage ##
 deploy:
   stage: deploy
+  needs:
+    - find-cluster
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -121,6 +124,9 @@ deploy:
 # Common pre-check tests
 pre-check:
   stage: pre-check-test
+  needs:
+    - find-cluster
+    - deploy
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -132,6 +138,9 @@ pre-check:
 ## PA-WAS stage ##
 pa-was-integration-tests:
   stage: pa-was-test
+  needs:
+    - find-cluster
+    - pre-check
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -189,6 +198,9 @@ pa-was-integration-tests:
   variables:
     TEST: ""
   stage: integration-test
+  needs:
+    - find-cluster
+    - pre-check
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
