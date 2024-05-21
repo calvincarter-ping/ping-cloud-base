@@ -890,7 +890,7 @@ metadata:
     helm.sh/chart: thanos-15.4.7
     app.kubernetes.io/component: receive
 spec:
-  replicas: 1
+  replicas: 3
   revisionHistoryLimit: 10
   podManagementPolicy: OrderedReady
   serviceName: thanos-receive-headless
@@ -968,7 +968,7 @@ spec:
             - --tsdb.retention=8h
             - --receive.local-endpoint=127.0.0.1:10901
             - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
-            - --receive.replication-factor=1
+            - --receive.replication-factor=3
           env:
             - name: NAME
               valueFrom:

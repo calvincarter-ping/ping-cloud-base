@@ -11,6 +11,8 @@ storegateway:
   enabled: true
 receive:
   enabled: true
+  replicaCount: 3
+  replicationFactor: 3
   replicaLabel: replica
   resourcesPreset: "xlarge"
   tsdbRetention: 8h
