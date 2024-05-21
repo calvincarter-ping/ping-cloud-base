@@ -831,7 +831,7 @@ spec:
             - --log.format=logfmt
             - --grpc-address=0.0.0.0:10901
             - --http-address=0.0.0.0:10902
-            - --query.replica-label=k8s_cluster_name
+            - --query.replica-label=replica_cluster_name
             - --query.replica-label=prometheus_replica
             - --query.replica-label=replica
             - --endpoint=dnssrv+_grpc._tcp.thanos-storegateway.prometheus.svc.cluster.local

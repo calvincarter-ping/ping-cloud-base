@@ -13,6 +13,7 @@ spec:
   scrapeTimeout: 5s
   externalLabels:
     k8s_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}
+    replica_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}
   scrapeConfigSelector:
     matchLabels:
       prometheus: system-monitoring-prometheus

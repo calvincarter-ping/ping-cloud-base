@@ -1,7 +1,7 @@
 existingObjstoreSecret: "thanos-objstore-config"
 query:
   enabled: true
-  replicaLabel: [ "k8s_cluster_name","prometheus_replica", "replica" ]
+  replicaLabel: [ "replica_cluster_name","prometheus_replica", "replica" ]
 compactor:
   enabled: true
   retentionResolutionRaw: 15d
