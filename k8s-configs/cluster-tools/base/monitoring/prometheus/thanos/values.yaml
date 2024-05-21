@@ -11,6 +11,7 @@ storegateway:
   enabled: true
 receive:
   enabled: true
+  mode: dual-mode
   replicaCount: 3
   replicationFactor: 3
   replicaLabel: replica
