@@ -4,7 +4,6 @@ namespace: prometheus
 
 resources:
   - apiservers-service-monitor.yaml
-  - cadvisor-service-monitor.yaml
   - ksm-service-monitor.yaml
   - pgo-pod-monitor.yaml
   - prometheus-agent.yaml
@@ -14,6 +13,7 @@ resources:
   - storage.yaml
   - volume-autoscaler
   - prometheus-job-exporter.yaml
+  - prometheus-scrape-config-cadvisor.yaml
   - prometheus-scrape-config-pods.yaml
   - prometheus-scrape-config-services.yaml
   - prometheus-scrape-config-nodes.yaml
