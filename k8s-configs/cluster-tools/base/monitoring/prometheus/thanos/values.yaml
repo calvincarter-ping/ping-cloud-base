@@ -44,7 +44,7 @@ receive:
   extraFlags:
     - "--receive.hashrings-algorithm=ketama"
     - "--receive-forward-timeout=5m"
-  replicationFactor: 3
+  replicationFactor: 2
   replicaLabel: replica
   podManagementPolicy: Parallel
   minReadySeconds: 120

@@ -1008,7 +1008,7 @@ spec:
             - --tsdb.retention=8h
             - --receive.local-endpoint=$(NAME).thanos-receive-headless.$(NAMESPACE).svc.cluster.local:10901
             - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
-            - --receive.replication-factor=3
+            - --receive.replication-factor=2
             - --receive.hashrings-algorithm=ketama
             - --receive-forward-timeout=5m
           env:
