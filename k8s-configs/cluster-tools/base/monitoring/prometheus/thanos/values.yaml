@@ -43,7 +43,8 @@ receive:
         - "thanos-receive-2.thanos-receive-headless.prometheus.svc.cluster.local:10901"
   extraFlags:
     - "--receive.hashrings-algorithm=ketama"
-  replicationFactor: 2
+    - "--receive-forward-timeout=5m"
+  replicationFactor: 3
   replicaLabel: replica
   podManagementPolicy: Parallel
   resourcesPreset: "xlarge"
