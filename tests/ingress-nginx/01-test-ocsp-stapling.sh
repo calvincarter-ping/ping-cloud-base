@@ -28,7 +28,7 @@ oneTimeSetUp() {
 }
 
 testOCSPEnabled() {
-  local endpoint="$PINGCLOUD_METADATA_API"
+  local endpoint=$(echo "$PINGCLOUD_METADATA_API" | sed 's/https:\/\///')
   expected_output="OCSP Response Status: successful (0x0)"
   ocsp_response=$(openssl s_client -connect $endpoint:443 -status </dev/null 2>/dev/null \
     | grep "$expected_output" | sed 's/^[[:space:]]*//')
