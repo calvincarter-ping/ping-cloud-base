@@ -619,10 +619,10 @@ organize_code_for_csr() {
           find "${app_target_dir}" -type f -name "prod-values.yaml" -exec rm -f {} +
           ;;
         stage | prod | customer-hub)
-          # rename prod-values.yaml to values.yaml (overwriting values.yaml if it exists)
+          # merge prod-values.yaml to values.yaml (overwriting values.yaml if it exists)
           prod_values_files=$(find "${app_target_dir}" -type f -name "prod-values.yaml")
           for prod_values_file in ${prod_values_files}; do
-            yq -i ". *= load(\"${prod_values_file}\")" values.yaml
+            yq -i ". *= load(\"${prod_values_file}\")" "${prod_values_file//prod-/}"
             rm -f $prod_values_file
           done
           ;;
