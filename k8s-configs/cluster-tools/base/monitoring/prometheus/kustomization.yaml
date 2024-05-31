@@ -27,5 +27,7 @@ images:
 
 configMapGenerator:
   - name: prometheus-environment-variables
+    options:
+      disableNameSuffixHash: true
     envs:
       - env_vars
