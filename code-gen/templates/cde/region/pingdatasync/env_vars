@@ -5,9 +5,3 @@ SERVER_PROFILE_PATH=profiles/pingdatasync
 
 # PingDirectory pod name within P1AS where PingDataSync will sync with. Default pod is pingdirectory-0.
 P1AS_PD_POD_NAME=pingdirectory-0
-
-# Add auth cert(s) - space delimited if multiple - here to enable X.509-based authentication via SASL
-# More info here: https://confluence.pingidentity.com/display/proserv/Enabling+X.509+Authentication+with+PingDirectory
-# NOTE: do not put quotes around the value of this env var, they will be escaped and added as part of the var itself
-# Example: PD_X509_AUTH_CERTS=cert_one cert_two
-PING_DATA_SYNC_X509_AUTH_CERTS=
