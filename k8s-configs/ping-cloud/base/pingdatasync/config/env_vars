@@ -54,7 +54,6 @@ EXT_PD_HOST=example.com
 EXT_PD_LDAPS_PORT=443
 EXT_PD_LDAP_PORT=1389
 EXT_PD_HTTPS_PORT=1443
-EXT_PD_TRUST_MANAGER_PROVIDER=Blind Trust
 
 # P1AS PingDirectory server information
 P1AS_PD_POD_NAME=pingdirectory-0
