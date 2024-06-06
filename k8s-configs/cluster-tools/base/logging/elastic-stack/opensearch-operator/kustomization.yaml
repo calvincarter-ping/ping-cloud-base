@@ -15,6 +15,7 @@ resources:
 - opensearch-operator-metrics-reader-clusterrole.yaml
 - opensearch-operator-proxy-clusterrolebinding.yaml
 - opensearch-operator-proxy-clusterrole.yaml
+- customer-p1-app.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
