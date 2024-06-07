@@ -10,6 +10,7 @@ class TestP1EnvSetupAndTeardown(p1_test_base.P1TestBase):
         super().setUpClass()
         cls.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         cls.auth_policy_name = f"client-{cls.tenant_name}"
+        cls.external_idp_name = cls.tenant_name
 
     def test_population_exists(self):
         pop = self.get(self.cluster_env_endpoints.populations, self.population_name)
@@ -30,6 +31,10 @@ class TestP1EnvSetupAndTeardown(p1_test_base.P1TestBase):
                     any(action in a.get("type") for a in p1_auth_policy_actions),
                     f"Authentication policy '{self.auth_policy_name}' action '{action}' not added",
                 )
+
+    def test_external_idp_created(self):
+        p1_idp = self.get(self.cluster_env_endpoints.identity_providers, self.external_idp_name)
+        self.assertTrue(p1_idp, f"External IDP '{self.external_idp_name}' not created")
 
 
 if __name__ == "__main__":
