@@ -4,4 +4,8 @@ _Changes:_
 
 - [X] PDO-7238 Remove KMS Init Container from PingDirectory
 - [X] PDO-6661 Remove Cronjob / Job for PingDataSync
+<<<<<<< HEAD
 - [X] PDO-7548 Add 'source cluster' identifier to graphs legend for Volume Autoscaler dashboard 
+=======
+- [X] PDO-7528 Making Graviton as default for NON-GA environment, fix GA consistency across envs
+>>>>>>> de0eb4012 (update changelog)
