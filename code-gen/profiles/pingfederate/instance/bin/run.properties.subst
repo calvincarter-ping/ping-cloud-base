@@ -252,7 +252,7 @@ pf.cluster.node.index=
 # characters is enforced.
 # Keep 'pf.cluster.auth.pwd' empty as it will be replaced by P1AS automation by injecting the obfuscated variable of PF_CLUSTER_AUTH_PASSWORD
 pf.cluster.auth.pwd=
-pf.cluster.encrypt=false
+pf.cluster.encrypt=true
 
 # Specify the key size to use with the AES encryption algorithm that is used
 # when encrypting communication among the cluster. The key sizes allowed
