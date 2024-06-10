@@ -71,7 +71,7 @@ spec:
       "gnetId": null,
       "graphTooltip": 0,
       "id": null,
-      "iteration": 1624501789811,
+      "iteration": 1625070004605,
       "links": [
         {
           "icon": "external link",
@@ -126,7 +126,7 @@ spec:
             {
               "expr": "sum(sum_over_time(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment,pod,dbname,exported_role)",
               "instant": false,
-              "fixed_interval": "",
+              "interval": "",
               "legendFormat": "",
               "refId": "A"
             }
@@ -181,7 +181,7 @@ spec:
               "expr": "sum(sum_over_time(ccp_pg_stat_statements_total_exec_time_ms{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment,pod,dbname,exported_role)",
               "format": "time_series",
               "instant": false,
-              "fixed_interval": "",
+              "interval": "",
               "legendFormat": "",
               "refId": "A"
             }
@@ -238,7 +238,7 @@ spec:
               "expr": "avg(sum_over_time(ccp_pg_stat_statements_total_mean_exec_time_ms{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment,pod,dbname,exported_role)",
               "format": "time_series",
               "instant": false,
-              "fixed_interval": "",
+              "interval": "",
               "legendFormat": "",
               "refId": "A"
             }
@@ -295,7 +295,7 @@ spec:
               "expr": "sum(sum_over_time(ccp_pg_stat_statements_total_row_count{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment, pod,dbname,exported_role)",
               "format": "time_series",
               "instant": false,
-              "fixed_interval": "",
+              "interval": "",
               "legendFormat": "",
               "refId": "A"
             }
@@ -358,7 +358,7 @@ spec:
             {
               "expr": "sum(irate(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment, pod)",
               "instant": false,
-              "fixed_interval": "",
+              "interval": "",
               "legendFormat": "db: {{dbname}}, user: {{exported_role}}",
               "refId": "A"
             }
@@ -538,7 +538,7 @@ spec:
               "format": "table",
               "hide": false,
               "instant": true,
-              "fixed_interval": "",
+              "interval": "",
               "legendFormat": "",
               "refId": "B"
             }
@@ -714,7 +714,7 @@ spec:
               "format": "table",
               "hide": false,
               "instant": true,
-              "fixed_interval": "",
+              "interval": "",
               "legendFormat": "",
               "refId": "B"
             }
@@ -888,7 +888,7 @@ spec:
               "expr": "sum(irate(ccp_pg_stat_statements_top_total_exec_time_ms{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment,pod)",
               "format": "table",
               "instant": true,
-              "fixed_interval": "",
+              "interval": "",
               "legendFormat": "",
               "refId": "A"
             }
@@ -924,6 +924,116 @@ spec:
                 },
                 "renameByName": {
                   "Value": "Runtime"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": "prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "displayMode": "auto",
+                "filterable": false,
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "WAL Size"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "bytes"
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "auto"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 23,
+            "x": 0,
+            "y": 34
+          },
+          "id": 12,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "WAL Size"
+              }
+            ]
+          },
+          "pluginVersion": "8.5.15",
+          "targets": [
+            {
+              "datasource": "prometheus",
+              "expr": "ccp_pg_stat_statements_top_wal_bytes{pg_cluster=\"[[cluster]]\", dbname=~\"[[dbname]]\", role=\"[[role]]\"}",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Query Total WAL Genterated (Bytes)",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "exp_type": true,
+                  "job": true,
+                  "role": false
+                },
+                "indexByName": {
+                  "Time": 6,
+                  "Value": 5,
+                  "__name__": 7,
+                  "dbname": 0,
+                  "exp_type": 8,
+                  "instance": 2,
+                  "job": 9,
+                  "query": 3,
+                  "queryid": 4,
+                  "role": 1
+                },
+                "renameByName": {
+                  "Value": "WAL Size"
                 }
               }
             }
