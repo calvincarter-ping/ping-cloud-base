@@ -14,7 +14,7 @@ class TestP1EnvSetupAndTeardown(p1_test_base.P1TestBase):
 
     def test_population_exists(self):
         pop = self.get(self.cluster_env_endpoints.populations, self.population_name)
-        self.assertIsNotNone(pop)
+        self.assertTrue(pop)
 
     def test_authentication_policy_created(self):
         p1_auth_policy = self.get(self.cluster_env_endpoints.sign_on_policies, self.auth_policy_name)
