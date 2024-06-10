@@ -295,16 +295,6 @@ data:
   #        REMOTE_MONITORING: true
   #      labels:
   #        env: production
-  pingmetadata.yaml: |-
-    integrations:
-      - config:
-          apis:
-            - event_type: pingmetaDataOutputSample
-              jq: .version
-              url: http://metadata.ping-cloud:5000
-          name: pingmetadata
-        interval: 2m
-        name: nri-flex
 ---
 # Source: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/kubelet/scraper-configmap.yaml
 apiVersion: v1
