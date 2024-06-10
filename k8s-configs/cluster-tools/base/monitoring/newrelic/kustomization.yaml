@@ -33,7 +33,7 @@ patches:
       path: /metadata/annotations/helm.sh~1hook-delete-policy
   target:
     kind: ClusterRole
-    name: nri-bundle-nri-metadata-injection-admission
+    name: release-name-nri-metadata-injection-admission
 - patch: |
     - op: remove
       path: /metadata/annotations/helm.sh~1hook
@@ -41,7 +41,7 @@ patches:
       path: /metadata/annotations/helm.sh~1hook-delete-policy
   target:
     kind: ClusterRoleBinding
-    name: nri-bundle-nri-metadata-injection-admission
+    name: release-name-nri-metadata-injection-admission
 - patch: |
     - op: remove
       path: /metadata/annotations/helm.sh~1hook
@@ -49,7 +49,7 @@ patches:
       path: /metadata/annotations/helm.sh~1hook-delete-policy
   target:
     kind: Role
-    name: nri-bundle-nri-metadata-injection-admission
+    name: release-name-nri-metadata-injection-admission
 - patch: |
     - op: remove
       path: /metadata/annotations/helm.sh~1hook
@@ -57,7 +57,7 @@ patches:
       path: /metadata/annotations/helm.sh~1hook-delete-policy
   target:
     kind: RoleBinding
-    name: nri-bundle-nri-metadata-injection-admission
+    name: release-name-nri-metadata-injection-admission
 - patch: |
     - op: remove
       path: /metadata/annotations/helm.sh~1hook
@@ -65,7 +65,7 @@ patches:
       path: /metadata/annotations/helm.sh~1hook-delete-policy
   target:
     kind: Job
-    name: nri-bundle-nri-metadata-injection-admission-create
+    name: release-name-nri-metadata-injection-admission-create
 - patch: |
     - op: remove
       path: /metadata/annotations/helm.sh~1hook
@@ -73,7 +73,7 @@ patches:
       path: /metadata/annotations/helm.sh~1hook-delete-policy
   target:
     kind: Job
-    name: nri-bundle-nri-metadata-injection-admission-patch
+    name: release-name-nri-metadata-injection-admission-patch
 - patch: |
     - op: remove
       path: /metadata/annotations/helm.sh~1hook
@@ -81,7 +81,7 @@ patches:
       path: /metadata/annotations/helm.sh~1hook-delete-policy
   target:
     kind: ServiceAccount
-    name: nri-bundle-nri-metadata-injection-admission-patch
+    name: release-name-nri-metadata-injection-admission-patch
 - patch: |
     - op: remove
       path: /metadata/annotations/helm.sh~1hook
@@ -89,4 +89,4 @@ patches:
       path: /metadata/annotations/helm.sh~1hook-delete-policy
   target:
     kind: ServiceAccount
-    name: nri-bundle-nri-metadata-injection-admission
+    name: release-name-nri-metadata-injection-admission
