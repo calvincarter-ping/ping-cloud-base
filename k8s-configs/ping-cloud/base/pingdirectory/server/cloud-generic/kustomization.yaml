@@ -8,6 +8,7 @@ commonLabels:
   role: pingdirectory
 
 resources:
+- configmaps.yaml
 - storage.yaml
 - statefulset.yaml
 - service.yaml

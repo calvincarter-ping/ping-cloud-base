@@ -64,6 +64,7 @@ spec:
             cpu: 300m
             memory: 256Mi
         args:
+        - --events
         - --source=service
         - --source=ingress
         - --provider=aws
