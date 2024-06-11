@@ -791,6 +791,7 @@ spec:
               memory: 100Mi
       securityContext:
         fsGroup: 9999
+        runAsGroup: 0
       volumes:
         - name: ssh-dir
           emptyDir: {}
