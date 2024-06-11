@@ -128,7 +128,7 @@ spec:
         - mountPath: /opt/shared-dir
           name: shared-dir
       - image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/codecommit:0.0.1
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: download-profile
         env:
           - name: KEY_PATH
@@ -157,7 +157,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
       - image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/python-topology:0.0.1
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: topology-generation
         env:
         - name: POD_NAME
@@ -292,7 +292,7 @@ spec:
         - configMapRef:
             name: pingcommon-environment-variables
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/pd:10.0.0.2-alpine-example
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: pd-init
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
