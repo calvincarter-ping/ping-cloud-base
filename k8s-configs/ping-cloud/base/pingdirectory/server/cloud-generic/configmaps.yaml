@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pd-default-config
+  namespace: ping-cloud
+data:
+  LDAPS_PORT: "1636"
+  HTTPS_PORT: "8443"
+  LDAP_PORT: "1389"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pd-common-config
+  namespace: ping-cloud
+data:
+  ROOT_USER: administrator
+  ROOT_USER_DN: cn=administrator
+  HOOKS_DIR: "" # this should be removed after the reference is taken out of the profiles repos
+  PD_POD_LIMIT_INDEX: "1000"
+  PD_BASE_DN_LIMIT_INDEX: "20"
+  REPLICATION_BASE_DNS: "o=platformconfig;o=appintegrations"
+  LOCAL_DOMAIN_NAME: "pingdirectory.ping-cloud.svc.cluster.local"
+  ADMIN_PASSWORD_FILE: /usr/local/secrets/admin-user-password
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-config
+  namespace: ping-cloud
+data:
+  REGION_NICK_NAME: us-west-2
+  IS_MULTI_CLUSTER: "false"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pd-restart-strategy
+  namespace: ping-cloud
+data:
+  RESTART_STRATEGY: ''
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: topology-config
+  namespace: ping-cloud
+data:
+  SERVER_RUNTIME_DIR: /opt/pingidentity/runtime
+  REPL_PORT: "8989"
+
+---

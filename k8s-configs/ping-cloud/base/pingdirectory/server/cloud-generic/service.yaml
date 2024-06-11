@@ -6,11 +6,14 @@ kind: Service
 metadata:
   name: pingdirectory
   annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingdirectory-cluster.ping-demo.com
+    external-dns.alpha.kubernetes.io/ttl: "1m"
     prometheus.io/scrape: "true"
     prometheus.io/path: "/metrics"
     prometheus.io/port: "9102"
     newrelic.io/scrape: "true"
 spec:
+  publishNotReadyAddresses: true
   ports:
   - port: 1389
     name: ldap
