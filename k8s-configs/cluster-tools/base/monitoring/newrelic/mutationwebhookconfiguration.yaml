@@ -1,10 +1,11 @@
+---
 # Source: p1as-newrelic/charts/nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/mutatingWebhookConfiguration.yaml
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
-  name: release-name-nri-metadata-injection
+  name: nri-bundle-nri-metadata-injection
   labels:
-    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: nri-metadata-injection
     app.kubernetes.io/version: 1.27.2
@@ -13,7 +14,7 @@ webhooks:
   - name: metadata-injection.newrelic.com
     clientConfig:
       service:
-        name: release-name-nri-metadata-injection
+        name: nri-bundle-nri-metadata-injection
         namespace: newrelic
         path: "/mutate"
       caBundle: ""

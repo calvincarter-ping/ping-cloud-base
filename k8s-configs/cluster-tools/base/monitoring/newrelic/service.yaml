@@ -1,11 +1,12 @@
+---
 # Source: p1as-newrelic/charts/nri-bundle/charts/nri-metadata-injection/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: release-name-nri-metadata-injection
+  name: nri-bundle-nri-metadata-injection
   namespace: newrelic
   labels:
-    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: nri-metadata-injection
     app.kubernetes.io/version: 1.27.2
@@ -15,5 +16,5 @@ spec:
     - port: 443
       targetPort: 8443
   selector:
-    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
