@@ -1,57 +1,46 @@
-# This defines the deployment (as a stateful set) of the pingdirectory servers
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: pingdirectory
+  annotations:
+    downscaler/exclude: "true"
+    meta.helm.sh/release-name: p1as-pingdirectory
+    meta.helm.sh/release-namespace: ping-cloud
+  generation: 1
   labels:
+    app: ping-cloud
+    app.kubernetes.io/instance: geofflancaster-primary-us-west-2-dev
     class: pingdirectory-server
+    role: pingdirectory
+  name: pingdirectory
+  namespace: ping-cloud
 spec:
-  serviceName: pingdirectory
-  replicas: 3
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  podManagementPolicy: OrderedReady
+  replicas: 2
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
+      app: ping-cloud
       class: pingdirectory-server
-  updateStrategy:
-    type: RollingUpdate
-  podManagementPolicy: OrderedReady
+      role: pingdirectory
+  serviceName: pingdirectory
   template:
     metadata:
       annotations:
-        lastUpdateReason: "NA"
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/"
-        prometheus.io/port: "8080"
+        lastUpdateReason: NA
         newrelic.io/scrape: "true"
-      labels:
+        prometheus.io/path: /
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels: 
+        app: ping-cloud
         class: pingdirectory-server
         entitled-app: "true"
+        role: pingdirectory    
     spec:
-      serviceAccount: ping-serviceaccount
-      priorityClassName: high-priority-apps-to-avoid-pending-state
       affinity:
-        podAntiAffinity:
-          # Add a hard requirement for each PD pod to be deployed to a different node
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: role
-                    operator: In
-                    values:
-                      - pingdirectory
-              topologyKey: "kubernetes.io/hostname"
-          # Add a soft requirement for each PD pod to be deployed to a different AZ
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: role
-                      operator: In
-                      values:
-                        - pingdirectory
-                topologyKey: "topology.kubernetes.io/zone"
-        # this does not apply in dev/test and is removed via kustomize
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -511,17 +500,21 @@ spec:
           optional: true
           secretName: pingdirectory-truststore-certs
   volumeClaimTemplates:
-    - metadata:
-        name: out-dir
-        annotations:
-          volume.autoscaler.kubernetes.io/ignore: "true"
-        labels:
-          class: pingdirectory-server
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        storageClassName: pingdirectory-gp3
-        resources:
-          requests:
-            storage: 40Gi
-      
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      annotations:
+        volume.autoscaler.kubernetes.io/ignore: "true"
+      labels:
+        app: ping-cloud
+        class: pingdirectory-server
+        role: pingdirectory
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 40Gi
+      storageClassName: pingdirectory-gp3
+      volumeMode: Filesystem
