@@ -234,10 +234,6 @@ spec:
           value: "true"
         - name: TOPOLOGY_FILE_PATH
           value: /out/data/topology.json
-        - name: PING_IDENTITY_DEVOPS_USER
-          value: geofflancaster@pingidentity.com
-        - name: PING_IDENTITY_DEVOPS_KEY
-          value: a5e3de84-0864-4a2a-a9a2-bc071226fedb
         - name: ADS_CRT_FILE
           value: /usr/local/secrets/ads.crt
         - name: ADS_KEY_FILE
