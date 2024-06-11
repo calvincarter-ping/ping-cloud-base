@@ -1,5 +1,5 @@
 ---
-# Source: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/clusterrole.yaml
+# Sourcce: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
