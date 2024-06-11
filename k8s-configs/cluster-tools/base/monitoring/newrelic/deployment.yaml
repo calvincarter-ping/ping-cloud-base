@@ -1,41 +1,40 @@
----
 # Source: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/ksm/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: newrelic
   labels:
-    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/instance: release-name
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: newrelic-infrastructure
-    app.kubernetes.io/version: 3.17.0
-    helm.sh/chart: newrelic-infrastructure-3.22.0
+    app.kubernetes.io/version: 3.28.8
+    helm.sh/chart: newrelic-infrastructure-3.33.8
     mode: privileged
-  name: nri-bundle-nrk8s-ksm
+  name: release-name-nrk8s-ksm
 spec:
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/instance: nri-bundle
+      app.kubernetes.io/instance: release-name
       app.kubernetes.io/name: newrelic-infrastructure
       app.kubernetes.io/component: ksm
   template:
     metadata:
       annotations:
-        checksum/nri-kubernetes: 8e953ee663fd1219a01e13477f3948f9820842b6b42f22fc36a5b17b648e9d2b
-        checksum/agent-config: c8b017d1fba11a65690e4ce0deb076a0a7fe2c1dbc8767f31fa21fa1c93fbb21
+        checksum/nri-kubernetes: 13c13a18dd433921c4e18eb2721be10f2cca1e9b931eef31da7cc54b818e8721
+        checksum/agent-config: 0a561181f145171a88d34397d374f73b03b3030ba8f979f0b1fa9e837c2b7b7c
       labels:
-        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/instance: release-name
         app.kubernetes.io/name: newrelic-infrastructure
         mode: privileged
         app.kubernetes.io/component: ksm
     spec:
-      serviceAccountName: nri-bundle-newrelic-infrastructure
+      serviceAccountName: release-name-newrelic-infrastructure
       hostNetwork: false
       containers:
         - name: ksm
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.17.0"
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.28.8"
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -49,7 +48,6 @@ spec:
               value: test-cluster
             - name: "NRI_KUBERNETES_VERBOSE"
               value: "false"
-
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -66,7 +64,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.47.0"
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.52.3"
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -81,10 +79,8 @@ spec:
                 secretKeyRef:
                   name: newrelic-license-key
                   key: NEW_RELIC_LICENSE_KEY
-
             - name: "NRIA_DNS_HOSTNAME_RESOLUTION"
               value: "false"
-
             - name: "K8S_NODE_NAME"
               valueFrom:
                 fieldRef:
@@ -109,7 +105,7 @@ spec:
       volumes:
         - name: nri-kubernetes-config
           configMap:
-            name: nri-bundle-nrk8s-ksm
+            name: release-name-nrk8s-ksm
             items:
               - key: nri-kubernetes.yml
                 path: nri-kubernetes.yml
@@ -121,7 +117,7 @@ spec:
           emptyDir: {}
         - name: config
           configMap:
-            name: nri-bundle-nrk8s-agent-ksm
+            name: release-name-nrk8s-agent-ksm
             items:
               - key: newrelic-infra.yml
                 path: newrelic-infra.yml
@@ -139,19 +135,21 @@ spec:
           operator: Exists
         - effect: NoExecute
           operator: Exists
+      nodeSelector:
+        kubernetes.io/os: linux
 ---
 # Source: p1as-newrelic/charts/nri-bundle/charts/nri-kube-events/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nri-bundle-nri-kube-events
+  name: release-name-nri-kube-events
   namespace: newrelic
   labels:
-    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/instance: release-name
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: nri-kube-events
-    app.kubernetes.io/version: 2.2.2
-    helm.sh/chart: nri-kube-events-3.2.0
+    app.kubernetes.io/version: 2.9.8
+    helm.sh/chart: nri-kube-events-3.9.8
   annotations:
 spec:
   selector:
@@ -160,7 +158,7 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/instance: release-name
         app.kubernetes.io/name: nri-kube-events
     spec:
       securityContext:
@@ -168,7 +166,7 @@ spec:
         runAsUser: 1000
       containers:
         - name: kube-events
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kube-events:2.2.2
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kube-events:2.9.8
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -179,7 +177,7 @@ spec:
             - name: config-volume
               mountPath: /app/config
         - name: forwarder
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.43.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.52.3
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -193,13 +191,11 @@ spec:
                 secretKeyRef:
                   name: newrelic-license-key
                   key: NEW_RELIC_LICENSE_KEY
-
             - name: NRIA_OVERRIDE_HOSTNAME_SHORT
               valueFrom:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: spec.nodeName
-
           volumeMounts:
             - mountPath: /var/db/newrelic-infra/data
               name: tmpfs-data
@@ -210,37 +206,39 @@ spec:
             - name: config
               mountPath: /etc/newrelic-infra.yml
               subPath: newrelic-infra.yml
-      serviceAccountName: nri-bundle-nri-kube-events
+      serviceAccountName: release-name-nri-kube-events
       volumes:
         - name: config
           configMap:
-            name: nri-bundle-nri-kube-events-agent-config
+            name: release-name-nri-kube-events-agent-config
             items:
               - key: newrelic-infra.yml
                 path: newrelic-infra.yml
         - name: config-volume
           configMap:
-            name: nri-bundle-nri-kube-events-config
+            name: release-name-nri-kube-events-config
         - name: tmpfs-data
           emptyDir: {}
         - name: tmpfs-user-data
           emptyDir: {}
         - name: tmpfs-tmp
           emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
       hostNetwork: false
 ---
 # Source: p1as-newrelic/charts/nri-bundle/charts/nri-metadata-injection/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nri-bundle-nri-metadata-injection
+  name: release-name-nri-metadata-injection
   namespace: newrelic
   labels:
-    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/instance: release-name
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.15.0
-    helm.sh/chart: nri-metadata-injection-4.7.0
+    app.kubernetes.io/version: 1.27.2
+    helm.sh/chart: nri-metadata-injection-4.19.2
 spec:
   replicas: 1
   selector:
@@ -249,7 +247,7 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/instance: release-name
         app.kubernetes.io/name: nri-metadata-injection
     spec:
       securityContext:
@@ -259,7 +257,7 @@ spec:
       hostNetwork: false
       containers:
         - name: nri-metadata-injection
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-metadata-injection:1.15.0"
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-metadata-injection:1.27.2"
           imagePullPolicy: IfNotPresent
           env:
             - name: clusterName
@@ -277,7 +275,6 @@ spec:
             initialDelaySeconds: 1
             periodSeconds: 1
           resources:
-
             limits:
               memory: 80M
             requests:
@@ -286,4 +283,6 @@ spec:
       volumes:
         - name: tls-key-cert-pair
           secret:
-            secretName: nri-bundle-nri-metadata-injection-admission
+            secretName: release-name-nri-metadata-injection-admission
+      nodeSelector:
+        kubernetes.io/os: linux
