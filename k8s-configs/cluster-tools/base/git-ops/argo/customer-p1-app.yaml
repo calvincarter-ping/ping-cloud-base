@@ -3,6 +3,8 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: customer-p1-app
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
 type: Opaque
 data:
   CLIENT_ID: ""

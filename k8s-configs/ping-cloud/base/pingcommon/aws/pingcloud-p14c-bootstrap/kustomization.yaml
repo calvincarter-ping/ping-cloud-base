@@ -22,4 +22,3 @@ configMapGenerator:
 resources:
 - rbac.yaml
 - deployment.yaml
-- customer-p1-app.yaml
