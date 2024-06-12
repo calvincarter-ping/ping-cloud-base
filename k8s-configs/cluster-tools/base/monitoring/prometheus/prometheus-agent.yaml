@@ -14,6 +14,7 @@ spec:
   externalLabels:
     k8s_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}
     replica_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}
+    k8s_cluster_region: ${REGION_NICK_NAME}
   scrapeConfigSelector:
     matchLabels:
       prometheus: system-monitoring-prometheus
