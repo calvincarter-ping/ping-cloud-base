@@ -8,6 +8,7 @@
 - Update HPAs to prevent flapping on short bursting CPU loads
 - Commenting out existing PD refs, now pulling in p1as-pingdirectory helm chart
 - Support customer bringing their own certificate for their external server and adding it to PingDataSync truststore
+- De-duplicate prod-values.yaml
 
 _Changes:_
 
@@ -17,6 +18,7 @@ _Changes:_
 - [X] PDO-5900 Add p1as-pingdirectory code-gen directory to PCB
 - [X] PDO-6573 Support customer bringing their own certificate for their external server and adding it to PingDataSync truststore
 - [X] PDO-6877 Update HPAs to prevent flapping on short bursting CPU loads
+- [X] PDO-7469 De-duplicate prod-values.yaml
 
 ### 1.19.1.0
 
