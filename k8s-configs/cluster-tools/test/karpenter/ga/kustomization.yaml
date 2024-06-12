@@ -5,6 +5,30 @@ resources:
 - ../../../base/karpenter/
 
 
+# Adjust the volume size for instances that will be provisioned by Karpenter.
+patches:
+  - target:
+      kind: EC2NodeClass
+      name: default
+    patch: |-
+      - op: replace
+        path: /spec/blockDeviceMappings/0/ebs/volumeSize
+        value: '120Gi'
+  - target:
+      kind: EC2NodeClass
+      name: pd-only
+    patch: |-
+      - op: replace
+        path: /spec/blockDeviceMappings/0/ebs/volumeSize
+        value: '120Gi'
+  - target:
+      kind: EC2NodeClass
+      name: pgo-only
+    patch: |-
+      - op: replace
+        path: /spec/blockDeviceMappings/0/ebs/volumeSize
+        value: '120Gi'
+
 patchesStrategicMerge:
 - |-
   apiVersion: karpenter.sh/v1beta1
