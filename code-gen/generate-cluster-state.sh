@@ -1358,7 +1358,8 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     # Append patch to merge base and region env vars for ArgoCD in region kustomization.yaml
     export CHUB_REGION_KUST_FILE="${CHUB_TEMPLATES_DIR}/region/kustomization.yaml"
     yq eval -i '.configMapGenerator += (load(strenv(CHUB_REGION_KUST_FILE)).configMapGenerator[] | select(.name == "argocd-bootstrap"))' "${PRIMARY_PING_KUST_FILE}"
-
+    yq eval -i '.configMapGenerator += (load(strenv(CHUB_REGION_KUST_FILE)).configMapGenerator[] | select(.name == "p14c-environment-variables"))' "${PRIMARY_PING_KUST_FILE}"
+    
     # Keep ArgoCD in pingaccess-was-ingress by replacing the delete patches
     # shellcheck disable=SC2016
     if test "${ENV}" = "${CUSTOMER_HUB}"; then

@@ -3,6 +3,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: customer-p1-connection
+  namespace: argocd
   labels:
     role: customer-p1-connection
 spec:
@@ -30,7 +31,7 @@ spec:
                 fieldPath: metadata.namespace
         envFrom:
         - configMapRef:
-            name: argocd-bootstrap
+            name: p14c-environment-variables
         resources:
           requests:
             memory: "256Mi"

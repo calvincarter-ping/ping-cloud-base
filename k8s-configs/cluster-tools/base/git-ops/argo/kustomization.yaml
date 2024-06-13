@@ -22,6 +22,8 @@ configMapGenerator:
   - argocd-p1as-bootstrap-resources.yaml
   name: argocd-p1as-bootstrap-resources
 
+- name: p14c-environment-variables
+  namespace: argocd
 
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
 images:
