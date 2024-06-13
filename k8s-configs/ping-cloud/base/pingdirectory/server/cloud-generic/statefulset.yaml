@@ -322,7 +322,6 @@ spec:
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/pd:10.0.0.2-alpine-example
         imagePullPolicy: Always
         name: pd-init
-        resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
