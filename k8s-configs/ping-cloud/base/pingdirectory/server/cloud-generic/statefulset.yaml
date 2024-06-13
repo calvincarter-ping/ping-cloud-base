@@ -346,10 +346,6 @@ spec:
           runAsUser: 9031
       containers:
       - env:
-        - name: REGION
-          value: us-west-2
-        - name: PRIMARY_REGION
-          value: us-west-2
         - name: POD_NAME
           valueFrom:
             fieldRef:
