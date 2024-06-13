@@ -377,6 +377,16 @@ spec:
           successThreshold: 1
           timeoutSeconds: 5
           initialDelaySeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /available-state
+            port: 1443
+            scheme: HTTPS
+          failureThreshold: 3
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+          initialDelaySeconds: 5
         name: pingdirectory
         ports:
         - containerPort: 1389
@@ -391,16 +401,6 @@ spec:
         - containerPort: 8989
           name: repl
           protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /available-state
-            port: 1443
-            scheme: HTTPS
-          failureThreshold: 3
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 5
-          initialDelaySeconds: 5
         resources:
           limits:
             cpu: "3"
