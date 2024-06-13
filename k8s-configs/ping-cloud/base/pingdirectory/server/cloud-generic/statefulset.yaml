@@ -99,23 +99,6 @@ spec:
         - mountPath: /wait-for-services.sh
           name: pingdirectory-init
           subPath: wait-for-services.sh
-      - command:
-        - /get_ssm_env_vars.sh
-        envFrom:
-        - configMapRef:
-            name: pingdirectory-environment-variables
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.15.36
-        imagePullPolicy: IfNotPresent
-        name: pingdirectory-discovery-service
-        resources: {}
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        volumeMounts:
-        - mountPath: /config
-          name: data-dir
-        - mountPath: /get_ssm_env_vars.sh
-          name: discovery-service
-          subPath: get_ssm_env_vars.sh
       - name: newrelic-tags-exporter
         env:
         - name: NEW_RELIC_APP_NAME
@@ -527,10 +510,6 @@ spec:
           defaultMode: 256
           optional: true
           secretName: pingdirectory-truststore-certs
-      - configMap:
-          defaultMode: 365
-          name: pingcommon-init
-        name: discovery-service    
   volumeClaimTemplates:
     - metadata:
         name: out-dir
