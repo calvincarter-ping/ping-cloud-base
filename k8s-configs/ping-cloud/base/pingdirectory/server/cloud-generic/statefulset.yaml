@@ -346,8 +346,6 @@ spec:
           runAsUser: 9031
       containers:
       - env:
-        - name: MAX_HEAP_SIZE
-          value: 3g
         - name: REGION
           value: us-west-2
         - name: PRIMARY_REGION
