@@ -159,8 +159,8 @@ set_customer_p1_connection_job_suspension() {
   for job_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "customer-p1-connection.yaml"); do
     local customer_p1_enabled_lc
     customer_p1_enabled_lc=$(echo "${CUSTOMER_PINGONE_ENABLED}" | tr '[:upper:]' '[:lower:]')
-    log "Setting customer-p1-connection job suspension value in ${job_file}"
     if [[ "${customer_p1_enabled_lc}" == "true" ]]; then
+      log "Setting customer-p1-connection job suspension value in ${job_file}"
       sed -i.bak 's/suspend: true/suspend: false/g' "${job_file}"
       rm -f "${job_file}".bak
     fi
