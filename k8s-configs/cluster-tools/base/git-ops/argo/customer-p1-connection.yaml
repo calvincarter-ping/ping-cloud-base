@@ -7,6 +7,8 @@ metadata:
   labels:
     role: customer-p1-connection
 spec:
+  # Job is suspended by default, as the job depends on a customer's PingOne being configured before running.
+  # After customer-p1-app secret values are set with values from customer, change value to 'false' to run job.
   suspend: true
   template:
     metadata:
