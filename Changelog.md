@@ -8,3 +8,4 @@ _Changes:_
 - [X] PDO-7456 Upgrade Karpenter to 0.37.0
 - [X] PDO-7528 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - [X] PDO-7548 Add 'source cluster' identifier to graphs legend for Volume Autoscaler dashboard 
+- [X] PDO-6332 : Remove all thread count limits from PingDirectory
