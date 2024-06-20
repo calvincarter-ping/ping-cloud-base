@@ -16,4 +16,3 @@ spec:
               cpu: "750m"  # 0.75 Cores
               memory: "3Gi"
 
-
