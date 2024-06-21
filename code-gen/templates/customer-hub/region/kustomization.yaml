@@ -42,6 +42,9 @@ patchesStrategicMerge:
 - ../base/cluster-tools/monitoring/remove-chub-dashboards.yaml
 - ../base/cluster-tools/logging/remove-chub-dashboards.yaml
 
+### Cost saving measures
+- ../base/cluster-tools/logging/chub-pingaccess-was-scaledown-patch.yaml
+- ../base/cluster-tools/logging/chub-public-ingress-scaledown-patch.yaml
 ### Remove opensearch from chub
 - ../base/cluster-tools/logging/disable-opensearch-base-patch.yaml
 #- ../base/cluster-tools/logging/disable-opensearch-primary-region-patch.yaml

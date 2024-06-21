@@ -38,3 +38,5 @@ spec:
       initContainers:
       - name: wait-for-bootstrap-completed
         $patch: delete
+
+---
