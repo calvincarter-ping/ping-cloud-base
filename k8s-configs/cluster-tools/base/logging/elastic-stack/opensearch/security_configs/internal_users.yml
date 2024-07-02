@@ -1,1 +1,12 @@
-# ping-cloud-docker/pingcloud-services/p14c-integration/src/templates/opensearch/internal_users.yml
+# Define your internal users here that require the same password across primary and child clusters
+# Dynamically generated passwords are generated in ping-cloud-docker/pingcloud-services/p14c-integration/src/templates/opensearch/internal_users.yml
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+logstash:
+  hash: "$2y$12$eTCIRWius.Lix5/5zwJwHOJCqILQmaWDRx6fn3IDR54K59snwlURa"
+  reserved: true
+  backend_roles:
+  - "logstash"
+  description: "Logstash user"
