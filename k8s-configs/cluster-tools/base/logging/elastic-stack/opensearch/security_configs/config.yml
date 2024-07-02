@@ -1,1 +1,19 @@
-# ping-cloud-docker/pingcloud-services/p14c-integration/src/templates/opensearch/config.yml
+# OIDC configuration is configured in ping-cloud-docker/pingcloud-services/p14c-integration/src/templates/opensearch/config.yml
+_meta:
+  type: "config"
+  config_version: 2
+config:
+  dynamic:
+    authc:
+      # OpenSearch Dashboards requires that the internal OpenSearch Dashboards server user can authenticate through
+      # HTTP basic authentication.
+      basic_internal_auth_domain:
+        description: "Authenticate via HTTP Basic against internal users database"
+        http_enabled: true
+        transport_enabled: true
+        order: 0
+        http_authenticator:
+          type: basic
+          challenge: false
+        authentication_backend:
+          type: intern
