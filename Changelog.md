@@ -11,6 +11,7 @@ _Changes:_
 - [X] PDO-7434 Update Logstash HPA
 - [X] PDO-7456 Upgrade Karpenter to 0.37.0
 - [X] PDO-7461 Updated Prometheus CPU and memory limits
+- [X] PDO-7519 Revert deletion of Opensearch logstash user
 - [X] PDO-7528 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - [X] PDO-7530 Implement permanent reduction of OS resources in 1.19.1
 - [X] PDO-7548 Add 'source cluster' identifier to graphs legend for Volume Autoscaler dashboard 
