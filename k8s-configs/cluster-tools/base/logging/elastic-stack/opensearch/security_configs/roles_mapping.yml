@@ -1,1 +1,15 @@
-# ping-cloud-docker/pingcloud-services/p14c-integration/src/templates/opensearch/roles_mapping.yml
+# Define your roles mapping here for internal users that require the same password across primary and child clusters
+# All other roles are generated in ping-cloud-docker/pingcloud-services/p14c-integration/src/templates/opensearch/roles_mapping.yml
+_meta:
+  type: "rolesmapping"
+  config_version: 2
+
+logstash:
+  reserved: false
+  backend_roles:
+  - "logstash"
+
+logstash_write:
+  reserved: false
+  backend_roles:
+  - "logstash"
