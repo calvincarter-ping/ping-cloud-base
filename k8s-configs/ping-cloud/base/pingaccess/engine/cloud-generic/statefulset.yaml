@@ -256,11 +256,6 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
-      - name: topology-descriptor
-        configMap:
-          name: topology-descriptor
-          optional: true
-          defaultMode: 0644
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret
