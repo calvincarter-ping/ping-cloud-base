@@ -107,17 +107,17 @@
         <Set name="sameSiteExcludedUserAgentPatterns">
             <Array type="java.lang.String">
                 <!-- User Agents based on https://www.chromium.org/updates/same-site/incompatible-clients -->
-                <!-- MacOS 10.14 and all browsers on iOS12 -->
+                <!-- Safari 12 on MacOS [10.12 to 10.14] and all browsers on iOS12 -->
                 <Item>\(iP.+; CPU .*OS 12[_\d]*.*\) AppleWebKit\/</Item>
-                <Item>^.*Macintosh;.*Mac OS X 10_14.*Version.*Safari.*$</Item>
+                <Item>^.*Macintosh;.*Mac OS X 10_(\d+)[\d]*.*Version\/12.*Safari.*$</Item>
                 <!-- Chrome 51-66 -->
                 <Item>(Chromium|Chrome)\/(5[1-9]|6[0-6])\.(\d+)(?:\.(\d+)|)(?:\.(\d+)|)</Item>
                 <!-- UC browser on Android prior to 13-->
                 <Item>UCBrowser\/[0-9][0-1]?.(\d+)\.(\d+)[\.\d]*</Item>
                 <Item>UCBrowser\/12.[0-9][0-2]?.(\d+)[\.\d]*</Item>
                 <Item>UCBrowser\/12.13.[0-2][\.\d]*</Item>
-                <!-- Embedded Apple Webkit Browsers on MacOS 10.14 -->
-                <Item>\(Macintosh;.*Mac OS X 10_14[_\d]*.*\) AppleWebKit\/[\.\d]+ \(KHTML, like Gecko\)$</Item>
+                <!-- Embedded Apple Webkit Browser Safari 12 on MacOS [10.12 to 10.14] -->
+                <Item>\(Macintosh;.*Mac OS X 10_(\d+)[\d]*.*\) AppleWebKit\/60[6-7][\.\d]+ \(KHTML, like Gecko\)$</Item>
                 <!-- Box Client on MacOS 10.14 -->
                 <Item>Box.*\/.+Darwin\/10.14</Item>
                 <!-- Palo Alto Networks VPN Client on MacOS 10.14 -->
@@ -253,7 +253,7 @@
                         <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler">
                             <Set name="requestLog">
                                 <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
-                                    <Set name="filename"><SystemProperty name="pf.log.dir" default="."/>/request2.log</Set>
+                                    <Set name="filename"><SystemProperty name="pf.log.dir" default="."/>/yyyy_mm_dd.request2.log</Set>
                                     <Set name="filenameDateFormat">yyyy_MM_dd</Set>
                                     <Set name="retainDays">90</Set>
                                     <Set name="append">true</Set>
