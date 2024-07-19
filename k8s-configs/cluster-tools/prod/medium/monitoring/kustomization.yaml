@@ -4,6 +4,16 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ../../../base/monitoring/
 
-patchesStrategicMerge:
-- grafana/grafana-limits.yaml
-- prometheus/prometheus-limits.yaml
+patchesJson6902:
+- path: grafana/grafana-limits.json
+  target:
+    group: grafana.integreatly.org
+    version: v1beta1
+    kind: Grafana
+    name: grafana
+- path: prometheus/prometheus-limits.json
+  target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: prometheus
