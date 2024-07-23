@@ -16,13 +16,6 @@ spec:
       containers:
       - name: pingdataconsole
         image: pingidentity/pingdataconsole:2406-10.0.0.2
-        resources:
-          requests:
-            memory: 512Mi
-            cpu: 300m
-          limits:
-            memory: 1024Mi
-            cpu: 300m
         ports:
         - containerPort: 8080
           name: http
