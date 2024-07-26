@@ -317,4 +317,5 @@ customer_role:
   - tenant_patterns:
     - "customer"
     allowed_actions:
+    - "kibana_all_read"
     - "kibana_all_write"
