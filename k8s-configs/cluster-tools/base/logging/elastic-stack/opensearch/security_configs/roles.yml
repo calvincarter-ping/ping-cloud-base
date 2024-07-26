@@ -303,6 +303,7 @@ customer_role:
   cluster_permissions:
   - "kibana_all_read" # action group
   - "cluster:admin/opensearch/notifications/*" # direct permissions attach
+  - "cluster_composite_ops_ro" # Allow read-only operations on the cluster
   index_permissions:
   - index_patterns:
     - "*"
