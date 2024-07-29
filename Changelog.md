@@ -16,6 +16,7 @@
 - Updating memory limits for thanos-storegateway
 - Updating Fluent-bit legacy configuration
 - Increase ephemeral storage for thanos compactor
+- Updating Fluentbit legacy configuration
 
 _Changes:_
 
