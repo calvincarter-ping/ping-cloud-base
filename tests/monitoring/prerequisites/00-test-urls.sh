@@ -43,6 +43,12 @@ removeWebsession() {
   app_config=$(curl -k -s -u "Administrator:${ADMIN_PASS}" -H 'X-Xsrf-Header: PingAccess' \
                 "${PINGACCESS_WAS_API}/applications/${app_id}")
 
+  if ! jq -n "${app_config}" | jq '.webSessionId'; then
+    log "Failed to get the app config"
+    log "app_config: ${app_config}"
+    return 1
+  fi
+
   # Remove websession from app config
   app_config=$(jq -n "${app_config}" | jq '.webSessionId = 0')
 
