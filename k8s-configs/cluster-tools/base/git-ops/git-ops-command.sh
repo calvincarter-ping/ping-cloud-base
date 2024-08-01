@@ -8,6 +8,16 @@
 LOG_FILE=/tmp/git-ops-command.log
 
 ########################################################################################################################
+# Converts the provided string to lowercase.
+#
+# Arguments
+#   $1 -> The string to convert to lowercase.
+########################################################################################################################
+lowercase() {
+  echo "$1" | tr '[:upper:]' '[:lower:]'
+}
+
+########################################################################################################################
 # Add the provided message to LOG_FILE.
 #
 # Arguments
@@ -15,7 +25,7 @@ LOG_FILE=/tmp/git-ops-command.log
 ########################################################################################################################
 log() {
   msg="$1"
-  if [[ "${DEBUG}" == "true" ]]; then
+  if [[ $(lowercase "${DEBUG}") == "true" ]]; then
     echo "git-ops-command: ${msg}"
   else
     echo "git-ops-command: ${msg}" >> "${LOG_FILE}"
@@ -140,7 +150,7 @@ feature_flags() {
     log "${search_term} is set to ${enabled}"
 
     # If the feature flag is disabled, comment the search term lines out of the kustomization files
-    if [[ ${enabled} != "true" ]]; then
+    if [[ $(lowercase "${enabled}") != "true" ]]; then
       for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
         comment_lines_in_file "${kust_file}" "${search_term}"
       done
@@ -191,12 +201,12 @@ toggle_customer_p1_connection_job() {
   cd "${TMP_DIR}"
   local search_term='disable-customer-p1-connection-patch.yaml'
   local base_env_vars_file
-  local customer_p1_enabled_lc
+  local customer_p1_enabled
   base_env_vars_file=$(find "${TMP_DIR}/base" -maxdepth 1 -name "env_vars")
-  customer_p1_enabled_lc=$(get_env_var_value "${base_env_vars_file}" CUSTOMER_PINGONE_ENABLED | tr '[:upper:]' '[:lower:]')
+  customer_p1_enabled=$(get_env_var_value "${base_env_vars_file}" CUSTOMER_PINGONE_ENABLED)
 
   for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-    if [[ "${customer_p1_enabled_lc}" == "true" ]]; then
+    if [[ $(lowercase "${customer_p1_enabled}") == "true" ]]; then
       comment_lines_in_file "${kust_file}" "${search_term}"
     else
       uncomment_lines_in_file "${kust_file}" "${search_term}"
@@ -254,7 +264,7 @@ trap on_terminate SIGTERM
 TARGET_DIR="${1:-.}"
 cd "${TARGET_DIR}" >/dev/null 2>&1
 
-if [[ "${DEBUG}" != "true" ]]; then
+if [[ $(lowercase "${DEBUG}") != "true" ]]; then
   # Trap all exit codes from here on so cleanup is run
   trap "cleanup" EXIT
 fi
@@ -267,7 +277,7 @@ TARGET_DIR_SHORT="$(basename "${TARGET_DIR_FULL}")"
 BASE_DIR='../base'
 
 # Perform substitution and build in a temporary directory
-if [[ ${DEBUG} == "true" ]]; then
+if [[ $(lowercase "${DEBUG}") == "true" ]]; then
   TMP_DIR="/tmp/git-ops-scratch-space"
   rm -rf "${TMP_DIR}"
   mkdir -p "${TMP_DIR}"
@@ -306,7 +316,7 @@ if test -f 'env_vars'; then
     PCB_TMP="${TMP_DIR}/${K8S_GIT_BRANCH}"
 
     # Try to copy a local repo to improve testing flow
-    if [[ "${LOCAL}" == "true" ]]; then
+    if [[ $(lowercase "${LOCAL}") == "true" ]]; then
       if [[ -z "${PCB_PATH}" ]]; then
         log "ERROR: running in local mode, please provide a PCB_PATH. Exiting."
         exit 1
@@ -363,7 +373,7 @@ fi
 toggle_customer_p1_connection_job
 
 # Build the uber deploy yaml
-if [[ ${DEBUG} == "true" ]]; then
+if [[ $(lowercase "${DEBUG}") == "true" ]]; then
   log "DEBUG - generating uber yaml file from '${BUILD_DIR}' to /tmp/uber-debug.yaml"
   kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" --output /tmp/uber-debug.yaml
 # Output the yaml to stdout for Argo when operating normally
