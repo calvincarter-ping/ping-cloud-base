@@ -56,9 +56,6 @@ patchesStrategicMerge:
 - ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
 - ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
 
-### Customer PingOne connection is disabled by default. Automatically toggled by git-ops-command.sh based on
-### CUSTOMER_PINGONE_ENABLED value in base/env_vars.
-- ../base/cluster-tools/git-ops/disable-customer-p1-connection-patch.yaml
 
 configMapGenerator:
 

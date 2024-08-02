@@ -62,20 +62,6 @@ substitute_vars() {
 }
 
 ########################################################################################################################
-# Get the value for an environment variable from an env_vars file.
-#
-# Arguments
-#   $1 -> The env_vars file containing the environment variable.
-#   $2 -> The env_var name to get the value for.
-########################################################################################################################
-get_env_var_value() {
-  local env_file="$1"
-  local env_var_name="$2"
-
-  grep -E "^${env_var_name}=" "${env_file}" | cut -d= -f2
-}
-
-########################################################################################################################
 # Comments out lines in a file containing a search term.
 #
 # Arguments
@@ -142,21 +128,26 @@ feature_flags() {
   cd "${1}/k8s-configs"
 
   # Map with the feature flag environment variable & the term to search to find the kustomization files
-  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy"
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy
+            ${CUSTOMER_PINGONE_ENABLED}:customer-p1-connection.yaml"
 
   for flag in $flag_map; do
     enabled="${flag%%:*}"
     search_term="${flag##*:}"
     log "${search_term} is set to ${enabled}"
 
-    # If the feature flag is disabled, comment the search term lines out of the kustomization files
-    if [[ $(lowercase "${enabled}") != "true" ]]; then
-      for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
+    # When feature flag is enabled, uncomment the search term to include the resources in the kustomization files
+    # When feature flag is disabled, comment the search term to exclude the resources in the kustomization files
+    for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
+      if [[ $(lowercase "${enabled}") == "true" ]]; then
+        uncomment_lines_in_file "${kust_file}" "${search_term}"
+      else
         comment_lines_in_file "${kust_file}" "${search_term}"
-      done
-    fi
+      fi
+    done
   done
 }
+
 ########################################################################################################################
 # Comments the remove external ingress patch for ping apps from k8s-configs kustomization.yaml files.
 # Hence the apps which are part of list in EXTERNAL_INGRESS_ENABLED will have external ingress enabled.
@@ -192,26 +183,6 @@ disable_os_operator_crds() {
   for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
       comment_lines_in_file "${kust_file}" "${search_term}"
     done
-}
-
-########################################################################################################################
-# Toggles enabling/disabling the customer-p1-connection job
-########################################################################################################################
-toggle_customer_p1_connection_job() {
-  cd "${TMP_DIR}"
-  local search_term='disable-customer-p1-connection-patch.yaml'
-  local base_env_vars_file
-  local customer_p1_enabled
-  base_env_vars_file=$(find "${TMP_DIR}/base" -maxdepth 1 -name "env_vars")
-  customer_p1_enabled=$(get_env_var_value "${base_env_vars_file}" CUSTOMER_PINGONE_ENABLED)
-
-  for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-    if [[ $(lowercase "${customer_p1_enabled}") == "true" ]]; then
-      comment_lines_in_file "${kust_file}" "${search_term}"
-    else
-      uncomment_lines_in_file "${kust_file}" "${search_term}"
-    fi
-  done
 }
 
 ########################################################################################################################
@@ -369,8 +340,6 @@ if ! command -v argocd &> /dev/null ; then
   disable_grafana_crds
   disable_os_operator_crds
 fi
-
-toggle_customer_p1_connection_job
 
 # Build the uber deploy yaml
 if [[ $(lowercase "${DEBUG}") == "true" ]]; then
