@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.1.0
+
+- Update PingDirectory resource limits
+
+_Changes:_
+
+- [X] PDO-7616 Update PingDirectory resource limits
+
 ### 2.0.0
 
 - Update seal-secret-values.py script to seal with namespace only. Update secret structure
