@@ -553,6 +553,10 @@ metadata:
     app.kubernetes.io/version: 0.35.0
     helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: compactor
+  annotations:
+    prometheus.io/path: "/"                                                                                                                                                                                                │
+    prometheus.io/port: "8080"                                                                                                                                                                                             │
+    prometheus.io/scrape: "true"
 spec:
   replicas: 1
   revisionHistoryLimit: 10
@@ -728,7 +732,7 @@ spec:
         sysctls: []
       containers:
         - name: query-frontend
-          image: docker.io/bitnami/thanos:0.35.0-debian-12-r4
+          image: quay.io/thanos/thanos:v0.35.1
           imagePullPolicy: "IfNotPresent"
           securityContext:
             allowPrivilegeEscalation: false
@@ -776,7 +780,7 @@ spec:
           resources:
             limits:
               cpu: "1.5"
-              ephemeral-storage: 1024Mi
+              ephemeral-storage: 16Gi
               memory: 3072Mi
             requests:
               cpu: "1.0"
