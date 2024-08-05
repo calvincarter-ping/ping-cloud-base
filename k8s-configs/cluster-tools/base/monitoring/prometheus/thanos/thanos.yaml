@@ -555,7 +555,7 @@ metadata:
     app.kubernetes.io/component: compactor
   annotations:
     prometheus.io/path: "/"                                                                                                                                                                                                │
-    prometheus.io/port: "8080"                                                                                                                                                                                             │
+    prometheus.io/port: 8080                                                                                                                                                                                             │
     prometheus.io/scrape: "true"
 spec:
   replicas: 1
@@ -602,7 +602,7 @@ spec:
         sysctls: []
       containers:
         - name: compactor
-          image: docker.io/bitnami/thanos:0.35.0-debian-12-r4
+          image: quay.io/thanos/thanos:v0.35.1
           imagePullPolicy: "IfNotPresent"
           securityContext:
             allowPrivilegeEscalation: false
@@ -732,7 +732,7 @@ spec:
         sysctls: []
       containers:
         - name: query-frontend
-          image: quay.io/thanos/thanos:v0.35.1
+          image: docker.io/bitnami/thanos:0.35.0-debian-12-r4
           imagePullPolicy: "IfNotPresent"
           securityContext:
             allowPrivilegeEscalation: false
@@ -780,7 +780,7 @@ spec:
           resources:
             limits:
               cpu: "1.5"
-              ephemeral-storage: 16Gi
+              ephemeral-storage: 1024Mi
               memory: 3072Mi
             requests:
               cpu: "1.0"
