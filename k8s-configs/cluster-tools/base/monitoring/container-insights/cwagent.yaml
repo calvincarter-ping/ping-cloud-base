@@ -70,14 +70,42 @@ data:
       },
       "logs": {
         "metrics_collected": {
-          "kubernetes": {
-            "cluster_name": "cluster_name",
-            "metrics_collection_interval": 60
-          }
-        },
+            "prometheus": {
+              "cluster_name": "cluster_name",
+              "log_group_name": "/aws/containerinsights/cluster_name/performance",
+              "prometheus_config_path": "/etc/prometheusconfig/prometheus.yaml",
+              "emf_processor": {
+                "metric_declaration_dedup": true,
+                "metric_declaration": [
+                  {
+                    "source_labels": ["job"],
+                    "label_matcher": "kube-state-metrics"
+                  }
+                ]
+              }
+            }
+          },
         "force_flush_interval": 5
       }
     }
+  prometheus.yaml: |-
+    global:
+      scrape_interval: 15s
+      scrape_timeout: 5s
+    scrape_configs:
+    - job_name: 'cw-scrape'
+      static_configs:
+        - targets:
+          - "kube-state-metrics.kube-system.svc.cluster.local:8080"
+      metric_relabel_configs:
+        - source_labels: [ __name__ ]
+          regex: "kube_node_status_condition|kube_endpoint_address_available"
+          action: keep
+        - regex: "instance|job"
+          action: labeldrop
+        - source_labels: [__name__,condition,status]
+          regex: kube_node_status_condition;Ready;true
+          action: drop
 kind: ConfigMap
 metadata:
   name: cwagentconfig
@@ -85,13 +113,14 @@ metadata:
 
 ---
 
-# deploy cwagent as daemonset
+# deploy cwagent as deployment
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: cloudwatch-agent
   namespace: amazon-cloudwatch
 spec:
+  replicas: 1
   selector:
     matchLabels:
       name: cloudwatch-agent
@@ -134,6 +163,8 @@ spec:
           volumeMounts:
             - name: cwagentconfig
               mountPath: /etc/cwagentconfig
+            - mountPath: /etc/prometheusconfig
+              name: cwagentconfig
             - name: rootfs
               mountPath: /rootfs
               readOnly: true
