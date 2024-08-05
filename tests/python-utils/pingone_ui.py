@@ -66,18 +66,19 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         self.addCleanup(self.browser.quit)
 
     @classmethod
-    def create_pingone_user(cls, role_attribute_name: str, role_attribute_values: list):
+    def create_pingone_user(cls, role_attribute_name: str, role_attribute_values: list = [], population_id: str = None):
         """
         Get population ID for dev/cicd
         Create a user in population
         Add role to user
         """
 
-        population_id = p1_utils.get_population_id(
-            token_session=cls.p1_session,
-            endpoints=cls.p1_environment_endpoints,
-            name=cls.tenant_name,
-        )
+        if not population_id:
+            population_id = p1_utils.get_population_id(
+                token_session=cls.p1_session,
+                endpoints=cls.p1_environment_endpoints,
+                name=cls.tenant_name,
+            )
 
         user_payload = {
             "email": "do-not-reply@pingidentity.com",
@@ -102,6 +103,28 @@ class ConsoleUILoginTestBase(unittest.TestCase):
             role_name="Identity Data Read Only",
             environment_id=ENV_ID,
         )
+    
+    @classmethod
+    def update_pingone_user(cls, role_attribute_name: str, role_attribute_values: list = [], population_id: str = None):
+        """
+        Update a user in population
+        """
+
+        user_payload = {
+            "email": "do-not-reply@pingidentity.com",
+            "name": {"given": cls.username, "family": "User"},
+            "population": {"id": population_id},
+            "username": cls.username,
+            "password": {"value": cls.password, "forceChange": "false"},
+            role_attribute_name: role_attribute_values,
+        }
+
+        p1_utils.update_user(
+            token_session=cls.p1_session,
+            endpoints=cls.p1_environment_endpoints,
+            name=cls.username,
+            payload=user_payload,
+        )
 
     @classmethod
     def delete_pingone_user(cls):
@@ -123,6 +146,14 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         # Wait for post-login screen
         self.browser.implicitly_wait(10)
         self.close_popup()
+
+    def pingone_logout(self):
+        self.browser.get(ENV_UI_URL)
+        # Wait for initial page load
+        self.browser.implicitly_wait(10)
+        self.browser.find_element(By.CLASS_NAME, "login-logout-button")[0].click()
+        # Wait for login screen
+        self.browser.implicitly_wait(10)
 
     def close_popup(self):
         try:
