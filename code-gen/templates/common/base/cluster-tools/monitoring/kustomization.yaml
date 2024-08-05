@@ -200,6 +200,7 @@ patchesStrategicMerge:
       http_server_enabled: true
       enable_process_metrics: true
       http_server_port: 8003
+
 - |-
   apiVersion: apps/v1
   kind: DaemonSet
@@ -344,6 +345,23 @@ patchesStrategicMerge:
         region: "${REGION_NICK_NAME}"
         aws_sdk_auth: True
       prefix: "${CLUSTER_NAME}-${TENANT_NAME}"
+
+- |-
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: thanos-storegateway
+    namespace: prometheus
+  spec:
+    template:
+      spec:
+        containers:
+        - name: storegateway
+          resources:
+            limits:
+              memory: "8Gi"
+            requests:
+              memory: "3Gi"
 
 patchesJson6902:
 
