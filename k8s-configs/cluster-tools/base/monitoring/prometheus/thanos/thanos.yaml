@@ -616,7 +616,7 @@ spec:
               drop:
               - ALL
             privileged: false
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
             runAsGroup: 1001
             runAsNonRoot: true
             runAsUser: 1001
