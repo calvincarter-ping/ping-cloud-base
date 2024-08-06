@@ -625,7 +625,7 @@ spec:
             - --data-dir=/data
             - --retention.resolution-raw=1d
             - --retention.resolution-5m=1d
-            - --retention.resolutiaon-1h=1d
+            - --retention.resolution-1h=1d
             - --consistency-delay=30m
             - --objstore.config-file=/conf/objstore.yml
             - --delete-delay=0
