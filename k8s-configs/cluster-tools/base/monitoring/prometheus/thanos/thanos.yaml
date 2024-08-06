@@ -624,8 +624,8 @@ spec:
             - --http-address=0.0.0.0:10902
             - --data-dir=/data
             - --retention.resolution-raw=2d
-            - --retention.resolution-5m=2d
-            - --retention.resolution-1h=2d
+            - --retention.resolution-5m=10d
+            - --retention.resolution-1h=10d
             - --consistency-delay=30m
             - --objstore.config-file=/conf/objstore.yml
             - --delete-delay=0
