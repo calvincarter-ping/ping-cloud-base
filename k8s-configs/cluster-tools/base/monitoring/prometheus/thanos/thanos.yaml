@@ -733,6 +733,13 @@ spec:
         fsGroupChangePolicy: Always
         supplementalGroups: []
         sysctls: []
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        privileged: false
+        readOnlyRootFilesystem: false
+        runAsNonRoot: true
       containers:
         - name: query-frontend
           image: docker.io/bitnami/thanos:0.35.0-debian-12-r4
