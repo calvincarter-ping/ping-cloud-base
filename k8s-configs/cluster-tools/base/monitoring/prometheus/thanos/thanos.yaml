@@ -627,6 +627,8 @@ spec:
             - --retention.resolution-5m=10d
             - --retention.resolution-1h=10d
             - --consistency-delay=30m
+            - --compact.concurrency=2
+            - --downsample.concurrency=1
             - --objstore.config-file=/conf/objstore.yml
             - --delete-delay=0
             - --wait
@@ -656,7 +658,7 @@ spec:
               scheme: HTTP
           resources:
             limits:
-              cpu: "1.5"
+              cpu: "2"
               ephemeral-storage: 16Gi
               memory: 3072Mi
             requests:
