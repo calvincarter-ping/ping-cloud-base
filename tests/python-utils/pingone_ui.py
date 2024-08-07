@@ -8,7 +8,9 @@ import requests
 import requests_oauthlib
 import selenium.common.exceptions
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 import tenacity
 import urllib3
 import warnings
@@ -24,6 +26,32 @@ ENV_UI_URL = f"https://console-staging.pingone.com/?env={ENV_ID}#home?nav=home"
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+
+def any_browser_element_displayed(browser: webdriver, xpaths: [str]) -> bool:
+    """
+    Check if any of the elements are displayed in the browser
+    :param browser: webdriver.Chrome()
+    :param xpaths: A list of XPATH strings, ex: ["//span[contains(text(), 'Applications')]", ...]
+    :return: True if any of the elements are displayed, False otherwise
+    """
+    for xpath in xpaths:
+        try:
+            element = browser.find_element(By.XPATH, xpath)
+            WebDriverWait(browser, timeout=10).until(lambda t: element.is_displayed())
+            if element.is_displayed():
+                return True
+        except NoSuchElementException:
+            continue
+    return False
+
+
+def login_from_external_idp(browser: webdriver.Chrome, console_url: str, username: str, password: str):
+    browser.get(console_url)
+    browser.find_element(By.CLASS_NAME, "custom-provider-button").click()
+    browser.find_element(By.ID, "username").send_keys(username)
+    browser.find_element(By.ID, "password").send_keys(password)
+    browser.find_element(By.CSS_SELECTOR, 'button[data-id="submit-button"]').click()
 
 
 class ConsoleUILoginTestBase(unittest.TestCase):
@@ -62,6 +90,12 @@ class ConsoleUILoginTestBase(unittest.TestCase):
             name="Default",
         )
 
+        # External IdP setup
+        cls.external_idp_env_id = os.getenv("EXTERNAL_IDP_ENVIRONMENT_ID")
+        cls.external_idp_endpoints = p1_utils.EnvironmentEndpoints(
+            p1_utils.API_LOCATION, cls.external_idp_env_id
+        )
+
     @classmethod
     def tearDownClass(cls):
         cls.p1_session.close()
@@ -75,10 +109,16 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         options.add_argument("--no-sandbox")  # run in Docker
         options.add_argument("--disable-dev-shm-usage")  # run in Docker
         self.browser = webdriver.Chrome(options=options)
+        self.browser.implicitly_wait(10)
         self.addCleanup(self.browser.quit)
 
     @classmethod
-    def create_pingone_user(cls, role_attribute_name: str, role_attribute_values: list, population_id: str = None):
+    def create_pingone_user(
+        cls,
+        role_attribute_name: str,
+        role_attribute_values: list,
+        population_id: str = None,
+    ):
         """
         Get population ID for dev/cicd
         Create a user in population
@@ -113,11 +153,43 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         )
 
     @classmethod
-    def delete_pingone_user(cls):
+    def create_external_idp_user(
+        cls,
+        endpoints: p1_utils.EnvironmentEndpoints,
+        username: str,
+        password: str,
+    ):
+        """
+        Create a user in the default population in an external PingOne environment
+        """
+        user_payload = {
+            "email": "do-not-reply@pingidentity.com",
+            "name": {"given": username, "family": "User"},
+            "username": username,
+            "password": {"value": password, "forceChange": "false"},
+            "p1asArgoCDRoles": ["argo-configteam"],
+            "p1asOpensearchRoles": ["os-configteam"],
+            "p1asPingAccessRoles": ["dev-pa-audit"],
+            "p1asPingFederateRoles": ["dev-pf-audit"],
+        }
+
+        p1_utils.create_user(
+            token_session=cls.p1_session,
+            endpoints=endpoints,
+            name=username,
+            payload=user_payload,
+        )
+
+    @classmethod
+    def delete_pingone_user(
+        cls,
+        endpoints: p1_utils.EnvironmentEndpoints,
+        username: str,
+    ):
         p1_utils.delete_user(
             token_session=cls.p1_session,
-            endpoints=cls.p1_environment_endpoints,
-            name=cls.username,
+            endpoints=endpoints,
+            name=username,
         )
 
     def pingone_login(self):
