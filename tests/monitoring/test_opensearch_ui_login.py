@@ -33,6 +33,10 @@ class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
             endpoints=cls.external_idp_endpoints,
             username=cls.external_user_username,
         )
+        cls.delete_pingone_user(
+            endpoints=cls.p1_environment_endpoints,
+            username=f"{cls.external_user_username}-{cls.tenant_name}",
+        )
         cls.create_external_idp_user(
             endpoints=cls.external_idp_endpoints,
             username=cls.external_user_username,
@@ -44,6 +48,11 @@ class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
         super().tearDownClass()
         cls.delete_pingone_user(
             endpoints=cls.p1_environment_endpoints, username=cls.username
+        )
+        # Delete the external user from the external IdP environment and the main PingOne environment
+        cls.delete_pingone_user(
+            endpoints=cls.p1_environment_endpoints,
+            username=f"{cls.external_user_username}-{cls.tenant_name}",
         )
         cls.delete_pingone_user(
             endpoints=cls.external_idp_endpoints,

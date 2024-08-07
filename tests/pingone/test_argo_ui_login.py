@@ -28,6 +28,10 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             endpoints=cls.external_idp_endpoints,
             username=cls.external_user_username,
         )
+        cls.delete_pingone_user(
+            endpoints=cls.p1_environment_endpoints,
+            username=f"{cls.external_user_username}-{cls.tenant_name}",
+        )
         cls.create_external_idp_user(
             endpoints=cls.external_idp_endpoints,
             username=cls.external_user_username,
@@ -38,6 +42,11 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
     def tearDownClass(cls):
         super().tearDownClass()
         cls.delete_pingone_user(endpoints=cls.p1_environment_endpoints, username=cls.username)
+        # Delete the external user from the external IdP environment and the main PingOne environment
+        cls.delete_pingone_user(
+            endpoints=cls.p1_environment_endpoints,
+            username=f"{cls.external_user_username}-{cls.tenant_name}",
+        )
         cls.delete_pingone_user(
             endpoints=cls.external_idp_endpoints,
             username=cls.external_user_username,
@@ -61,7 +70,6 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
                     population_id=TestArgoUILogin.population_id)
 
         self.browser.get(self.console_url)
-        self.browser.implicitly_wait(10)
         try:
             title = self.browser.find_element(
                 By.XPATH, "//span[contains(text(), 'Applications')]"
@@ -83,7 +91,6 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
                     population_id=TestArgoUILogin.default_population_id)
 
         self.browser.get(f"{self.public_hostname}/auth/login")
-        self.browser.implicitly_wait(10)
         try:
             title = self.browser.find_element(
                 By.XPATH, "//span[contains(text(), 'Applications')]"
