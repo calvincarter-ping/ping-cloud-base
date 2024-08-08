@@ -65,7 +65,6 @@ class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
         # Attempt to access the console with SSO
         self.pingone_login()
         self.browser.get(self.console_url)
-        self.browser.implicitly_wait(10)
         try:
             title = self.browser.find_element(
                 By.XPATH, "//h4[contains(text(), 'Select your tenant')]"

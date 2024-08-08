@@ -61,7 +61,6 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
         # Attempt to access the PingAccess Admin console with SSO
         self.pingone_login()
         self.browser.get(self.public_hostname)
-        self.browser.implicitly_wait(10)
         try:
             title = self.browser.find_element(
                 By.XPATH, "//div[contains(text(), 'Applications')]"

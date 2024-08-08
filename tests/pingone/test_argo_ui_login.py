@@ -115,7 +115,6 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
                     population_id=TestArgoUILogin.default_population_id)
 
         self.browser.get(f"{self.public_hostname}/auth/login")
-        self.browser.implicitly_wait(10)
         try:
             title = self.browser.find_element(
                 By.XPATH, "//span[contains(text(), 'Applications')]"

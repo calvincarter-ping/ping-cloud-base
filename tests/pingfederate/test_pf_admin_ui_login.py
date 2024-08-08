@@ -60,7 +60,6 @@ class TestPingFederateUILogin(p1_ui.ConsoleUILoginTestBase):
         # Attempt to access the console with SSO
         self.pingone_login()
         self.browser.get(self.public_hostname)
-        self.browser.implicitly_wait(10)
         try:
             try:
                 # This pop-up may or may not be displayed

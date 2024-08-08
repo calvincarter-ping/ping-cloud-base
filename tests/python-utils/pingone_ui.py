@@ -194,15 +194,11 @@ class ConsoleUILoginTestBase(unittest.TestCase):
 
     def pingone_login(self):
         self.browser.get(ENV_UI_URL)
-        # Wait for initial page load
-        self.browser.implicitly_wait(10)
         self.browser.find_element(By.ID, "username").send_keys(self.username)
         self.browser.find_element(By.ID, "password").send_keys(self.password)
         self.browser.find_element(
             By.CSS_SELECTOR, 'button[data-id="submit-button"]'
         ).click()
-        # Wait for post-login screen
-        self.browser.implicitly_wait(10)
         self.close_popup()
 
     def close_popup(self):
@@ -240,7 +236,6 @@ class ConsoleUILoginTestBase(unittest.TestCase):
 
     def test_user_can_log_in_to_pingone(self):
         self.pingone_login()
-        self.browser.implicitly_wait(10)
         # The content iframe on the home page displays the list of environments, have to switch or selenium can't see it
 
         try:
