@@ -2,7 +2,6 @@ import os
 import unittest
 
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
 
 import pingone_ui as p1_ui
 
@@ -39,6 +38,11 @@ class TestPingFederateUILogin(p1_ui.ConsoleUILoginTestBase):
             username=cls.external_user_username,
             password=cls.external_user_password,
         )
+        # PingFederate has a pop-up that may or may not be displayed
+        cls.expected_xpaths = [
+            "//div[contains(text(), 'Welcome to PingFederate')]",
+            "//div[contains(text(), 'Cluster')]",
+        ]
 
     @classmethod
     def tearDownClass(cls):
@@ -61,15 +65,8 @@ class TestPingFederateUILogin(p1_ui.ConsoleUILoginTestBase):
         self.pingone_login()
         self.browser.get(self.public_hostname)
         try:
-            try:
-                # This pop-up may or may not be displayed
-                if self.browser.find_element(By.XPATH, "//span[contains(text(), 'Welcome to PingFederate')]"):
-                    self.browser.find_element(By.CSS_SELECTOR, 'a[data-id="content-link"]').click()
-            except NoSuchElementException:
-                pass
-            cluster = self.browser.find_element(By.XPATH, "//div[contains(text(), 'Cluster')]")
             self.assertTrue(
-                cluster.is_displayed(),
+                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
                 f"PingFederate Admin console 'Cluster' was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
         except NoSuchElementException:
@@ -78,12 +75,6 @@ class TestPingFederateUILogin(p1_ui.ConsoleUILoginTestBase):
             )
 
     def test_external_user_can_access_pingfederate_admin_console(self):
-        # PingFederate has a pop-up that may or may not be displayed
-        expected_xpaths = [
-            "//div[contains(text(), 'Welcome to PingFederate')]",
-            "//div[contains(text(), 'Cluster')]",
-        ]
-
         # Wait for admin console to be reachable if it has been restarted by another test
         self.wait_until_url_is_reachable(self.public_hostname)
         try:
@@ -94,7 +85,7 @@ class TestPingFederateUILogin(p1_ui.ConsoleUILoginTestBase):
                 password=self.external_user_password,
             )
             self.assertTrue(
-                p1_ui.any_browser_element_displayed(self.browser, expected_xpaths),
+                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
                 f"PingFederate Admin console was not displayed when attempting to access {self.public_hostname}. "
                 f"SSO may have failed. Browser contents: {self.browser.page_source}",
             )

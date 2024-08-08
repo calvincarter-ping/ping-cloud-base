@@ -10,6 +10,7 @@ import selenium.common.exceptions
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 import tenacity
 import urllib3
@@ -28,6 +29,17 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
+def wait_until_browser_element_displayed(browser: webdriver, xpath: str) -> WebElement:
+    """
+    Wait until the element is displayed in the browser
+    :param browser: webdriver.Chrome()
+    :param xpath: XPATH string, ex: "//span[contains(text(), 'Applications')]"
+    """
+    element = browser.find_element(By.XPATH, xpath)
+    WebDriverWait(browser, timeout=10).until(lambda t: element.is_displayed())
+    return element
+
+
 def any_browser_element_displayed(browser: webdriver, xpaths: [str]) -> bool:
     """
     Check if any of the elements are displayed in the browser
@@ -37,8 +49,7 @@ def any_browser_element_displayed(browser: webdriver, xpaths: [str]) -> bool:
     """
     for xpath in xpaths:
         try:
-            element = browser.find_element(By.XPATH, xpath)
-            WebDriverWait(browser, timeout=10).until(lambda t: element.is_displayed())
+            element = wait_until_browser_element_displayed(browser, xpath)
             if element.is_displayed():
                 return True
         except NoSuchElementException:
@@ -65,6 +76,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
     p1_session = None
     population_id = ""
     default_population_id = ""
+    console_url = ""
 
     @classmethod
     def setUpClass(cls):

@@ -2,8 +2,6 @@ import os
 import unittest
 
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 
 import pingone_ui as p1_ui
 
@@ -40,6 +38,7 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
             username=cls.external_user_username,
             password=cls.external_user_password,
         )
+        cls.expected_xpaths = ["//div[contains(text(), 'Applications')]"]
 
     @classmethod
     def tearDownClass(cls):
@@ -62,13 +61,8 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
         self.pingone_login()
         self.browser.get(self.public_hostname)
         try:
-            title = self.browser.find_element(
-                By.XPATH, "//div[contains(text(), 'Applications')]"
-            )
-            wait = WebDriverWait(self.browser, timeout=10)
-            wait.until(lambda t: title.is_displayed())
             self.assertTrue(
-                title.is_displayed(),
+                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
                 f"PingAccess Admin console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
         except NoSuchElementException:
@@ -77,8 +71,6 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
             )
 
     def test_external_user_can_access_pingaccess_admin_console(self):
-        expected_xpaths = ["//div[contains(text(), 'Applications')]"]
-
         # Wait for admin console to be reachable if it has been restarted by another test
         self.wait_until_url_is_reachable(self.public_hostname)
         try:
@@ -89,7 +81,7 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
                 password=self.external_user_password,
             )
             self.assertTrue(
-                p1_ui.any_browser_element_displayed(self.browser, expected_xpaths),
+                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
                 f"PingAccess Admin console was not displayed when attempting to access {self.public_hostname}. "
                 f"SSO may have failed. Browser contents: {self.browser.page_source}",
             )

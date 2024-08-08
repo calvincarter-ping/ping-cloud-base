@@ -3,7 +3,6 @@ import unittest
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 
 import pingone_ui as p1_ui
 
@@ -37,6 +36,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             username=cls.external_user_username,
             password=cls.external_user_password,
         )
+        cls.expected_xpaths = ["//span[contains(text(), 'Applications')]"]
 
     @classmethod
     def tearDownClass(cls):
@@ -71,13 +71,8 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
 
         self.browser.get(self.console_url)
         try:
-            title = self.browser.find_element(
-                By.XPATH, "//span[contains(text(), 'Applications')]"
-            )
-            wait = WebDriverWait(self.browser, timeout=10)
-            wait.until(lambda t: title.is_displayed())
             self.assertTrue(
-                title.is_displayed(),
+                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
                 f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
         except NoSuchElementException:
@@ -92,11 +87,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
 
         self.browser.get(self.console_url)
         try:
-            title = self.browser.find_element(
-                By.XPATH, "//span[contains(text(), 'Applications')]"
-            )
-            wait = WebDriverWait(self.browser, timeout=10)
-            wait.until(lambda t: title.is_displayed())
+            p1_ui.wait_until_browser_element_displayed(self.browser, "//span[contains(text(), 'Applications')]")
             app_list = self.browser.find_elements(
                 By.CLASS_NAME, "applications-list__entry"
             )
@@ -116,11 +107,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
 
         self.browser.get(f"{self.console_url}/auth/login")
         try:
-            title = self.browser.find_element(
-                By.XPATH, "//span[contains(text(), 'Applications')]"
-            )
-            wait = WebDriverWait(self.browser, timeout=10)
-            wait.until(lambda t: title.is_displayed())
+            p1_ui.wait_until_browser_element_displayed(self.browser, "//span[contains(text(), 'Applications')]")
             app_list = self.browser.find_elements(
                 By.CLASS_NAME, "applications-list__entry"
             )
@@ -134,8 +121,6 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             )
 
     def test_external_user_can_access_argocd_console(self):
-        expected_xpaths = ["//span[contains(text(), 'Applications')]"]
-
         # Wait for admin console to be reachable if it has been restarted by another test
         self.wait_until_url_is_reachable(self.console_url)
         try:
@@ -146,7 +131,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
                 password=self.external_user_password,
             )
             self.assertTrue(
-                p1_ui.any_browser_element_displayed(self.browser, expected_xpaths),
+                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
                 f"ArgoCD console was not displayed when attempting to access {self.console_url}. "
                 f"SSO may have failed. Browser contents: {self.browser.page_source}",
             )
