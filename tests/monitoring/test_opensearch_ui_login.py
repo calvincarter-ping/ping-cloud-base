@@ -23,7 +23,11 @@ class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
             endpoints=cls.p1_environment_endpoints, username=cls.username
         )
         cls.create_pingone_user(
-            role_attribute_name="p1asPingRoles", role_attribute_values=["os-ping"]
+            username=cls.username,
+            password=cls.password,
+            role_attribute_name="p1asPingRoles",
+            role_attribute_values=["os-ping"],
+            population_id=cls.population_id,
         )
         cls.external_user_username = (
             f"opensearch-external-idp-test-user-{cls.tenant_name}"

@@ -21,8 +21,13 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
         cls.username = f"sso-pingaccess-test-user-{cls.tenant_name}"
         cls.password = "2FederateM0re!"
         cls.delete_pingone_user(endpoints=cls.p1_environment_endpoints, username=cls.username)
-        cls.create_pingone_user(role_attribute_name="p1asPingAccessRoles",
-                                role_attribute_values=[f"{cls.environment}-pa-admin"])
+        cls.create_pingone_user(
+            username=cls.username,
+            password=cls.password,
+            role_attribute_name="p1asPingAccessRoles",
+            role_attribute_values=[f"{cls.environment}-pa-admin"],
+            population_id=cls.population_id
+        )
         cls.external_user_username = f"pingaccess-external-idp-test-user-{cls.tenant_name}"
         cls.external_user_password = "2FederateM0re!"
         cls.delete_pingone_user(

@@ -127,39 +127,40 @@ class ConsoleUILoginTestBase(unittest.TestCase):
     @classmethod
     def create_pingone_user(
         cls,
-        role_attribute_name: str,
-        role_attribute_values: list,
+        username: str,
+        password: str,
+        role_attribute_name: str = None,
+        role_attribute_values: list = None,
         population_id: str = None,
     ):
         """
-        Get population ID for dev/cicd
-        Create a user in population
-        Add role to user
+        Create a PingOne user
         """
-
-        if not population_id:
-            population_id = cls.population_id
 
         user_payload = {
             "email": "do-not-reply@pingidentity.com",
-            "name": {"given": cls.username, "family": "User"},
-            "population": {"id": population_id},
-            "username": cls.username,
-            "password": {"value": cls.password, "forceChange": "false"},
-            role_attribute_name: role_attribute_values,
+            "name": {"given": username, "family": "User"},
+            "username": username,
+            "password": {"value": password, "forceChange": "false"},
         }
+
+        if population_id:
+            user_payload["population"] = {"id": population_id}
+
+        if role_attribute_name and role_attribute_values:
+            user_payload[role_attribute_name] = role_attribute_values
 
         p1_utils.create_user(
             token_session=cls.p1_session,
             endpoints=cls.p1_environment_endpoints,
-            name=cls.username,
+            name=username,
             payload=user_payload,
         )
 
         p1_utils.add_role_to_user(
             token_session=cls.p1_session,
             endpoints=cls.p1_environment_endpoints,
-            user_name=cls.username,
+            user_name=username,
             role_name="Identity Data Read Only",
             environment_id=ENV_ID,
         )

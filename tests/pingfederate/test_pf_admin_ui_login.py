@@ -21,8 +21,13 @@ class TestPingFederateUILogin(p1_ui.ConsoleUILoginTestBase):
         cls.username = f"sso-pingfederate-test-user-{cls.tenant_name}"
         cls.password = "2FederateM0re!"
         cls.delete_pingone_user(endpoints=cls.p1_environment_endpoints, username=cls.username)
-        cls.create_pingone_user(role_attribute_name="p1asPingFederateRoles",
-                                role_attribute_values=[f"{cls.environment}-pf-roleadmin"])
+        cls.create_pingone_user(
+            username=cls.username,
+            password=cls.password,
+            role_attribute_name="p1asPingFederateRoles",
+            role_attribute_values=[f"{cls.environment}-pf-roleadmin"],
+            population_id=cls.population_id,
+        )
         cls.external_user_username = f"pingfederate-external-idp-test-user-{cls.tenant_name}"
         cls.external_user_password = "2FederateM0re!"
         cls.delete_pingone_user(

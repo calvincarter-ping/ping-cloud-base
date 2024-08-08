@@ -19,8 +19,13 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
         cls.username = f"sso-argocd-test-user-{cls.tenant_name}"
         cls.password = "2FederateM0re!"
         cls.delete_pingone_user(endpoints=cls.p1_environment_endpoints, username=cls.username)
-        cls.create_pingone_user(role_attribute_name="p1asPingRoles",
-                                role_attribute_values=["argo-pingbeluga"])
+        cls.create_pingone_user(
+            username=cls.username,
+            password=cls.password,
+            role_attribute_name="p1asPingRoles",
+            role_attribute_values=["argo-pingbeluga"],
+            population_id=cls.population_id,
+        )
         cls.external_user_username = f"argocd-external-idp-test-user-{cls.tenant_name}"
         cls.external_user_password = "2FederateM0re!"
         cls.delete_pingone_user(
@@ -56,9 +61,13 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
         # Delete user if exists
         self.delete_pingone_user(endpoints=self.p1_environment_endpoints, username=self.username)
         # Create user
-        TestArgoUILogin.create_pingone_user(role_attribute_name=role_attribute_name,
-                                            role_attribute_values=role_attribute_values,
-                                            population_id=population_id)
+        TestArgoUILogin.create_pingone_user(
+            username=self.username,
+            password=self.password,
+            role_attribute_name=role_attribute_name,
+            role_attribute_values=role_attribute_values,
+            population_id=population_id
+        )
         # Wait for admin console to be reachable if it has been restarted by another test
         self.wait_until_url_is_reachable(self.console_url)
         # Attempt to access the console with SSO
