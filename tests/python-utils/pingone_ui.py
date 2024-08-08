@@ -65,6 +65,13 @@ def login_from_external_idp(browser: webdriver.Chrome, console_url: str, usernam
     browser.find_element(By.CSS_SELECTOR, 'button[data-id="submit-button"]').click()
 
 
+def login_as_pingone_user(browser: webdriver.Chrome, console_url: str, username: str, password: str):
+    browser.get(console_url)
+    browser.find_element(By.ID, "username").send_keys(username)
+    browser.find_element(By.ID, "password").send_keys(password)
+    browser.find_element(By.CSS_SELECTOR, 'button[data-id="submit-button"]').click()
+
+
 class ConsoleUILoginTestBase(unittest.TestCase):
     tenant_name = ""
     environment = ""
@@ -101,7 +108,17 @@ class ConsoleUILoginTestBase(unittest.TestCase):
             endpoints=cls.p1_environment_endpoints,
             name="Default",
         )
-
+        cls.no_role_user_username = f"no-role-{cls.tenant_name}"
+        cls.no_role_user_password = "2FederateM0re!"
+        cls.delete_pingone_user(
+            endpoints=cls.p1_environment_endpoints,
+            username=cls.no_role_user_username,
+        )
+        cls.create_pingone_user(
+            username=cls.no_role_user_username,
+            password=cls.no_role_user_password,
+            population_id=cls.population_id,
+        )
         # External IdP setup
         cls.external_idp_env_id = os.getenv("EXTERNAL_IDP_ENVIRONMENT_ID")
         cls.external_idp_endpoints = p1_utils.EnvironmentEndpoints(
@@ -110,6 +127,10 @@ class ConsoleUILoginTestBase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.delete_pingone_user(
+            endpoints=cls.p1_environment_endpoints,
+            username=cls.no_role_user_username,
+        )
         cls.p1_session.close()
 
     def setUp(self):

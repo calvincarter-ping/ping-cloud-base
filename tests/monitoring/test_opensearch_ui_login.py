@@ -2,8 +2,6 @@ import os
 import unittest
 
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 
 import pingone_ui as p1_ui
 
@@ -46,7 +44,8 @@ class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
             username=cls.external_user_username,
             password=cls.external_user_password,
         )
-        cls.expected_xpaths = ["//h4[contains(text(), 'Select your tenant')]"]
+        cls.access_granted_xpaths = ["//h4[contains(text(), 'Select your tenant')]"]
+        cls.access_denied_xpaths = ["//h3[contains(text(), 'Missing Role')]"]
 
     @classmethod
     def tearDownClass(cls):
@@ -72,7 +71,9 @@ class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
         self.browser.get(self.console_url)
         try:
             self.assertTrue(
-                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
+                p1_ui.any_browser_element_displayed(
+                    self.browser, self.access_granted_xpaths
+                ),
                 f"Opensearch console was not displayed when attempting to access {self.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
         except NoSuchElementException:
@@ -91,7 +92,9 @@ class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
                 password=self.external_user_password,
             )
             self.assertTrue(
-                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
+                p1_ui.any_browser_element_displayed(
+                    self.browser, self.access_granted_xpaths
+                ),
                 f"Opensearch console was not displayed when attempting to access {self.console_url}. "
                 f"SSO may have failed. Browser contents: {self.browser.page_source}",
             )
@@ -100,6 +103,22 @@ class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
                 f"Opensearch console was not displayed when attempting to access {self.console_url}. "
                 f"SSO may have failed. Browser contents: {self.browser.page_source}",
             )
+
+    def test_user_without_role_cannot_access_opensearch_console(self):
+        self.wait_until_url_is_reachable(self.console_url)
+        p1_ui.login_as_pingone_user(
+            browser=self.browser,
+            console_url=self.console_url,
+            username=self.no_role_user_username,
+            password=self.no_role_user_password,
+        )
+
+        self.assertTrue(
+            p1_ui.any_browser_element_displayed(
+                browser=self.browser, xpaths=self.access_denied_xpaths
+            ),
+            f"Expected 'Missing Role' to be in browser contents: {self.browser.page_source}",
+        )
 
 
 if __name__ == "__main__":

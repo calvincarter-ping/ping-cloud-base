@@ -20,15 +20,19 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
         )
         cls.username = f"sso-pingaccess-test-user-{cls.tenant_name}"
         cls.password = "2FederateM0re!"
-        cls.delete_pingone_user(endpoints=cls.p1_environment_endpoints, username=cls.username)
+        cls.delete_pingone_user(
+            endpoints=cls.p1_environment_endpoints, username=cls.username
+        )
         cls.create_pingone_user(
             username=cls.username,
             password=cls.password,
             role_attribute_name="p1asPingAccessRoles",
             role_attribute_values=[f"{cls.environment}-pa-admin"],
-            population_id=cls.population_id
+            population_id=cls.population_id,
         )
-        cls.external_user_username = f"pingaccess-external-idp-test-user-{cls.tenant_name}"
+        cls.external_user_username = (
+            f"pingaccess-external-idp-test-user-{cls.tenant_name}"
+        )
         cls.external_user_password = "2FederateM0re!"
         cls.delete_pingone_user(
             endpoints=cls.external_idp_endpoints,
@@ -43,12 +47,15 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
             username=cls.external_user_username,
             password=cls.external_user_password,
         )
-        cls.expected_xpaths = ["//div[contains(text(), 'Applications')]"]
+        cls.access_granted_xpaths = ["//div[contains(text(), 'Applications')]"]
+        cls.access_denied_xpaths = ["//pre[contains(text(), 'Access Denied')]"]
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        cls.delete_pingone_user(endpoints=cls.p1_environment_endpoints, username=cls.username)
+        cls.delete_pingone_user(
+            endpoints=cls.p1_environment_endpoints, username=cls.username
+        )
         # Delete the external user from the external IdP environment and the main PingOne environment
         cls.delete_pingone_user(
             endpoints=cls.p1_environment_endpoints,
@@ -67,7 +74,9 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
         self.browser.get(self.public_hostname)
         try:
             self.assertTrue(
-                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
+                p1_ui.any_browser_element_displayed(
+                    self.browser, self.access_granted_xpaths
+                ),
                 f"PingAccess Admin console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
         except NoSuchElementException:
@@ -86,7 +95,9 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
                 password=self.external_user_password,
             )
             self.assertTrue(
-                p1_ui.any_browser_element_displayed(self.browser, self.expected_xpaths),
+                p1_ui.any_browser_element_displayed(
+                    self.browser, self.access_granted_xpaths
+                ),
                 f"PingAccess Admin console was not displayed when attempting to access {self.public_hostname}. "
                 f"SSO may have failed. Browser contents: {self.browser.page_source}",
             )
@@ -95,6 +106,22 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
                 f"PingAccess Admin console was not displayed when attempting to access {self.public_hostname}. "
                 f"SSO may have failed. Browser contents: {self.browser.page_source}",
             )
+
+    def test_user_without_role_cannot_access_pingaccess_admin_console(self):
+        self.wait_until_url_is_reachable(self.public_hostname)
+        p1_ui.login_as_pingone_user(
+            browser=self.browser,
+            console_url=self.public_hostname,
+            username=self.no_role_user_username,
+            password=self.no_role_user_password,
+        )
+
+        self.assertTrue(
+            p1_ui.any_browser_element_displayed(
+                browser=self.browser, xpaths=self.access_denied_xpaths
+            ),
+            f"Expected 'Access Denied' to be in browser contents: {self.browser.page_source}",
+        )
 
 
 if __name__ == "__main__":
