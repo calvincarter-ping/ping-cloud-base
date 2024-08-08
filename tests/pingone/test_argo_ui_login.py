@@ -16,33 +16,31 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             f"https://argocd.{os.environ['TENANT_DOMAIN']}",
         )
         cls.console_url = f"{cls.public_hostname}/auth/login"
-        cls.username = f"sso-argocd-test-user-{cls.tenant_name}"
-        cls.password = "2FederateM0re!"
-        cls.delete_pingone_user(
-            endpoints=cls.p1_environment_endpoints, username=cls.username
-        )
-        cls.create_pingone_user(
-            username=cls.username,
-            password=cls.password,
-            role_attribute_name="p1asPingRoles",
-            role_attribute_values=["argo-pingbeluga"],
+        cls.local_user = p1_ui.PingOneUser(
+            session=cls.p1_session,
+            environment_endpoints=cls.p1_environment_endpoints,
+            username=f"sso-argocd-test-user-{cls.tenant_name}",
+            roles={"p1asArgoCDRoles": ["argo-configteam"]},
             population_id=cls.population_id,
         )
-        cls.external_user_username = f"argocd-external-idp-test-user-{cls.tenant_name}"
-        cls.external_user_password = "2FederateM0re!"
-        cls.delete_pingone_user(
-            endpoints=cls.external_idp_endpoints,
-            username=cls.external_user_username,
+        cls.local_user.delete()
+        cls.local_user.create(add_p1_role=True)
+        cls.external_user = p1_ui.PingOneUser(
+            session=cls.p1_session,
+            environment_endpoints=cls.external_idp_endpoints,
+            username=f"argocd-external-idp-test-user-{cls.tenant_name}",
+            roles={"p1asArgoCDRoles": ["argo-configteam"]},
         )
-        cls.delete_pingone_user(
-            endpoints=cls.p1_environment_endpoints,
-            username=f"{cls.external_user_username}-{cls.tenant_name}",
+        cls.external_user.delete()
+        cls.external_user.create()
+        cls.shadow_external_user = p1_ui.PingOneUser(
+            session=cls.p1_session,
+            environment_endpoints=cls.p1_environment_endpoints,
+            username=f"{cls.external_user.username}-{cls.tenant_name}",
         )
-        cls.create_external_idp_user(
-            endpoints=cls.external_idp_endpoints,
-            username=cls.external_user_username,
-            password=cls.external_user_password,
-        )
+        # Do not create shadow external user, delete only in case it exists from a previous run
+        cls.shadow_external_user.delete()
+
         cls.application_page_xpath = "//span[contains(text(), 'Applications')]"
         cls.access_granted_xpaths = [cls.application_page_xpath]
         cls.access_denied_xpaths = [
@@ -52,36 +50,21 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        cls.delete_pingone_user(
-            endpoints=cls.p1_environment_endpoints, username=cls.username
-        )
-        # Delete the external user from the external IdP environment and the main PingOne environment
-        cls.delete_pingone_user(
-            endpoints=cls.p1_environment_endpoints,
-            username=f"{cls.external_user_username}-{cls.tenant_name}",
-        )
-        cls.delete_pingone_user(
-            endpoints=cls.external_idp_endpoints,
-            username=cls.external_user_username,
-        )
+        cls.local_user.delete()
+        cls.external_user.delete()
+        cls.shadow_external_user.delete()
 
     def _setup(self, role_attribute_name, role_attribute_values, population_id):
         # Delete user if exists
-        self.delete_pingone_user(
-            endpoints=self.p1_environment_endpoints, username=self.username
-        )
+        self.local_user.delete()
         # Create user
-        TestArgoUILogin.create_pingone_user(
-            username=self.username,
-            password=self.password,
-            role_attribute_name=role_attribute_name,
-            role_attribute_values=role_attribute_values,
-            population_id=population_id,
-        )
+        self.local_user.roles = {role_attribute_name: role_attribute_values}
+        self.local_user.population_id = population_id
+        self.local_user.create(add_p1_role=True)
         # Wait for admin console to be reachable if it has been restarted by another test
         self.wait_until_url_is_reachable(self.console_url)
         # Attempt to access the console with SSO
-        self.pingone_login()
+        self.pingone_login(username=self.local_user.username, password=self.local_user.password)
 
     def test_cust_user_can_access_argocd_with_correct_population(self):
         self._setup(
@@ -162,8 +145,8 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             p1_ui.login_from_external_idp(
                 browser=self.browser,
                 console_url=self.console_url,
-                username=self.external_user_username,
-                password=self.external_user_password,
+                username=self.external_user.username,
+                password=self.external_user.password,
             )
             p1_ui.wait_until_browser_element_displayed(
                 self.browser, self.application_page_xpath
@@ -188,8 +171,8 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             p1_ui.login_as_pingone_user(
                 browser=self.browser,
                 console_url=self.console_url,
-                username=self.no_role_user_username,
-                password=self.no_role_user_password,
+                username=self.no_role_user.username,
+                password=self.no_role_user.password,
             )
             self.assertTrue(
                 p1_ui.any_browser_element_displayed(

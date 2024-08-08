@@ -72,11 +72,62 @@ def login_as_pingone_user(browser: webdriver.Chrome, console_url: str, username:
     browser.find_element(By.CSS_SELECTOR, 'button[data-id="submit-button"]').click()
 
 
+class PingOneUser:
+
+    def __init__(self, session: requests_oauthlib.OAuth2Session, environment_endpoints: p1_utils.EnvironmentEndpoints, username: str, roles: {} = None, population_id: str = None):
+        self.endpoints = environment_endpoints
+        self.password = "2FederateM0re!"
+        self.population_id = population_id
+        self.roles = roles
+        self.session = session
+        self.username = username
+
+    def create(self, add_p1_role: bool = False):
+        payload = {
+            "email": "do-not-reply@pingidentity.com",
+            "name": {"given": self.username, "family": "User"},
+            "username": self.username,
+            "password": {"value": self.password, "forceChange": "false"},
+        }
+
+        if self.population_id:
+            payload["population"] = {"id": self.population_id}
+
+        if self.roles:
+            for role_attribute_name, role_attribute_values in self.roles.items():
+                payload[role_attribute_name] = role_attribute_values
+
+        p1_utils.create_user(
+            token_session=self.session,
+            endpoints=self.endpoints,
+            name=self.username,
+            payload=payload,
+        )
+
+        if add_p1_role:
+            environment_id = self.endpoints.env.split("/environments/")[1]
+            self.add_pingone_identity_read_only_role(environment_id=environment_id)
+
+    def add_pingone_identity_read_only_role(self, environment_id: str):
+        p1_utils.add_role_to_user(
+            token_session=self.session,
+            endpoints=self.endpoints,
+            user_name=self.username,
+            role_name="Identity Data Read Only",
+            environment_id=environment_id,
+        )
+
+    def delete(self):
+        p1_utils.delete_user(
+            token_session=self.session,
+            endpoints=self.endpoints,
+            name=self.username,
+        )
+
+
 class ConsoleUILoginTestBase(unittest.TestCase):
     tenant_name = ""
     environment = ""
-    username = ""
-    password = ""
     group_names = []
     p1_client = None
     p1_environment_endpoints = None
@@ -84,6 +135,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
     population_id = ""
     default_population_id = ""
     console_url = ""
+    local_user = None
 
     @classmethod
     def setUpClass(cls):
@@ -95,8 +147,9 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         cls.p1_session = requests_oauthlib.OAuth2Session(
             cls.p1_client["client_id"], token=cls.p1_client["token"]
         )
+        cls.environment_id = ENV_ID
         cls.p1_environment_endpoints = p1_utils.EnvironmentEndpoints(
-            p1_utils.API_LOCATION, ENV_ID
+            p1_utils.API_LOCATION, cls.environment_id
         )
         cls.population_id = p1_utils.get_population_id(
             token_session=cls.p1_session,
@@ -108,17 +161,16 @@ class ConsoleUILoginTestBase(unittest.TestCase):
             endpoints=cls.p1_environment_endpoints,
             name="Default",
         )
-        cls.no_role_user_username = f"no-role-{cls.tenant_name}"
-        cls.no_role_user_password = "2FederateM0re!"
-        cls.delete_pingone_user(
-            endpoints=cls.p1_environment_endpoints,
-            username=cls.no_role_user_username,
-        )
-        cls.create_pingone_user(
-            username=cls.no_role_user_username,
-            password=cls.no_role_user_password,
+        cls.no_role_user = PingOneUser(
+            session=cls.p1_session,
+            environment_endpoints=cls.p1_environment_endpoints,
+            username=f"no-role-{cls.tenant_name}",
+            roles=None,
             population_id=cls.population_id,
         )
+        cls.no_role_user.delete()
+        cls.no_role_user.create()
+
         # External IdP setup
         cls.external_idp_env_id = os.getenv("EXTERNAL_IDP_ENVIRONMENT_ID")
         cls.external_idp_endpoints = p1_utils.EnvironmentEndpoints(
@@ -127,10 +179,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.delete_pingone_user(
-            endpoints=cls.p1_environment_endpoints,
-            username=cls.no_role_user_username,
-        )
+        cls.no_role_user.delete()
         cls.p1_session.close()
 
     def setUp(self):
@@ -144,47 +193,6 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         self.browser = webdriver.Chrome(options=options)
         self.browser.implicitly_wait(10)
         self.addCleanup(self.browser.quit)
-
-    @classmethod
-    def create_pingone_user(
-        cls,
-        username: str,
-        password: str,
-        role_attribute_name: str = None,
-        role_attribute_values: list = None,
-        population_id: str = None,
-    ):
-        """
-        Create a PingOne user
-        """
-
-        user_payload = {
-            "email": "do-not-reply@pingidentity.com",
-            "name": {"given": username, "family": "User"},
-            "username": username,
-            "password": {"value": password, "forceChange": "false"},
-        }
-
-        if population_id:
-            user_payload["population"] = {"id": population_id}
-
-        if role_attribute_name and role_attribute_values:
-            user_payload[role_attribute_name] = role_attribute_values
-
-        p1_utils.create_user(
-            token_session=cls.p1_session,
-            endpoints=cls.p1_environment_endpoints,
-            name=username,
-            payload=user_payload,
-        )
-
-        p1_utils.add_role_to_user(
-            token_session=cls.p1_session,
-            endpoints=cls.p1_environment_endpoints,
-            user_name=username,
-            role_name="Identity Data Read Only",
-            environment_id=ENV_ID,
-        )
 
     @classmethod
     def create_external_idp_user(
@@ -226,10 +234,10 @@ class ConsoleUILoginTestBase(unittest.TestCase):
             name=username,
         )
 
-    def pingone_login(self):
+    def pingone_login(self, username: str, password: str):
         self.browser.get(ENV_UI_URL)
-        self.browser.find_element(By.ID, "username").send_keys(self.username)
-        self.browser.find_element(By.ID, "password").send_keys(self.password)
+        self.browser.find_element(By.ID, "username").send_keys(username)
+        self.browser.find_element(By.ID, "password").send_keys(password)
         self.browser.find_element(
             By.CSS_SELECTOR, 'button[data-id="submit-button"]'
         ).click()
@@ -269,7 +277,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
             raise
 
     def test_user_can_log_in_to_pingone(self):
-        self.pingone_login()
+        self.pingone_login(username=self.local_user.username, password=self.local_user.password)
         # The content iframe on the home page displays the list of environments, have to switch or selenium can't see it
 
         try:
