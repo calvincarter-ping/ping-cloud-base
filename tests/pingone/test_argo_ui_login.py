@@ -90,7 +90,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
                     role_attribute_values=["argo-pingbeluga"],
                     population_id=TestArgoUILogin.default_population_id)
 
-        self.browser.get(f"{self.public_hostname}/auth/login")
+        self.browser.get(self.console_url)
         try:
             title = self.browser.find_element(
                 By.XPATH, "//span[contains(text(), 'Applications')]"
@@ -102,11 +102,11 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             )
             self.assertTrue(
                 len(app_list) > 0,
-                f"Applications were not visible on ArgoCD console 'Applications' page when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"Applications were not visible on ArgoCD console 'Applications' page when attempting to access {self.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
         except NoSuchElementException:
             self.fail(
-                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
 
     def test_cust_user_cannot_access_argocd_without_correct_population(self):
@@ -114,7 +114,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
                     role_attribute_values=["argo-configteam"],
                     population_id=TestArgoUILogin.default_population_id)
 
-        self.browser.get(f"{self.public_hostname}/auth/login")
+        self.browser.get(f"{self.console_url}/auth/login")
         try:
             title = self.browser.find_element(
                 By.XPATH, "//span[contains(text(), 'Applications')]"
@@ -126,11 +126,11 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             )
             self.assertTrue(
                 len(app_list) == 0,
-                f"Applications were visible on ArgoCD console 'Applications' page when attempting to access {self.public_hostname}. SSO may have succeeded. Browser contents: {self.browser.page_source}",
+                f"Applications were visible on ArgoCD console 'Applications' page when attempting to access {self.console_url}. SSO may have succeeded. Browser contents: {self.browser.page_source}",
             )
         except NoSuchElementException:
             self.fail(
-                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
 
     def test_external_user_can_access_argocd_console(self):
