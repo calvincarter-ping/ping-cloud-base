@@ -633,10 +633,11 @@ spec:
             - --retention.resolution-5m=10d
             - --retention.resolution-1h=10d
             - --consistency-delay=30m
-            - --compact.concurrency=2
             - --downsample.concurrency=1
             - --objstore.config-file=/conf/objstore.yml
             - --delete-delay=0
+            - --enable-auto-gomemlimit
+            - --hash-func=SHA256
             - --wait
           ports:
             - name: http
