@@ -72,6 +72,91 @@ def login_as_pingone_user(browser: webdriver.Chrome, console_url: str, username:
     browser.find_element(By.CSS_SELECTOR, 'button[data-id="submit-button"]').click()
 
 
+class PingOneUITestConfig:
+
+    def __init__(self, app_name: str, console_url: str, roles: {}, access_granted_xpaths: [str], access_denied_xpaths: [str]):
+        self.app_name = app_name
+        self.console_url = console_url
+        self.roles = roles
+        self.access_granted_xpaths = access_granted_xpaths
+        self.access_denied_xpaths = access_denied_xpaths
+        self.tenant_name = os.getenv("TENANT_NAME")
+        self.client = p1_utils.get_client()
+        self.session = requests_oauthlib.OAuth2Session(
+            self.client["client_id"], token=self.client["token"]
+        )
+        self.environment_id = ENV_ID
+        self.p1as_endpoints = p1_utils.EnvironmentEndpoints(
+            p1_utils.API_LOCATION, self.environment_id
+        )
+        self.population_id = p1_utils.get_population_id(
+            token_session=self.session,
+            endpoints=self.p1as_endpoints,
+            name=self.tenant_name,
+        )
+
+        # User with no roles for negative testing
+        self.no_role_user = PingOneUser(
+            session=self.session,
+            environment_endpoints=self.p1as_endpoints,
+            username=f"{self.app_name}-no-role-{self.tenant_name}",
+            roles=None,
+            population_id=self.population_id,
+        )
+        self.no_role_user.delete()
+        self.no_role_user.create()
+
+        # User local to the P1AS shared tenant environment
+        self.local_user = PingOneUser(
+            session=self.session,
+            environment_endpoints=self.p1as_endpoints,
+            username=f"{self.app_name}-sso-user-{self.tenant_name}",
+            roles=self.roles,
+            population_id=self.population_id,
+        )
+        self.local_user.delete()
+        self.local_user.create(add_p1_role=True)
+
+        # Default population user for negative testing
+        self.default_pop_user = PingOneUser(
+            session=self.session,
+            environment_endpoints=self.p1as_endpoints,
+            username=f"{self.app_name}-default-pop-{self.tenant_name}",
+            roles=self.roles,
+        )
+        self.default_pop_user.delete()
+        self.default_pop_user.create()
+
+        # External IdP setup
+        self.external_idp_env_id = os.getenv("EXTERNAL_IDP_ENVIRONMENT_ID")
+        self.external_idp_endpoints = p1_utils.EnvironmentEndpoints(
+            p1_utils.API_LOCATION, self.external_idp_env_id
+        )
+        # External IdP user for P1-to-P1 SSO testing
+        self.external_user = PingOneUser(
+            session=self.session,
+            environment_endpoints=self.external_idp_endpoints,
+            username=f"{self.app_name}-external-idp-test-user-{self.tenant_name}",
+            roles=self.roles,
+        )
+        self.external_user.delete()
+        self.external_user.create()
+        self.shadow_external_user = PingOneUser(
+            session=self.session,
+            environment_endpoints=self.p1as_endpoints,
+            username=f"{self.external_user.username}-{self.tenant_name}",
+        )
+        # Do not create shadow external user, delete only in case it exists from a previous run
+        self.shadow_external_user.delete()
+
+    def delete_users(self):
+        self.local_user.delete()
+        self.external_user.delete()
+        self.shadow_external_user.delete()
+        self.no_role_user.delete()
+        self.default_pop_user.delete()
+
+
 class PingOneUser:
 
     def __init__(self, session: requests_oauthlib.OAuth2Session, environment_endpoints: p1_utils.EnvironmentEndpoints, username: str, roles: {} = None, population_id: str = None):
@@ -126,61 +211,22 @@ class PingOneUser:
 
 
 class ConsoleUILoginTestBase(unittest.TestCase):
-    tenant_name = ""
-    environment = ""
-    group_names = []
-    p1_client = None
-    p1_environment_endpoints = None
-    p1_session = None
-    population_id = ""
-    default_population_id = ""
-    console_url = ""
-    local_user = None
+    """
+    Base class for PingOne console UI login tests. Contains a basic suite of tests to verify that a user can log in to
+    the PingOne console and access the app console with SSO.
 
+    Add test cases specific to each app in the child classes.
+    """
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         chromedriver_autoinstaller.install()
-        cls.tenant_name = os.getenv("TENANT_NAME")
-        cls.environment = os.getenv("ENV", "dev")
-        cls.p1_client = p1_utils.get_client()
-        cls.p1_session = requests_oauthlib.OAuth2Session(
-            cls.p1_client["client_id"], token=cls.p1_client["token"]
-        )
-        cls.environment_id = ENV_ID
-        cls.p1_environment_endpoints = p1_utils.EnvironmentEndpoints(
-            p1_utils.API_LOCATION, cls.environment_id
-        )
-        cls.population_id = p1_utils.get_population_id(
-            token_session=cls.p1_session,
-            endpoints=cls.p1_environment_endpoints,
-            name=cls.tenant_name,
-        )
-        cls.default_population_id = p1_utils.get_population_id(
-            token_session=cls.p1_session,
-            endpoints=cls.p1_environment_endpoints,
-            name="Default",
-        )
-        cls.no_role_user = PingOneUser(
-            session=cls.p1_session,
-            environment_endpoints=cls.p1_environment_endpoints,
-            username=f"no-role-{cls.tenant_name}",
-            roles=None,
-            population_id=cls.population_id,
-        )
-        cls.no_role_user.delete()
-        cls.no_role_user.create()
-
-        # External IdP setup
-        cls.external_idp_env_id = os.getenv("EXTERNAL_IDP_ENVIRONMENT_ID")
-        cls.external_idp_endpoints = p1_utils.EnvironmentEndpoints(
-            p1_utils.API_LOCATION, cls.external_idp_env_id
-        )
+        cls.config = None
 
     @classmethod
     def tearDownClass(cls):
-        cls.no_role_user.delete()
-        cls.p1_session.close()
+        super().tearDownClass()
+        cls.config.delete_users()
 
     def setUp(self):
         options = webdriver.ChromeOptions()
@@ -193,46 +239,6 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         self.browser = webdriver.Chrome(options=options)
         self.browser.implicitly_wait(10)
         self.addCleanup(self.browser.quit)
-
-    @classmethod
-    def create_external_idp_user(
-        cls,
-        endpoints: p1_utils.EnvironmentEndpoints,
-        username: str,
-        password: str,
-    ):
-        """
-        Create a user in the default population in an external PingOne environment
-        """
-        user_payload = {
-            "email": "do-not-reply@pingidentity.com",
-            "name": {"given": username, "family": "User"},
-            "username": username,
-            "password": {"value": password, "forceChange": "false"},
-            "p1asArgoCDRoles": ["argo-configteam"],
-            "p1asOpensearchRoles": ["os-configteam"],
-            "p1asPingAccessRoles": ["dev-pa-audit"],
-            "p1asPingFederateRoles": ["dev-pf-audit"],
-        }
-
-        p1_utils.create_user(
-            token_session=cls.p1_session,
-            endpoints=endpoints,
-            name=username,
-            payload=user_payload,
-        )
-
-    @classmethod
-    def delete_pingone_user(
-        cls,
-        endpoints: p1_utils.EnvironmentEndpoints,
-        username: str,
-    ):
-        p1_utils.delete_user(
-            token_session=cls.p1_session,
-            endpoints=endpoints,
-            name=username,
-        )
 
     def pingone_login(self, username: str, password: str):
         self.browser.get(ENV_UI_URL)
@@ -277,7 +283,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
             raise
 
     def test_user_can_log_in_to_pingone(self):
-        self.pingone_login(username=self.local_user.username, password=self.local_user.password)
+        self.pingone_login(username=self.config.local_user.username, password=self.config.local_user.password)
         # The content iframe on the home page displays the list of environments, have to switch or selenium can't see it
 
         try:
@@ -290,5 +296,82 @@ class ConsoleUILoginTestBase(unittest.TestCase):
             )
         except selenium.common.exceptions.NoSuchElementException:
             self.fail(
-                f"PingOne console 'Environments' page was not displayed when attempting to access {ENV_UI_URL}. Browser contents: {self.browser.page_source}"
+                f"PingOne console 'Environments' page was not displayed when attempting to access {ENV_UI_URL}. "
+                f"Browser contents: {self.browser.page_source}"
             )
+
+    def test_user_can_access_console(self):
+        # Wait for admin console to be reachable if it has been restarted by another test
+        self.wait_until_url_is_reachable(self.config.console_url)
+        # Attempt to access the console with SSO
+        self.pingone_login(username=self.config.local_user.username, password=self.config.local_user.password)
+        self.browser.get(self.config.console_url)
+        try:
+            self.assertTrue(
+                any_browser_element_displayed(
+                    self.browser, self.config.access_granted_xpaths
+                ),
+                f"{self.config.app_name} console was not displayed when attempting to access "
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+            )
+        except NoSuchElementException:
+            self.fail(
+                f"{self.config.app_name} console was not displayed when attempting to access "
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+            )
+
+    def test_external_user_can_access_console(self):
+        # Wait for admin console to be reachable if it has been restarted by another test
+        self.wait_until_url_is_reachable(self.config.console_url)
+        try:
+            login_from_external_idp(
+                browser=self.browser,
+                console_url=self.config.console_url,
+                username=self.config.external_user.username,
+                password=self.config.external_user.password,
+            )
+            self.assertTrue(
+                any_browser_element_displayed(
+                    self.browser, self.config.access_granted_xpaths
+                ),
+                f"{self.config.app_name} console was not displayed when attempting to access "
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+            )
+        except NoSuchElementException:
+            self.fail(
+                f"{self.config.app_name} console was not displayed when attempting to access "
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+            )
+
+    def test_user_without_role_cannot_access_console(self):
+        self.wait_until_url_is_reachable(self.config.console_url)
+        login_as_pingone_user(
+            browser=self.browser,
+            console_url=self.config.console_url,
+            username=self.config.no_role_user.username,
+            password=self.config.no_role_user.password,
+        )
+
+        self.assertTrue(
+            any_browser_element_displayed(
+                browser=self.browser, xpaths=self.config.access_denied_xpaths
+            ),
+            f"Expected '{self.config.access_denied_xpaths}' to be in browser contents: {self.browser.page_source}",
+        )
+
+    def test_user_cannot_access_console_without_correct_population(self):
+        self.wait_until_url_is_reachable(self.config.console_url)
+
+        login_as_pingone_user(
+            browser=self.browser,
+            console_url=self.config.console_url,
+            username=self.config.default_pop_user.username,
+            password=self.config.default_pop_user.password,
+        )
+
+        self.assertTrue(
+            any_browser_element_displayed(
+                browser=self.browser, xpaths=self.config.access_denied_xpaths
+            ),
+            f"Expected '{self.config.access_denied_xpaths}' to be in browser contents: {self.browser.page_source}",
+        )
