@@ -602,7 +602,7 @@ spec:
         sysctls: []
       containers:
         - name: compactor
-          image: quay.io/thanos/thanos:v0.35.1
+          image: docker.io/bitnami/thanos:0.35.0-debian-12-r4
           imagePullPolicy: "IfNotPresent"
           securityContext:
             allowPrivilegeEscalation: false
@@ -625,7 +625,7 @@ spec:
             - --data-dir=/data
             - --retention.resolution-raw=2d
             - --retention.resolution-5m=10d
-            - --retention.resolution-1h=5d
+            - --retention.resolution-1h=3d
             - --consistency-delay=30m
             - --objstore.config-file=/conf/objstore.yml
             - --enable-auto-gomemlimit
@@ -658,7 +658,7 @@ spec:
               scheme: HTTP
           resources:
             limits:
-              cpu: "2"
+              cpu: "1.5"
               ephemeral-storage: 16Gi
               memory: 3072Mi
             requests:
