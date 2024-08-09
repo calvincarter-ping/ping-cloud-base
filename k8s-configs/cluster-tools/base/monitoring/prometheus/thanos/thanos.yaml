@@ -600,12 +600,6 @@ spec:
         fsGroupChangePolicy: Always
         supplementalGroups: []
         sysctls: []
-        capabilities:
-          drop:
-          - ALL
-        privileged: false
-        readOnlyRootFilesystem: false
-        runAsNonRoot: true
       containers:
         - name: compactor
           image: quay.io/thanos/thanos:v0.35.1
@@ -616,7 +610,7 @@ spec:
               drop:
               - ALL
             privileged: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             runAsGroup: 1001
             runAsNonRoot: true
             runAsUser: 1001
@@ -631,13 +625,12 @@ spec:
             - --data-dir=/data
             - --retention.resolution-raw=2d
             - --retention.resolution-5m=10d
-            - --retention.resolution-1h=10d
+            - --retention.resolution-1h=5d
             - --consistency-delay=30m
-            - --downsample.concurrency=1
             - --objstore.config-file=/conf/objstore.yml
-            - --delete-delay=0
             - --enable-auto-gomemlimit
             - --hash-func=SHA256
+            - --delete-delay=12h
             - --wait
           ports:
             - name: http
