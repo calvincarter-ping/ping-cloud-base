@@ -16,11 +16,12 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             f"https://argocd.{os.environ['TENANT_DOMAIN']}",
         )
         cls.console_url = f"{cls.public_hostname}/auth/login"
+        cls.configteam_role = {"p1asArgoCDRoles": ["argo-configteam"]}
         cls.local_user = p1_ui.PingOneUser(
             session=cls.p1_session,
             environment_endpoints=cls.p1_environment_endpoints,
             username=f"sso-argocd-test-user-{cls.tenant_name}",
-            roles={"p1asArgoCDRoles": ["argo-configteam"]},
+            roles=cls.configteam_role,
             population_id=cls.population_id,
         )
         cls.local_user.delete()
@@ -29,7 +30,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             session=cls.p1_session,
             environment_endpoints=cls.external_idp_endpoints,
             username=f"argocd-external-idp-test-user-{cls.tenant_name}",
-            roles={"p1asArgoCDRoles": ["argo-configteam"]},
+            roles=cls.configteam_role,
         )
         cls.external_user.delete()
         cls.external_user.create()
@@ -54,11 +55,11 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
         cls.external_user.delete()
         cls.shadow_external_user.delete()
 
-    def _setup(self, role_attribute_name, role_attribute_values, population_id):
+    def _setup(self, roles, population_id):
         # Delete user if exists
         self.local_user.delete()
         # Create user
-        self.local_user.roles = {role_attribute_name: role_attribute_values}
+        self.local_user.roles = roles
         self.local_user.population_id = population_id
         self.local_user.create(add_p1_role=True)
         # Wait for admin console to be reachable if it has been restarted by another test
@@ -68,8 +69,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
 
     def test_cust_user_can_access_argocd_with_correct_population(self):
         self._setup(
-            role_attribute_name="p1asArgoCDRoles",
-            role_attribute_values=["argo-configteam"],
+            roles=self.configteam_role,
             population_id=TestArgoUILogin.population_id,
         )
 
@@ -92,8 +92,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
 
     def test_ping_user_can_access_argocd_with_any_population(self):
         self._setup(
-            role_attribute_name="p1asPingRoles",
-            role_attribute_values=["argo-pingbeluga"],
+            roles={"p1asPingRoles": ["argo-pingbeluga"]},
             population_id=TestArgoUILogin.default_population_id,
         )
 
@@ -116,8 +115,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
 
     def test_cust_user_cannot_access_argocd_without_correct_population(self):
         self._setup(
-            role_attribute_name="p1asArgoCDRoles",
-            role_attribute_values=["argo-configteam"],
+            roles=self.configteam_role,
             population_id=TestArgoUILogin.default_population_id,
         )
 

@@ -18,11 +18,12 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
             "PA_ADMIN_PUBLIC_HOSTNAME",
             f"https://pingaccess-admin.{os.environ['TENANT_DOMAIN']}",
         )
+        cls.audit_role = {"p1asPingAccessRoles": [f"{cls.environment}-pa-audit"]}
         cls.local_user = p1_ui.PingOneUser(
             session=cls.p1_session,
             environment_endpoints=cls.p1_environment_endpoints,
             username=f"sso-pingaccess-test-user-{cls.tenant_name}",
-            roles={"p1asPingAccessRoles": [f"{cls.environment}-pa-audit"]},
+            roles=cls.audit_role,
             population_id=cls.population_id,
         )
         cls.local_user.delete()
@@ -31,7 +32,7 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
             session=cls.p1_session,
             environment_endpoints=cls.external_idp_endpoints,
             username=f"pingaccess-external-idp-test-user-{cls.tenant_name}",
-            roles={"p1asPingAccessRoles": [f"{cls.environment}-pa-audit"]},
+            roles=cls.audit_role,
         )
         cls.external_user.delete()
         cls.external_user.create()
@@ -101,6 +102,32 @@ class TestPAAdminUILogin(p1_ui.ConsoleUILoginTestBase):
             console_url=self.public_hostname,
             username=self.no_role_user.username,
             password=self.no_role_user.password,
+        )
+
+        self.assertTrue(
+            p1_ui.any_browser_element_displayed(
+                browser=self.browser, xpaths=self.access_denied_xpaths
+            ),
+            f"Expected 'Access Denied' to be in browser contents: {self.browser.page_source}",
+        )
+
+    def test_user_cannot_access_console_without_correct_population(self):
+        default_population_user = p1_ui.PingOneUser(
+            session=self.p1_session,
+            environment_endpoints=self.p1_environment_endpoints,
+            username=f"pingaccess-default-pop-{self.tenant_name}",
+            roles=self.audit_role,
+        )
+        default_population_user.create()
+        self.addCleanup(default_population_user.delete)
+
+        self.wait_until_url_is_reachable(self.public_hostname)
+
+        p1_ui.login_as_pingone_user(
+            browser=self.browser,
+            console_url=self.public_hostname,
+            username=default_population_user.username,
+            password=default_population_user.password,
         )
 
         self.assertTrue(
