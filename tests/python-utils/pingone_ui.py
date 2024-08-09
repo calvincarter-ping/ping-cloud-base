@@ -149,12 +149,30 @@ class PingOneUITestConfig:
         # Do not create shadow external user, delete only in case it exists from a previous run
         self.shadow_external_user.delete()
 
+        # External IdP user without roles for P1-to-P1 SSO negative testing
+        self.no_role_external_user = PingOneUser(
+            session=self.session,
+            environment_endpoints=self.external_idp_endpoints,
+            username=f"{self.app_name}-no-role-external-idp-test-user-{self.tenant_name}",
+        )
+        self.no_role_external_user.delete()
+        self.no_role_external_user.create()
+        self.no_role_shadow_external_user = PingOneUser(
+            session=self.session,
+            environment_endpoints=self.p1as_endpoints,
+            username=f"{self.no_role_external_user.username}-{self.tenant_name}",
+        )
+        # Do not create shadow external user, delete only in case it exists from a previous run
+        self.no_role_shadow_external_user.delete()
+
     def delete_users(self):
         self.local_user.delete()
         self.external_user.delete()
         self.shadow_external_user.delete()
         self.no_role_user.delete()
         self.default_pop_user.delete()
+        self.no_role_external_user.delete()
+        self.no_role_shadow_external_user.delete()
 
 
 class PingOneUser:
@@ -336,6 +354,29 @@ class ConsoleUILoginTestBase(unittest.TestCase):
                 ),
                 f"{self.config.app_name} console was not displayed when attempting to access "
                 f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+            )
+        except NoSuchElementException:
+            self.fail(
+                f"{self.config.app_name} console was not displayed when attempting to access "
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+            )
+
+    def test_external_user_without_role_cannot_access_console(self):
+        # Wait for admin console to be reachable if it has been restarted by another test
+        self.wait_until_url_is_reachable(self.config.console_url)
+        try:
+            login_from_external_idp(
+                browser=self.browser,
+                console_url=self.config.console_url,
+                username=self.config.no_role_external_user.username,
+                password=self.config.no_role_external_user.password,
+            )
+            self.assertTrue(
+                any_browser_element_displayed(
+                    self.browser, self.config.access_denied_xpaths
+                ),
+                f"Expected '{self.config.access_denied_xpaths}' to be in browser contents: "
+                f"{self.browser.page_source}",
             )
         except NoSuchElementException:
             self.fail(
