@@ -6,6 +6,10 @@ from selenium.common.exceptions import NoSuchElementException
 import pingone_ui as p1_ui
 
 
+@unittest.skipIf(
+    os.environ.get("ENV_TYPE") == "customer-hub",
+    "Customer-hub CDE detected, skipping test module",
+)
 class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
     @classmethod
     def setUpClass(cls) -> None:
