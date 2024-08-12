@@ -1,8 +1,6 @@
 import os
 import unittest
 
-from selenium.common.exceptions import NoSuchElementException
-
 import pingone_ui as p1_ui
 
 
