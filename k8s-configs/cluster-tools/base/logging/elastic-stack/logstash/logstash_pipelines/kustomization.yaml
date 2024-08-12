@@ -6,5 +6,6 @@ resources:
 - main
 - customer
 - s3
-- newrelic
+- dlq
+- cloudwatch
 - dlq
