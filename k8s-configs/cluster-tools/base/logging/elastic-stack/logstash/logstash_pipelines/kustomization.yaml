@@ -7,5 +7,4 @@ resources:
 - customer
 - s3
 - cloudwatch
-- newrelic
 - dlq
