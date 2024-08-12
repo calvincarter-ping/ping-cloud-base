@@ -2,7 +2,6 @@ import os
 import unittest
 
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
 
 import pingone_ui as p1_ui
 
@@ -45,16 +44,19 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
         ping_user.create(add_p1_role=True)
         self.addCleanup(ping_user.delete)
 
+        self.wait_until_url_is_reachable(self.console_url)
         self.pingone_login(username=ping_user.username, password=ping_user.password)
         self.browser.get(self.console_url)
         try:
             self.assertTrue(
                 p1_ui.any_browser_element_displayed(self.browser, self.config.access_granted_xpaths),
-                f"Applications were not visible on ArgoCD console 'Applications' page when attempting to access {self.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"Applications were not visible on ArgoCD console 'Applications' page when attempting to access "
+                f"{self.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
         except NoSuchElementException:
             self.fail(
-                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.console_url}. "
+                f"SSO may have failed. Browser contents: {self.browser.page_source}",
             )
 
 
