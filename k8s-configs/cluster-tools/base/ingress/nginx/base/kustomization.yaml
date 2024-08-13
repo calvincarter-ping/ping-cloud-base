@@ -251,6 +251,7 @@ patches:
       path: /spec/template/spec/containers/0/securityContext/runAsGroup
       value: 101
 
+    # Use topology Spread Constraints to spread pods accross az
     - op: add
       path: /spec/template/spec/topologySpreadConstraints
       value:
