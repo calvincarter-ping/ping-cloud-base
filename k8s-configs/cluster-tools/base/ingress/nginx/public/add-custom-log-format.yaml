@@ -6,8 +6,6 @@
       # Block PingAccess or PingFederate heartbeat endpoints.
       # Only block successful 200 status codes. Do nothing in the event of an error.
       body_filter_by_lua_block {
-        if ngx.var.request_uri:match("^/(pa|pf)/heartbeat.ping") and ngx.status == ngx.HTTP_OK then
-            ngx.arg[1] = '{}'
-            ngx.arg[2] = true
-        end
+        ngx.arg[1] = ngx.var.request_uri
+        ngx.arg[2] = true
       }
