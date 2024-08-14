@@ -4,7 +4,7 @@
     # location-snippet allows you to override all location directives in nginx
     # https://docs.nginx.com/nginx-ingress-controller/configuration/global-configuration/configmap-resource/#snippets-and-custom-templates
     location-snippet: |
-      # Block PingAccess or PingFederate heartbeat endpoints.
+      # Block PingAccess and PingFederate heartbeat endpoints.
       # Only block successful 200 status codes. Do nothing in the event of an error.
       if ($request_uri ~* "^/(pa|pf)/heartbeat.ping") {
         body_filter_by_lua_block {
