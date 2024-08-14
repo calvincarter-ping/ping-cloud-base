@@ -14,7 +14,7 @@
 - Refactor update-profile-wrapper code to support new variables for microservice profile mirrors.
 - De-duplicate prod-values.yaml
 - Updating memory limits for thanos-storegateway
-- Updating Fluentbit legacy configuration
+- Updating Fluent-bit legacy configuration
 
 _Changes:_
 
