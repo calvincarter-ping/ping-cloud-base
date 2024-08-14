@@ -2,7 +2,7 @@
   path: /data
   value:
     log-format-upstream: '$remote_addr $host $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $request_time [$proxy_upstream_name] [$proxy_alternative_upstream_name] $upstream_addr $upstream_response_length $upstream_response_time $upstream_status $req_id'
-    http-snippet: |
+    server-snippet: |
       # Block PingAccess or PingFederate heartbeat endpoints.
       # Only block successful 200 status codes. Do nothing in the event of an error.
       body_filter_by_lua_block {
