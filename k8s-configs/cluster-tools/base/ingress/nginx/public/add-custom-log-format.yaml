@@ -5,8 +5,6 @@
     server-snippet: |
       # Block PingAccess or PingFederate heartbeat endpoints.
       # Only block successful 200 status codes. Do nothing in the event of an error.
-      location ~* "^/(pa|pf)/heartbeat.ping" {
         body_filter_by_lua_block {
-          if ngx.status == ngx.HTTP_OK then ngx.arg[1] = '{}'; ngx.arg[2] = true; end 
+          -- Calvin Carter Test
         }
-      }
