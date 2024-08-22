@@ -66,7 +66,6 @@ _Changes:_
 - [X] PDO-7806 added additional labels in logstash config
 - [X] PDO-8164 OpenSearch: Implement Version 2.11.1
 
-
 ### 1.19.0.0
 
 - Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
