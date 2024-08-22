@@ -13,6 +13,8 @@
 # To obtain the P14C environment ID for a given region and to register/obtain client credentials for that environment,
 # open an SRE ticket or contact the Beluga management team.
 
+### FILE UPDATED TO ALLOW MULTI PTA CONFIG COMPATIBLE WITH PD v10 ###
+
 dsconfig create-pass-through-authentication-handler \
     --handler-name "PingOne for Customers Pass-Through Authentication Handler"  \
     --type ping-one  \
@@ -35,7 +37,9 @@ dsconfig create-plugin \
     --type pluggable-pass-through-authentication  \
     --set enabled:true  \
     --set "pass-through-authentication-handler:P1AS Aggregate PTA Handler"  \
-    --set override-local-password:true
+    --set override-local-password:true \
+    --set update-local-password:false \
+    --set try-local-bind:true
 
 dsconfig create-plugin \
    --plugin-name 'PingOne for Customers Pass-Through Authentication Pre-Parse Plugin' \
