@@ -2,9 +2,14 @@ workflow:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
+    - if: $CI_COMMIT_MESSAGE =~ /\[skip_pipeline\]/
+      when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
-    - when: always
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BEFORE_SHA != "0000000000000000000000000000000000000000"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: always
 
 ## Pipeline stages ##
 stages:
@@ -156,7 +161,7 @@ pa-was-integration-tests:
   - monitoring
   - health
   - pingone
-  - ingress-nginx
+#  - ingress-nginx
   - cert-manager
 
 #################################################
