@@ -153,6 +153,8 @@ rules:
     - get
     - create
     - patch
+    - list
+    - watch
   - apiGroups:
     - ""
     - "apps"
