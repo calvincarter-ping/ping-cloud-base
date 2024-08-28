@@ -5,10 +5,51 @@ metadata:
 data:
   backup-cronjob.sh: |-
     #!/bin/sh
+    
+    # Function to get the full pod name based on the prefix
+    get_pod_name() {
+      kubectl get pods -n "$NAMESPACE" --no-headers -o custom-columns=":metadata.name" | grep "^$POD_PREFIX" | head -n 1
+    }
+
+    # Function to check pod status
+    check_pod_status() {
+      kubectl get pod "$1" -n "$NAMESPACE" -o jsonpath='{.status.phase}'
+    }
+    
+    # Variables
+    POD_PREFIX="pingdirectory-backup"  # Known prefix of the pod name that backup Job will recreate
+    PVC_NAME="pingdirectory-backup"
+    NAMESPACE="ping-cloud"
+    
+    #    POD_NAME=$(get_pod_name)
+    #    if [ -n "$POD_NAME" ]; then
+    #        kubectl delete pvc "$PVC_NAME" -n "$NAMESPACE"
+    #    fi
 
     # Execute backup-ops.sh script (which kicks off the k8s pingdirectory-backup Job)
     SCRIPT="/opt/in/backup-ops.sh"
     test -x ${SCRIPT} && ${SCRIPT} "scheduled-cronjob"
+
+    # Wait for pod to be in Terminating or Completed state
+    while true; do
+      POD_NAME=$(get_pod_name)
+  
+      if [ -z "$POD_NAME" ]; then
+        echo "Pod with prefix $POD_PREFIX not found. Waiting..."
+      else
+        POD_STATUS=$(check_pod_status "$POD_NAME")
+  
+        if [ "$POD_STATUS" = "Terminating" ] || [ "$POD_STATUS" = "Succeeded" ]; then
+          echo "Pod $POD_NAME is in $POD_STATUS state. Proceeding to delete PVC $PVC_NAME."
+          kubectl delete pvc "$PVC_NAME" -n "$NAMESPACE"
+          break
+        else
+          echo "Pod $POD_NAME is in $POD_STATUS state. Waiting..."
+        fi
+      fi
+  
+      sleep 5  # Wait for 5 seconds before checking again
+    done
 
 ---
 
