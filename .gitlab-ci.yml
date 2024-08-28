@@ -1,14 +1,11 @@
 workflow:
   rules:
-    - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+    - if: $CI_COMMIT_MESSAGE =~ /\[skip_pipeline\]/
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
-    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BEFORE_SHA != "0000000000000000000000000000000000000000"
-      when: always
-    - if: $CI_PIPELINE_SOURCE == "web"
-      when: always
-
+    - when: always
+    
 ## Pipeline stages ##
 stages:
 - compile
@@ -25,7 +22,7 @@ stages:
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
   CLUSTER_POSTFIXES: '_9 _10 _11 _12'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v2.1-release-branch
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v2.0-release-branch
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
