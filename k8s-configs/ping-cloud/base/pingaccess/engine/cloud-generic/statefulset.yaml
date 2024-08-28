@@ -150,9 +150,6 @@ spec:
             memory: "2Gi"
             cpu: 1
         volumeMounts:
-        - name: pingaccess-init
-          mountPath: /opt/staging/hooks/logger.lib.sh
-          subPath: logger.lib.sh
         - name: ssh-dir
           mountPath: /home/ping/.ssh
         - name: shared-dir
@@ -160,6 +157,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
         - name: data-dir
           mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
           subPath: jmx_prometheus_javaagent-0.14.0.jar
