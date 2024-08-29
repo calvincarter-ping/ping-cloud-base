@@ -1445,6 +1445,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     # Remove '-latest' from app_repo_branch if present
     app_repo_branch="${app_repo_branch%-latest}"
 
+    # Remove 'v2.1-' from app_repo_branch if present
+    app_repo_branch="${app_repo_branch#v2.1-}"
+
     # Remove 'p1as-' prefix from repository names
     product_name=${app_repo#p1as-}
     # Clone microservice repo at the new version
