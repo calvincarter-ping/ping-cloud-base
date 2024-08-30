@@ -1,0 +1,15 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  template:
+    spec:
+     tolerations:
+       - key: "pingidentity.com/admin-ingress-only"
+         operator: "Equal"
+         value: "true"
+         effect: "NoSchedule"
+

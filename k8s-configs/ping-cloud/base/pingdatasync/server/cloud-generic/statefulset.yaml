@@ -23,6 +23,22 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccountName: ping-serviceaccount
+      affinity:
+              # this does not apply in dev/test and is removed via kustomize
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: pingidentity.com/admin-ingress
+                    operator: In
+                    values:
+                      - "true"
+      # this does not apply in dev/test and is removed via kustomize
+      tolerations:
+        - key: "pingidentity.com/admin-ingress-only"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: wait-for-pds

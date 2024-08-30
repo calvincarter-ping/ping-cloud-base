@@ -68,6 +68,21 @@ patchesStrategicMerge:
           karpenter.sh/discovery: "${CLUSTER_NAME}"
     instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"
 
+
+- |-
+  apiVersion: karpenter.k8s.aws/v1beta1
+  kind: EC2NodeClass
+  metadata:
+    name: admin-ingress-only
+  spec:
+    securityGroupSelectorTerms:
+      - tags:
+          karpenter.sh/discovery: "${CLUSTER_NAME}"
+    subnetSelectorTerms:
+      - tags:
+          karpenter.sh/discovery: "${CLUSTER_NAME}"
+    instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"
+
 - |-
   apiVersion: karpenter.k8s.aws/v1beta1
   kind: EC2NodeClass
