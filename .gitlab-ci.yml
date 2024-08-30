@@ -265,12 +265,11 @@ merge-branch:   # Merge current release branch to next upstream release branch
   needs:
     - cleanup
   script:
-    - source ci-scripts/release/merge-branch.sh
+    - AUTO_MERGE=true source ci-scripts/release/merge-branch.sh
     - merge_release_branch
   variables:
     CREATE_MR: "yes"
-  rules:
-    - if: $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/
   only:
     variables:
       - $AUTO_MERGE == "true"
+      - /^.*-release-branch$/
