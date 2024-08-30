@@ -1,6 +1,6 @@
 workflow:
   rules:
-    - if: $CI_COMMIT_MESSAGE =~ /\[skip_pipeline\]/
+    - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
@@ -16,10 +16,12 @@ stages:
 - integration-test
 - chaos
 - cleanup
+- merge-branch
 - security # move this to the end and we'll use the "needs" keyword to allow it to run earlier and out of order
 
 ## Global environment variables ##
 variables:
+  AUTO_MERGE: $AUTO_MERGE
   DELETE_ENV_AFTER_PIPELINE: 'true'
   CLUSTER_POSTFIXES: '_9 _10 _11 _12'
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v1.19-release-branch
@@ -255,3 +257,20 @@ cleanup:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
   dependencies:
     - find-cluster
+
+merge-branch:   # Merge current release branch to next upstream release branch
+  stage: merge-branch
+  tags:
+    - platform-publish-docker
+  needs:
+    - cleanup
+  script:
+    - source ci-scripts/release/merge-branch.sh
+    - merge_release_branch
+  variables:
+    CREATE_MR: "yes"
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/
+  only:
+    variables:
+      - $AUTO_MERGE == "true"
