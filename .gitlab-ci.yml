@@ -272,4 +272,4 @@ merge-branch:   # Merge current release branch to next upstream release branch
   only:
     variables:
       - $AUTO_MERGE == "true"
-      - /^.*-release-branch$/
+      - $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/
