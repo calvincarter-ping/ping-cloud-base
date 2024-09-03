@@ -5,8 +5,6 @@ kind: ConfigMap
 metadata:
   name: cluster-info
 data:
-  cluster.name: cluster_name
-  logs.region: region_name
   log.level: "error"
   read.head: "True"
   read.tail: "Off"
