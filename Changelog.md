@@ -16,6 +16,7 @@
 - De-duplicate prod-values.yaml
 - Updating memory limits for thanos-storegateway
 - Updating memory limits plus other enhancements for thanos-compactor
+- Update RBAC for p14c-bootstrap to allow ops on ingress resources
 
 _Changes:_
 
@@ -36,6 +37,7 @@ _Changes:_
 - [X] PDO-7671 Thanos: Compactor is erroring with not enough ephemeral-storage
 - [X] PDO-7672 Thanos: Metrics older than 15 days are still present
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
+- [X] PDO-7073 Update RBAC for p14c-bootstrap to allow ops on ingress resources
 
 ### 1.19.1.0
 
