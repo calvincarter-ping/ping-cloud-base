@@ -16,6 +16,7 @@
 - De-duplicate prod-values.yaml
 - Updating memory limits for thanos-storegateway
 - Updating memory limits plus other enhancements for thanos-compactor
+- Enable runtime bulkhead via API for PingFederate
 
 _Changes:_
 
@@ -35,6 +36,7 @@ _Changes:_
 - [X] PDO-7669 Thanos: Storage Gateway crashlooping with OOM killed when choosing old range of data on Prometheus/Grafana UI
 - [X] PDO-7671 Thanos: Compactor is erroring with not enough ephemeral-storage
 - [X] PDO-7672 Thanos: Metrics older than 15 days are still present
+- [X] PDO-7683 Enable runtime bulkhead via API for PingFederate
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
 
 ### 1.19.1.0
