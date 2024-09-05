@@ -16,6 +16,7 @@
 - De-duplicate prod-values.yaml
 - Updating memory limits for thanos-storegateway
 - Updating memory limits plus other enhancements for thanos-compactor
+- Adding Cross zone load balancing and graceful shutdown to nginx
 - Enable runtime bulkhead via API for PingFederate
 
 _Changes:_
