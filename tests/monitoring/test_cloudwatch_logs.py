@@ -2,13 +2,12 @@ import unittest
 import os
 import json
 import boto3
-import k8s_utils
 from datetime import datetime, timedelta
 
 dt_now_ms = round(datetime.now().timestamp() * 1000)
 dt_past_ms = round((datetime.now() - timedelta(minutes=30)).timestamp() * 1000)
 
-class TestCloudWatchLogs(k8s_utils.K8sUtils):
+class TestCloudWatchLogs(unittest.TestCase):
     aws_region = os.environ.get("AWS_REGION", "us-west-2")
     k8s_cluster_name = os.environ.get("CLUSTER_NAME", "default-cluster")
     
