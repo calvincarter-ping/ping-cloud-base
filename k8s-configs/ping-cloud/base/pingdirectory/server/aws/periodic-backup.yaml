@@ -21,9 +21,10 @@ data:
     PVC_NAME="pingdirectory-backup"
     NAMESPACE="ping-cloud"
     
+    # Remove Pod and PVC if found in cluster
     #    POD_NAME=$(get_pod_name)
     #    if [ -n "$POD_NAME" ]; then
-    #        kubectl delete pvc "$PVC_NAME" -n "$NAMESPACE"
+    #        kubectl delete pod,pvc -l job-name=pingdirectory-backup -n ping-cloud
     #    fi
 
     # Execute backup-ops.sh script (which kicks off the k8s pingdirectory-backup Job)
@@ -73,7 +74,7 @@ spec:
       template:
         spec:
           serviceAccountName: pingdirectory-ops-serviceaccount
-          restartPolicy: OnFailure
+          restartPolicy: Never
           initContainers:
             - name: pingdirectory-init
               securityContext:
