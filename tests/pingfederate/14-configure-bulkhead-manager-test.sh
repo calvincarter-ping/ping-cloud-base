@@ -17,9 +17,9 @@ testBulkheadManagerExecution() {
   local container_name="pingfederate-admin"
   local script_path="/opt/staging/hooks/90-configure-bulkhead-manager.sh"
 
-  # Run the kubectl exec command
+  #Run the kubectl exec command
   output=$(kubectl exec "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -c "${container_name}" -- sh -c "${script_path}; status_code=\$?; echo Exit status: \$status_code")
-  
+
   # Capture the exit status from the output
   status_code=$(echo "$output" | grep "Exit status" | awk '{print $3}')
   
@@ -48,21 +48,13 @@ testBulkheadManagerWithAPI() {
 
   # Step 2: Verify if the environment variables were applied by querying the API
   echo "Verifying that the environment variables were applied using the API"
-  echo "${api_endpoint}"
-  
-  
-   #curl_output=$(curl -k --user "Administrator:${PF_ADMIN_USER_PASSWORD}" \
-  curl_output=$(kubectl exec -it "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -c "${container_name}" -- sh -c \
-    "curl -k --user \"Administrator:${PF_ADMIN_USER_PASSWORD}\" \
+
+  curl_output=$(curl -k --user "Administrator:${PF_ADMIN_USER_PASSWORD}" \
     -X 'GET' \
     "${api_endpoint}" \
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
-    -H 'X-XSRF-Header: PingFederate'")
-
-  # Display the result and verify
-  echo "API Response:"
-  echo "${curl_output}"
+    -H 'X-XSRF-Header: PingFederate')
 
   # Check if the threshold value we set is present in the API output
   echo "${curl_output}" | grep -q '"id":"ThreadPoolUsageWarningThreshold".*"stringValue":"0.3"'
