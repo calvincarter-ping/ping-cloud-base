@@ -17,7 +17,7 @@ helmCharts:
     valuesInline:
       ecrRegistryName: "705370621539.dkr.ecr.us-west-2.amazonaws.com/dev"
       profileBranch: PDO-8193-fix-helm-feature-charts
-    repo: oci://${ECR_REGISTRY_NAME}/dev/p1as-pingdirectory
+    repo: oci://705370621539.dkr.ecr.us-west-2.amazonaws.com/dev/p1as-pingdirectory
 
 ### This field is used to trigger a resync of the p1as-pingdirectory helm chart ###
 configMapGenerator:
