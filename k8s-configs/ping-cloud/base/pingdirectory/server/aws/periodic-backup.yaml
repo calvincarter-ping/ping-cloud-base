@@ -74,7 +74,7 @@ spec:
       template:
         spec:
           serviceAccountName: pingdirectory-ops-serviceaccount
-          restartPolicy: Never
+          restartPolicy: OnFailure
           initContainers:
             - name: pingdirectory-init
               securityContext:
