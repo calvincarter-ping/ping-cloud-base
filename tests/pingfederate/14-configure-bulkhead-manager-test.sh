@@ -14,12 +14,11 @@ fi
 testBulkheadManagerExecution() {
   local expected_exit_code=0
   local pod_name="pingfederate-admin-0"
-  local namespace="ping-cloud"
   local container_name="pingfederate-admin"
   local script_path="/opt/staging/hooks/90-configure-bulkhead-manager.sh"
 
   # Run the kubectl exec command
-  output=$(kubectl exec "${pod_name}" -n "${namespace}" -c "${container_name}" -- sh -c "${script_path}; status_code=\$?; echo Exit status: \$status_code")
+  output=$(kubectl exec "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -c "${container_name}" -- sh -c "${script_path}; status_code=\$?; echo Exit status: \$status_code")
   
   # Capture the exit status from the output
   status_code=$(echo "$output" | grep "Exit status" | awk '{print $3}')
@@ -32,18 +31,16 @@ testBulkheadManagerExecution() {
 testBulkheadManagerWithAPI() {
   local expected_exit_code=0
   local pod_name="pingfederate-admin-0"
-  local namespace="ping-cloud"
   local container_name="pingfederate-admin"
   local script_path="/opt/staging/hooks/90-configure-bulkhead-manager.sh"
   local bulkhead_env_var="PF_BULKHEAD_THREAD_POOL_USAGE_WARNING_THRESHOLD=0.3"
   local api_endpoint="https://pingfederate-admin:9999/pf-admin-api/v1/configStore/com.pingidentity.common.util.resiliency.BulkheadManagerImpl"
-  #local api_endpoint="https://localhost:9999/pf-admin-api/v1/configStore/com.pingidentity.common.util.resiliency.BulkheadManagerImpl/Enabled"
   local curl_output
-  local PF_ADMIN_USER_PASSWORD="2FederateM0re"
+  local PF_ADMIN_USER_PASSWORD=$(kubectl get secret pingcommon-passwords -o jsonpath='{.data.PF_ADMIN_USER_PASSWORD}' -n ping-cloud | base64 --decode)
 
   # Step 1: Export environment variable and execute the bulkhead manager script
   echo "Running bulkhead manager script with environment variable: ${bulkhead_env_var}"
-  kubectl exec "${pod_name}" -n "${namespace}" -c "${container_name}" -- sh -c "export ${bulkhead_env_var}; ${script_path}; status_code=\$?; echo Exit status: \$status_code"
+  kubectl exec "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -c "${container_name}" -- sh -c "export ${bulkhead_env_var}; ${script_path}; status_code=\$?; echo Exit status: \$status_code"
 
   # Capture the exit status from the output
   status_code=$(echo "$output" | grep "Exit status" | awk '{print $3}')
@@ -51,14 +48,17 @@ testBulkheadManagerWithAPI() {
 
   # Step 2: Verify if the environment variables were applied by querying the API
   echo "Verifying that the environment variables were applied using the API"
+  echo "${api_endpoint}"
   
-  #curl_output=$(kubectl exec -it "${pod_name}" -n "${namespace}" -c "${container_name}" -- sh -c \
-   curl_output=$(curl -k --user "Administrator:${PF_ADMIN_USER_PASSWORD}" \
+  
+   #curl_output=$(curl -k --user "Administrator:${PF_ADMIN_USER_PASSWORD}" \
+  curl_output=$(kubectl exec -it "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -c "${container_name}" -- sh -c \
+    "curl -k --user \"Administrator:${PF_ADMIN_USER_PASSWORD}\" \
     -X 'GET' \
-    '${api_endpoint}' \
+    "${api_endpoint}" \
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
-    -H 'X-XSRF-Header: PingFederate')
+    -H 'X-XSRF-Header: PingFederate'")
 
   # Display the result and verify
   echo "API Response:"
@@ -71,6 +71,25 @@ testBulkheadManagerWithAPI() {
   # Assert the API status
   assertEquals "Failed to verify the bulkhead configuration via API." 0 "${api_status}"
 }
+
+# # Negative Test: Script should fail when running bulkhead script with incorrect environment variable types
+# testBulkheadManagerWithIncorrectEnvVar() {
+#   local expected_exit_code=1  # We expect the script to fail, so exit code should be 1
+#   local pod_name="pingfederate-admin-0"
+#   local container_name="pingfederate-admin"
+#   local script_path="/opt/staging/hooks/90-configure-bulkhead-manager.sh"
+#   local incorrect_env_var="BULKHEAD_THRESHOLD=abc123"  # Incorrect type for the environment variable
+
+#   # Step 1: Export incorrect environment variable and execute the bulkhead manager script
+#   echo "Running bulkhead manager script with incorrect environment variable: ${incorrect_env_var}"
+#   kubectl exec "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -c "${container_name}" -- sh -c "export ${incorrect_env_var}; ${script_path}; status_code=\$?; echo Exit status: \$status_code"
+
+#   # Capture the exit status from the output
+#   bulkhead_status=$(echo "$output" | grep "Exit status" | awk '{print $3}')
+
+#   # Step 2: Check if the exit code is as expected (1 for failure)
+#   assertEquals "Bulkhead Manager script should fail due to incorrect environment variable, but it returned exit status: ${bulkhead_status}" "${expected_exit_code}" "${bulkhead_status}"
+# }
 
 # Shift arguments before loading shunit
 shift $#
