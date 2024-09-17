@@ -1443,7 +1443,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   PROFILE_REPO_MIRROR_DIR="$(mktemp -d)"
   for app_repo in ${PROFILE_REPO_MIRRORS[@]}; do
     # If feature-branch chart try to get profile branch from kustomization.yaml key
-    app_repo_branch=$(yq e '.helmCharts[].profilebranch' ./templates/${app_repo}/region/kustomization.yaml)
+    app_repo_branch=$(yq e '.helmCharts[].valuesInline.profileBranch' ./templates/p1as-pingdirectory/region/kustomization.yaml)
     if test -z "${app_repo_branch}"; then
       app_repo_branch=$(yq e '.helmCharts[].version' ./templates/${app_repo}/region/kustomization.yaml)
       # Remove '-latest' from app_repo_branch if present
