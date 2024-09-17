@@ -34,7 +34,7 @@ testBulkheadManagerWithAPI() {
   local container_name="pingfederate-admin"
   local script_path="/opt/staging/hooks/90-configure-bulkhead-manager.sh"
   local bulkhead_env_var="PF_BULKHEAD_THREAD_POOL_USAGE_WARNING_THRESHOLD=0.3"
-  local api_endpoint="https://pingfederate-admin:9999/pf-admin-api/v1/configStore/com.pingidentity.common.util.resiliency.BulkheadManagerImpl"
+  local api_endpoint="${PINGFEDERATE_ADMIN_API}/configStore/com.pingidentity.common.util.resiliency.BulkheadManagerImpl"
   local curl_output
   local PF_ADMIN_USER_PASSWORD=$(kubectl get secret pingcommon-passwords -o jsonpath='{.data.PF_ADMIN_USER_PASSWORD}' -n ping-cloud | base64 --decode)
 
