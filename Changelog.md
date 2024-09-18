@@ -20,11 +20,7 @@
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
 - Disabling anonymous login for OpenSearch and removing prometheus_read role
-<<<<<<< Changelog.md
 - log4j2.xml.subst root logger follows PF_DEBUG_LEVEL
-=======
-- Disabling anonymous login for OpenSearch and removing prometheus_read role
->>>>>>> Changelog.md
 
 _Changes:_
 
