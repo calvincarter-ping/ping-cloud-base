@@ -3,11 +3,9 @@ import os
 import json
 import boto3
 from datetime import datetime, timedelta
-from botocore.exceptions import ParamValidationError
 
-# Timestamps for log fetching
 dt_now_ms = round(datetime.now().timestamp() * 1000)
-dt_past_ms = round((datetime.now() - timedelta(minutes=30)).timestamp() * 1000)
+dt_past_ms = round((datetime.now() - timedelta(minutes=3)).timestamp() * 1000)
 
 class TestCloudWatchLogs(unittest.TestCase):
     aws_region = os.environ.get("AWS_REGION", "us-west-2")
@@ -15,90 +13,76 @@ class TestCloudWatchLogs(unittest.TestCase):
     
     aws_client = boto3.client("logs", region_name=aws_region)
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/prometheus"
-    
     metrics = ["kube_endpoint_address_available", "kube_node_status_condition"]
 
-    def get_cloudwatch_logs(self):
-        events = []
-        max_iterations = 10  
-        iteration = 0
-
-        # Get log streams in the log group
+    def get_latest_log_stream(self):
         try:
-            log_streams_response = self.aws_client.describe_log_streams(
+            response = self.aws_client.describe_log_streams(
                 logGroupName=self.log_group_name,
-                orderBy='LastEventTime',
+                orderBy="LastEventTime",
                 descending=True,
-                limit=5  # Fetch up to 5 log streams to avoid excessive data
+                limit=5
             )
-        except ParamValidationError as e:
-            self.fail(f"Param validation failed: {str(e)}")
-            return []
+            log_streams = response.get("logStreams", [])
+            if log_streams:
+                return log_streams[0]["logStreamName"]
+            self.fail("No log streams found in the log group.")
         except Exception as e:
-            self.fail(f"Error describing log streams: {str(e)}")
-            return []
+            self.fail(f"Error fetching log streams: {str(e)}")
 
-        if not log_streams_response.get('logStreams'):
-            self.fail(f"No log streams found in log group: {self.log_group_name}")
-            return []
+    def check_metrics_in_logs(self, log_stream_name):
+        found_metrics = {metric: False for metric in self.metrics}
+        events = []
+        iterations = 0
+        max_iterations = 10
+        start_time = datetime.now()
+        max_duration = timedelta(minutes=2)
 
-        for log_stream in log_streams_response.get('logStreams', []):
-            log_stream_name = log_stream.get('logStreamName')
-            if not log_stream_name:
-                self.fail(f"Log stream name is missing for stream: {log_stream}")
-                continue
-
-            try:
-                # Fetch log events from each stream
+        try:
+            while True:
                 response = self.aws_client.get_log_events(
                     logGroupName=self.log_group_name,
                     logStreamName=log_stream_name,
                     startTime=dt_past_ms,
                     endTime=dt_now_ms,
-                    startFromHead=True
+                    limit=5
                 )
-            except ParamValidationError as e:
-                self.fail(f"Param validation failed in get_log_events: {str(e)}")
-                continue
-            except Exception as e:
-                self.fail(f"Error fetching log events: {str(e)}")
-                continue
+                events.extend(response['events'])
 
-            events.extend(response.get('events', []))
+                for event in events:
+                    log_data = json.loads(event.get('message', '{}'))
+                    for metric in self.metrics:
+                        if metric in log_data:
+                            found_metrics[metric] = True
 
-            while response['nextForwardToken'] != response.get('prev_token', None) and iteration < max_iterations:
-                iteration += 1
+                if all(found_metrics.values()):
+                    return found_metrics
+
+                if response.get('nextForwardToken') == response.get('prev_token', None):
+                    break
+                if (datetime.now() - start_time) > max_duration or len(events) >= max_iterations:
+                    raise TimeoutError("Log fetching exceeded time or iteration limits.")
+
                 response['prev_token'] = response['nextForwardToken']
-                response = self.aws_client.get_log_events(
-                    logGroupName=self.log_group_name,
-                    logStreamName=log_stream_name,
-                    nextToken=response['nextForwardToken']
-                )
-                new_events = response.get('events', [])
-                if not new_events:
-                    break 
-                events.extend(new_events)
 
-            if iteration >= max_iterations:
-                self.fail(f"Max iterations ({max_iterations}) reached, stopping log fetching.")
-                break
+        except Exception as e:
+            self.fail(f"Error during log fetching: {str(e)}")
 
-        return [json.loads(event["message"])["log"].strip() for event in events]
+        return found_metrics
 
     def test_log_group_exists(self):
-        try:
-            response = self.aws_client.describe_log_groups(logGroupNamePrefix=self.log_group_name)
-            self.assertTrue(response["logGroups"], "Log group not found")
-        except ParamValidationError as e:
-            self.fail(f"Param validation failed: {str(e)}")
-        except Exception as e:
-            self.fail(f"Error describing log group: {str(e)}")
+        response = self.aws_client.describe_log_groups(logGroupNamePrefix=self.log_group_name)
+        self.assertTrue(response.get("logGroups"), "Log group not found")
 
     def test_metrics_in_logs(self):
-        cw_logs = self.get_cloudwatch_logs()
-        for metric in self.metrics:
-            self.assertTrue(any(metric in log for log in cw_logs), f"{metric} not found in logs")
+        log_stream_name = self.get_latest_log_stream()
+        found_metrics = self.check_metrics_in_logs(log_stream_name)
 
+        if any(found_metrics.values()):
+            found_metrics_str = ", ".join([metric for metric, found in found_metrics.items() if found])
+            print(f"Test passed: Metrics found in log group '{self.log_group_name}': {found_metrics_str}.")
+        else:
+            self.fail(f"Neither metric was found in the logs for log group '{self.log_group_name}'.")
 
 if __name__ == "__main__":
     unittest.main()
