@@ -1442,9 +1442,10 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   # Create temp dir for cloned profiles
   PROFILE_REPO_MIRROR_DIR="$(mktemp -d)"
   for app_repo in ${PROFILE_REPO_MIRRORS[@]}; do
-    # If feature-branch chart try to get profile branch from kustomization.yaml key
+    # First try to get the branch from the profileBranch key if it exists
     app_repo_branch=$(yq e '.helmCharts[].valuesInline.profileBranch' ./templates/${app_repo}/region/kustomization.yaml)
-    if test -z "${app_repo_branch}"; then
+    # Otherwise, use the version key
+    if [ "${app_repo_branch}" == "null" ]; then
       app_repo_branch=$(yq e '.helmCharts[].version' ./templates/${app_repo}/region/kustomization.yaml)
       # Remove '-latest' from app_repo_branch if present
       app_repo_branch="${app_repo_branch%-latest}"
