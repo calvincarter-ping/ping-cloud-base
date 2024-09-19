@@ -24,10 +24,10 @@ patchesStrategicMerge:
               value: "${CLUSTER_NAME}"
             - name: CLUSTER_ENDPOINT
               value: "${CLUSTER_ENDPOINT}"
-            - name: DISABLE_WEBHOOK
+            - name: DISABLE_WEBHOOK 
               value: "true"
             - name: FEATURE_GATES
-              value: "Drift=true"
+              value: "SpotToSpotConsolidation=false"
             - name: INTERRUPTION_QUEUE
               value: "interruption-${CLUSTER_NAME}"
 - |-
