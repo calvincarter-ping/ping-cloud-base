@@ -41,7 +41,7 @@ patchesStrategicMerge:
       ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
 
 - |-
-  apiVersion: karpenter.k8s.aws/v1beta1
+  apiVersion: karpenter.k8s.aws/v1
   kind: EC2NodeClass
   metadata:
     name: default
@@ -55,7 +55,7 @@ patchesStrategicMerge:
     instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"
 
 - |-
-  apiVersion: karpenter.k8s.aws/v1beta1
+  apiVersion: karpenter.k8s.aws/v1
   kind: EC2NodeClass
   metadata:
     name: pd-only
@@ -69,7 +69,7 @@ patchesStrategicMerge:
     instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"
 
 - |-
-  apiVersion: karpenter.k8s.aws/v1beta1
+  apiVersion: karpenter.k8s.aws/v1
   kind: EC2NodeClass
   metadata:
     name: pgo-only
