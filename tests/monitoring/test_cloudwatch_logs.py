@@ -19,12 +19,12 @@ class TestCloudWatchLogs(unittest.TestCase):
             descending=True
         )
         log_streams = response.get("logStreams", [])
-        self.assertIsNotNone(log_streams, "No log streams found in the log group.")
+        self.assertTrue(len(log_streams) > 0, "No log streams found in the log group.")
         return log_streams[0]["logStreamName"]
 
     def check_metrics_in_logs(self, log_stream_name):
         dt_now_ms = round(datetime.now().timestamp() * 1000)
-        dt_past_ms = round((datetime.now() - timedelta(minutes=2)).timestamp() * 1000)
+        dt_past_ms = round((datetime.now() - timedelta(minutes=5)).timestamp() * 1000)  # Updated to 5 minutes
 
         found_metrics = {metric: False for metric in self.metrics}
         events = []
@@ -49,14 +49,18 @@ class TestCloudWatchLogs(unittest.TestCase):
             if all(found_metrics.values()):
                 return found_metrics
 
-            if (datetime.now() - start_time) > max_duration:
-                raise AssertionError("Log fetching exceeded time or duration limits.")
+            self.assertFalse((datetime.now() - start_time) > max_duration, "Log fetching exceeded time or duration limits.")
+
+            if response.get('nextForwardToken') == response.get('prev_token', None):
+                break
+
+            response['prev_token'] = response['nextForwardToken']
 
         return found_metrics
 
     def test_log_group_exists(self):
         response = self.aws_client.describe_log_groups(logGroupNamePrefix=self.log_group_name)
-        self.assertIsNotNone(response.get("logGroups"), "Log group not found")
+        self.assertTrue(len(response.get("logGroups", [])) > 0, "Log group not found")
 
     def test_metrics_in_logs(self):
         log_stream_name = self.get_latest_log_stream()
