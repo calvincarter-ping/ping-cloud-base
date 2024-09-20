@@ -10,6 +10,8 @@ spec:
     spec:
       expireAfter: Never
       nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
         name: default
       requirements:
         - key: "karpenter.k8s.aws/instance-category"
@@ -47,6 +49,8 @@ spec:
     spec:
       expireAfter: Never
       nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
         name: pgo-only
       taints:
         - effect: NoSchedule
@@ -88,6 +92,8 @@ spec:
     spec:
       expireAfter: Never
       nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
         name: pd-only
       taints:
         - effect: NoSchedule
@@ -122,6 +128,8 @@ metadata:
   name: default
 spec:
   amiFamily: AL2 # Amazon Linux 2
+  amiSelectorTerms:
+  - alias: al2@latest
   detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
@@ -145,6 +153,8 @@ metadata:
   name: pd-only
 spec:
   amiFamily: AL2 # Amazon Linux 2
+  amiSelectorTerms:
+  - alias: al2@latest
   detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
@@ -168,6 +178,8 @@ metadata:
   name: pgo-only
 spec:
   amiFamily: AL2 # Amazon Linux 2
+  amiSelectorTerms:
+  - alias: al2@latest
   detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
