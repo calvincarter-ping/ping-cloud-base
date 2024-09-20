@@ -24,7 +24,7 @@ class TestCloudWatchLogs(unittest.TestCase):
 
     def check_metrics_in_logs(self, log_stream_name):
         dt_now_ms = round(datetime.now().timestamp() * 1000)
-        dt_past_ms = round((datetime.now() - timedelta(minutes=5)).timestamp() * 1000)  # Updated to 5 minutes
+        dt_past_ms = round((datetime.now() - timedelta(minutes=5)).timestamp() * 1000) 
 
         found_metrics = {metric: False for metric in self.metrics}
         events = []
