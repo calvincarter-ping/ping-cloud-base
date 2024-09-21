@@ -8,7 +8,6 @@ spec:
         labels:
           nodeType: fleet
     spec:
-      expireAfter: Never
       nodeClassRef:
         name: default
       requirements:
@@ -45,7 +44,6 @@ spec:
         nodeType: postgres-operator
         pingidentity.com/pgo: "true"
     spec:
-      expireAfter: Never
       nodeClassRef:
         name: pgo-only
       taints:
@@ -69,10 +67,9 @@ spec:
     cpu: "24"
     memory: 50Gi
   disruption:
-    budgets:
-    - nodes: 10%
-    consolidateAfter: 30s
     consolidationPolicy: WhenEmpty
+    consolidateAfter: 30s
+    expireAfter: Never
 
 ---
 apiVersion: karpenter.sh/v1beta1
@@ -86,7 +83,6 @@ spec:
         nodeType: pingdirectory
         pingidentity.com/pd: "true"
     spec:
-      expireAfter: Never
       nodeClassRef:
         name: pd-only
       taints:
@@ -110,10 +106,9 @@ spec:
     cpu: "60"
     memory: 500Gi
   disruption:
-    budgets:
-    - nodes: 10%
-    consolidateAfter: 30s
     consolidationPolicy: WhenEmpty
+    consolidateAfter: 30s
+    expireAfter: Never
 
 ---
 apiVersion: karpenter.k8s.aws/v1beta1
