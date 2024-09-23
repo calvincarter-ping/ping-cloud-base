@@ -13,7 +13,7 @@ commonAnnotations:
 images:
   - name: public.ecr.aws/karpenter/controller
     newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/karpenter/controller
-    newTag: v1.0.2
+    newTag: 1.0.2
 
 patchesStrategicMerge:
 - |-
