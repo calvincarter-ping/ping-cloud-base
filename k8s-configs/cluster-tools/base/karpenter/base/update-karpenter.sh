@@ -5,15 +5,8 @@ KARPENTER_VERSION="${1}"
 
 USAGE="./update-karpenter.sh KARPENTER_VERSION
 
-       example: ./update-karpenter.sh  v0.29.2"
+       example: ./update-karpenter.sh  1.0.2"
 
-
-# if [[ ${KARPENTER_VERSION:0:1} == "v" ]]; then
-#     echo "Using Karpenter version: $KARPENTER_VERSION"
-# else
-#     echo "Usage: ${USAGE}"
-#     exit 1
-# fi
 
 helm template karpenter oci://public.ecr.aws/karpenter/karpenter --version ${KARPENTER_VERSION} --namespace kube-system \
     --set settings.aws.defaultInstanceProfile=KarpenterInstanceProfile \
