@@ -132,7 +132,7 @@ deploy:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
-  dependencies:
+  needs:
     - find-cluster
 
 ## Integration Test stage ##
@@ -145,8 +145,8 @@ pre-check:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
-  dependencies:
-    - find-cluster
+  needs:
+    - deploy
 
 ## PA-WAS stage ##
 pa-was-integration-tests:
@@ -156,8 +156,8 @@ pa-was-integration-tests:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
-  dependencies:
-    - find-cluster
+  needs:
+    - pre-check
 
 ################################################
 # All integration tests defined to run on the  #
@@ -216,8 +216,8 @@ pa-was-integration-tests:
   script:
     - export SKIP_TESTS="${BRANCH_SKIP_TESTS}"
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${TEST}
-  dependencies:
-    - find-cluster
+  needs:
+    - pa-was-integration-tests
   artifacts:
     name: "integration_test_logs"
     paths:
@@ -264,6 +264,8 @@ chaos-tests:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
   dependencies:
     - find-cluster
+  # needs:
+
 
 .cleanup-base:
   stage: cleanup
