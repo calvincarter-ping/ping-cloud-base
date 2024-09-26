@@ -132,7 +132,7 @@ deploy:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
-  needs:
+  dependencies:
     - find-cluster
 
 ## Integration Test stage ##
@@ -145,8 +145,8 @@ pre-check:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
-  needs:
-    - deploy
+  dependencies:
+    - find-cluster
 
 ## PA-WAS stage ##
 pa-was-integration-tests:
@@ -156,11 +156,11 @@ pa-was-integration-tests:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
-  needs:
-    - pre-check
+  dependencies:
+    - find-cluster
 
 ################################################
-# All integration tests defined to run on the  #
+# All integration tests defid to run on the  #
 # traditionally deployed P1AS                  #
 ################################################
 .all-tests: &all-tests
@@ -216,8 +216,8 @@ pa-was-integration-tests:
   script:
     - export SKIP_TESTS="${BRANCH_SKIP_TESTS}"
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${TEST}
-  needs:
-    - pa-was-integration-tests
+  dependencies:
+    - find-cluster
   artifacts:
     name: "integration_test_logs"
     paths:
@@ -264,25 +264,24 @@ chaos-tests:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
   dependencies:
     - find-cluster
-  # needs:
-
 
 .cleanup-base:
   stage: cleanup
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
+  dependencies:
+    - find-cluster
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
 
 ## Cleanup stage that runs when everything has succeeded ##
 cleanup_on_success:
   extends: .cleanup-base
-  dependencies:
-    - find-cluster
 
-cleanup_on_failure:
+cleanup_on_compile_failure:
   extends: .cleanup-base
   needs:
     - find-cluster
+    - compile
   when: on_failure
