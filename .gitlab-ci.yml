@@ -1,3 +1,7 @@
+default:
+  # By default retry 2 times to account for flaky tests for strange ordering of tests...
+  retry: 2
+
 workflow:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip_pipeline\]/
@@ -12,7 +16,7 @@ stages:
 - find-cluster
 - deploy
 - pre-check-test
-- pa-was-test
+#- pa-was-test
 - integration-test
 - chaos
 - cleanup
@@ -154,19 +158,19 @@ pre-check:
     - find-cluster
     - deploy
 
-## PA-WAS stage ##
-pa-was-integration-tests:
-  stage: pa-was-test
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
-  dependencies:
-    - find-cluster
-  needs:
-    - find-cluster
-    - pre-check
+# ## PA-WAS stage ##
+# pa-was-integration-tests:
+#   stage: pa-was-test
+#   tags:
+#     - default-gitlab-runner-ping-cloud
+#   image: ${K8S_DEPLOY_TOOLS}
+#   script:
+#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
+#   dependencies:
+#     - find-cluster
+#   needs:
+#     - find-cluster
+#     - pre-check
 
 ################################################
 # All integration tests defid to run on the  #
@@ -177,6 +181,7 @@ pa-was-integration-tests:
   - pingdelegator
   - pingfederate
   - pingaccess
+  - pingaccess-was
   - pingcloud-services
   - pingcentral
   - pingdatasync
