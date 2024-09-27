@@ -31,7 +31,7 @@ patches:
 
 patchesStrategicMerge:
 - |-
-  apiVersion: karpenter.sh/v1beta1
+  apiVersion: karpenter.sh/v1
   kind: NodePool
   metadata:
     name: default
@@ -56,7 +56,7 @@ patchesStrategicMerge:
             values: ["7"]
 
 - |-
-  apiVersion: karpenter.sh/v1beta1
+  apiVersion: karpenter.sh/v1
   kind: NodePool
   metadata:
     name: pd-only
@@ -81,7 +81,7 @@ patchesStrategicMerge:
             values: ["7"]
 
 - |-
-  apiVersion: karpenter.sh/v1beta1
+  apiVersion: karpenter.sh/v1
   kind: NodePool
   metadata:
     name: pgo-only
