@@ -6,6 +6,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
+  job-type: cronjob
 spec:
   schedule: "30 */6 * * *"
   successfulJobsHistoryLimit: 0

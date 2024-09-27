@@ -7,8 +7,10 @@ metadata:
   labels:
     app: ping-cloud
     role: pingdirectory
+    job-type: job
 spec:
   ttlSecondsAfterFinished: 30
+  concurrencyPolicy: Forbid
   backoffLimit: 0
   template:
     spec:
