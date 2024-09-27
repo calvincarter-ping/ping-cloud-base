@@ -200,7 +200,8 @@ patches:
       path: /spec/template/spec/containers/0/ports/1
     - op: replace
       path: /spec/template/spec/containers/0/image
-      value: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev:v2.0-release-branch-latest
+      value: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/sigsci-nginx-ingress-controller:PDO-8144-upgrade-ingress
+      #value: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev:v2.0-release-branch-latest
     - op: replace
       path: /spec/template/spec/containers/0/imagePullPolicy
       value: Always
