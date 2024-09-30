@@ -25,6 +25,10 @@
         "@timestamp": {
           "type": "date"
         },
+        "app_timestamp": {
+          "type": "date",
+          "format": "yyyy-MM-dd'T'HH:mm:ss,SSS"
+        },
         "cluster_name": {
           "type": "text",
           "fields": {

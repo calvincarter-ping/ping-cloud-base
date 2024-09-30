@@ -253,6 +253,10 @@
         "@timestamp": {
           "type": "date"
         },
+        "app_timestamp": {
+          "type": "date",
+          "format": "yyyy-MM-dd'T'HH:mm:ss,SSS"
+        },
         "stream": {
           "type": "text",
           "fields": {
