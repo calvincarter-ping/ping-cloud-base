@@ -168,9 +168,6 @@ pa-was-integration-tests:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
   dependencies:
     - find-cluster
-  needs:
-    - find-cluster
-    - pre-check
 
 ################################################
 # All integration tests defid to run on the  #
