@@ -17,9 +17,8 @@ stages:
 - find-cluster
 - deploy
 - pre-check-test
-- pa-was-test
 - integration-test
-- chaos
+- pa-was-test-and-chaos
 - cleanup
 - security # move this to the end and we'll use the "needs" keyword to allow it to run earlier and out of order
 
@@ -161,7 +160,7 @@ pre-check:
 
 ## PA-WAS stage ##
 pa-was-integration-tests:
-  stage: pa-was-test
+  stage: pa-was-test-and-chaos
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -270,7 +269,7 @@ integration-tests-chub:
 
 ## Chaos testing stage ##
 chaos-tests:
-  stage: chaos
+  stage: pa-was-test-and-chaos
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
