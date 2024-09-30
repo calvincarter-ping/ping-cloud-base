@@ -15,15 +15,18 @@ testNginxIngressClass(){
     # Use xargs for whitespace trimming...
     num_ingress_classes=$(kubectl get ingressclass -A -o json | jq -r '.items[].metadata.name' | wc -l | xargs)
     expected_num_ingress_classes=2
-    assertEquals "${num_ingress_classes}" "${expected_num_ingress_classes}"
+    assertEquals "Number of ingress classes should have been two - public and private" "${num_ingress_classes}" "${expected_num_ingress_classes}"
 }
 
-# 
-#testMetadataEndpointReturns(){
-#kubectl get ingress metadata-ingress -n ping-cloud -o json | jq 'select(.spec.rules[].http.paths[].path == "/")'
-#}
+testMetadataEndpointReturns(){
+  # Get ingress URL to avoid hardcoding it
+  metadata_url=$(kubectl get ingress metadata-ingress -n ping-cloud -o jsonpath='{.spec.rules[*].host}')
+  assertNotNull "Metadata ingress URL was unexpectedly null!" "${metadata_url}"
 
-
+  # Make a request against the URL, check the response code is 200
+  metadata_resp_code=$(curl -s "https://${metadata_url}" -o /dev/null -w "%{http_code}")
+  assertEquals "Metadata response code was not 200" "200" "${metadata_resp_code}"
+}
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
