@@ -19,7 +19,7 @@ class TestCloudWatchLogs(unittest.TestCase):
         )
         log_groups = response.get("logGroups", [])
         self.assertTrue(len(log_groups) > 0, f"Log group '{self.log_group_name}' does not exist.")
-
+#logstream
     def get_all_log_streams(self):
         self.check_log_group_exists()
         
