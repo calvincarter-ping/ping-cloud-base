@@ -46,11 +46,11 @@ cleanup_resources() {
   fi
 }
 
-stop_if_another_backup_is_running() {
+check_if_another_backup_is_running() {
     # Determine if Cronjob Active
     num_of_active_cronjobs=$(kubectl get cronjob pingdirectory-periodic-backup -n ping-cloud -o jsonpath='{.status.active}' 2>/dev/null)
 
-    if [ -n "${num_of_active_cronjobs}" ] && [ "${num_of_active_cronjobs}" -eq 1 ]; then
+    if [ -n "${num_of_active_cronjobs}" ]; then
 
         # Determine if Manual Job is also running
         active_job_name=$(kubectl get jobs --selector=manual=true -o jsonpath='{.items[0].metadata.name}' -n ping-cloud 2>/dev/null)
@@ -62,8 +62,7 @@ stop_if_another_backup_is_running() {
 
         # Manual Job has been detected and is running.
         # Determine who ran 1st, Cronjob or Job? Avoid interrupting 1st backup that started.
-        active_cronjob_job_name=$(kubectl get jobs --selector=cronjob-name=pingdirectory-periodic-backup -o jsonpath='{.items[0].metadata.name}' -n ping-cloud 2>/dev/null)
-
+        active_cronjob_job_name=$(kubectl get jobs -o jsonpath='{.items[0].metadata.name}' -n ping-cloud 2>/dev/null | grep 'pingdirectory-periodic-backup-' | tail -n 1)
 
         second_job_by_name=$(kubectl get job "${active_cronjob_job_name}" "${active_job_name}" --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n ping-cloud 2>/dev/null | sed -n '2p')
 
@@ -91,9 +90,9 @@ stop_if_another_backup_is_running() {
 # This guarantees that cleanup_resources method will always run, even if the script exits due to an error
 trap "cleanup_resources" EXIT
 
-if ! stop_if_another_backup_is_running; then
+if ! check_if_another_backup_is_running; then
   SKIP_RESOURCE_CLEANUP="true"
-  exit 0
+  exit 0 # Exit graceful
 fi
 
 # Before backup begins. Ensure lingering resources of Job and PVC have been removed when running prior backup
