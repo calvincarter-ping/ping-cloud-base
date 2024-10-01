@@ -18,14 +18,23 @@ testNginxIngressClass(){
     assertEquals "Number of ingress classes should have been two - public and private" "${num_ingress_classes}" "${expected_num_ingress_classes}"
 }
 
-testMetadataEndpointReturns(){
+testNGINXService404(){
   # Get ingress URL to avoid hardcoding it
-  metadata_url=$(kubectl get ingress metadata-ingress -n ping-cloud -o jsonpath='{.spec.rules[*].host}')
-  assertNotNull "Metadata ingress URL was unexpectedly null!" "${metadata_url}"
+  nginx_service_url=$(kubectl get service ingress-nginx -n ingress-nginx-public -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
+  assertNotNull "NGINX service load balancer URL was unexpectedly null!" "${nginx_service_url}"
 
   # Make a request against the URL, check the response code is 200
-  metadata_resp_code=$(curl -s "https://${metadata_url}" -o /dev/null -w "%{http_code}")
-  assertEquals "Metadata response code was not 200" "200" "${metadata_resp_code}"
+  # Retry because nginx is restarting during this time...
+  nginx_service_resp_code=$(curl -k -s "https://${nginx_service_url}" -o /dev/null -w "%{http_code}")
+  if [[ "${nginx_service_resp_code}" == "000" ]]; then
+    echo "Error - Received response 000, curling with verbose before exiting..."
+    curl -v -k "https://${nginx_service_url}" -o /dev/null
+    exit 1
+  fi
+
+  # When going directly to the service, we should get a 404 from NGINX. This tests NGINX directly while removing 
+  # dependencies on underlying applications which might have issues (metadata service, pa-was, etc...)
+  assertEquals "NGINX service response code was not 404" "404" "${nginx_service_resp_code}"
 }
 
 # When arguments are passed to a script you must
