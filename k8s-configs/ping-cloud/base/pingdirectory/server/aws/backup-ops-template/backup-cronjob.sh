@@ -4,6 +4,7 @@
 BACKUP_NAME="pingdirectory-backup"
 NAMESPACE="ping-cloud"
 SCRIPT="/opt/in/backup-ops.sh"
+SKIP_RESOURCE_CLEANUP="false"
 
 # Functions
 # Function to get the full pod name based on the prefix name 'pingdirectory-backup'
@@ -28,6 +29,10 @@ get_backoff_limit() {
 
 # Function to delete Job and its PVC if detected in cluster
 cleanup_resources() {
+  if [ "${SKIP_RESOURCE_CLEANUP}" = "true" ]; then
+    return 0
+  fi
+
   # Remove Job and PVC if found in cluster
   kubectl get job "${BACKUP_NAME}" -n "${NAMESPACE}" > /dev/null 2>&1
   if [ "$?" -eq "0" ]; then
@@ -87,6 +92,7 @@ stop_if_another_backup_is_running() {
 trap "cleanup_resources" EXIT
 
 if ! stop_if_another_backup_is_running; then
+  SKIP_RESOURCE_CLEANUP="true"
   exit 0
 fi
 
