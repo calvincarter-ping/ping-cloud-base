@@ -1,0 +1,3 @@
+- op: replace
+  path: /spec/template/spec/containers/0/args/0
+  value: --resources=persistentvolumeclaims,persistentvolumes,pods,nodes,endpoints
