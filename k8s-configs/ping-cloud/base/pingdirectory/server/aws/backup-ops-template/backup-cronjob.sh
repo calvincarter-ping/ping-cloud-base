@@ -43,12 +43,12 @@ cleanup_resources() {
 
 stop_if_another_backup_is_running() {
     # Determine if Cronjob Active
-    num_of_active_cronjobs=$(kubectl get cronjob pingdirectory-periodic-backup -n ping-cloud -o jsonpath='{.status.active}')
+    num_of_active_cronjobs=$(kubectl get cronjob pingdirectory-periodic-backup -n ping-cloud -o jsonpath='{.status.active}' 2>/dev/null)
 
     if [ -n "${num_of_active_cronjobs}" ] && [ "${num_of_active_cronjobs}" -eq 1 ]; then
 
         # Determine if Manual Job is also running
-        active_job_name=$(kubectl get jobs --selector=manual=true -o jsonpath='{.items[0].metadata.name}' -n ping-cloud)
+        active_job_name=$(kubectl get jobs --selector=manual=true -o jsonpath='{.items[0].metadata.name}' -n ping-cloud 2>/dev/null)
 
         if [ -z "${active_job_name}" ]; then
             echo "Exiting because a second manual Job was not found"
@@ -57,17 +57,17 @@ stop_if_another_backup_is_running() {
 
         # Manual Job has been detected and is running.
         # Determine who ran 1st, Cronjob or Job? Avoid interrupting 1st backup that started.
-        active_cronjob_job_name=$(kubectl get jobs --selector=cronjob-name=pingdirectory-periodic-backup -o jsonpath='{.items[0].metadata.name}' -n ping-cloud)
+        active_cronjob_job_name=$(kubectl get jobs --selector=cronjob-name=pingdirectory-periodic-backup -o jsonpath='{.items[0].metadata.name}' -n ping-cloud 2>/dev/null)
 
 
-        second_job_by_name=$(kubectl get job "${active_cronjob_job_name}" "${active_job_name}" --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n ping-cloud | sed -n '2p')
+        second_job_by_name=$(kubectl get job "${active_cronjob_job_name}" "${active_job_name}" --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n ping-cloud 2>/dev/null | sed -n '2p')
 
         # Delete Second Job
         kubectl delete job "${second_job_by_name}" -n ping-cloud
 
     else # Cronjob is not active
 
-        second_job_by_name=$(kubectl get job --selector=manual=true --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n ping-cloud | sed -n '2p')
+        second_job_by_name=$(kubectl get job --selector=manual=true --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n ping-cloud 2>/dev/null | sed -n '2p')
 
         if [ -z "${second_job_by_name}" ]; then
             echo "Exiting because a second manual Job was not found"
