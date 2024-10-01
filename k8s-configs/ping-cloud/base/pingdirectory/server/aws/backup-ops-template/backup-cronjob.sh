@@ -41,10 +41,52 @@ cleanup_resources() {
   fi
 }
 
+stop_if_another_backup_is_running() {
+    # Determine if Cronjob Active
+    num_of_active_cronjobs=$(kubectl get cronjob periodic-backup -n ping-cloud -o jsonpath='{.status.active}')
+
+    if [ -n "${num_of_active_cronjobs}" ] && [ "${num_of_active_cronjobs}" -eq 1 ]; then
+
+        # Determine if Manual Job is also running
+        active_job_name=$(kubectl get jobs --selector=manual=true -o jsonpath='{.items[0].metadata.name}' -n ping-cloud)
+
+        if [ -z "${active_job_name}" ]; then
+            return 0 # Exit as no other Jobs are running
+        fi
+
+        # Manual Job has been detected and is running.
+        # Determine who ran 1st, Cronjob or Job? Avoid interrupting 1st backup that started.
+        active_cronjob_job_name=$(kubectl get jobs --selector=cronjob-name=pingdirectory-periodic-backup -o jsonpath='{.items[0].metadata.name}' -n ping-cloud)
+
+
+        second_job_by_name$(kubectl get job "${active_cronjob_job_name}" "${active_job_name}" --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n ping-cloud | sed -n '2p')
+
+        # Delete Second Job
+        kubectl delete job "${second_job_by_name}" -n ping-cloud
+
+    else # Cronjob is not active
+
+        second_job_by_name$(kubectl get job --selector=manual=true --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n ping-cloud | sed -n '2p')
+
+        if [ -z "${second_job_by_name}" ]; then
+            return 0 # Exit as no other Jobs are running
+        fi
+
+        # Delete Second Job
+        kubectl delete job "${second_job_by_name}" -n ping-cloud
+    fi
+
+    return 1 # Exit method as there is another Job running
+}
+
 ### Script execution begins here. ###
 
 # This guarantees that cleanup_resources method will always run, even if the script exits due to an error
 trap "cleanup_resources" EXIT
+
+if ! stop_if_another_backup_is_running; then
+  exit 0
+fi
 
 # Before backup begins. Ensure lingering resources of Job and PVC have been removed when running prior backup
 cleanup_resources
