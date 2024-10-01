@@ -24,7 +24,7 @@ pf.admin.https.port=${PF_ADMIN_PORT}
 # if pf.admin.baseurl is specified. But if only pf.admin.hostname is defined,
 # then the URL will be constructed the same way as in versions of PingFederate
 # before 10.3.
-pf.admin.baseurl=https://${PF_ADMIN_PUBLIC_HOSTNAME}:443
+pf.admin.baseurl=
 
 #
 # This property defines the IP address over which the PingFederate 
@@ -38,13 +38,7 @@ pf.console.bind.address=0.0.0.0
 #   ---------------
 # This property defines the browser window or tab title for the administrative 
 # console, used to make separate instances identifiable.
-pf.console.title=${PF_ADMIN_CONSOLE_TITLE}
-
-#
-# This property defines the name of the PingFederate environment that will be
-# displayed in the administrative console, used to make separate environments
-# easily identifiable.
-pf.console.environment=${PF_ADMIN_CONSOLE_ENVIRONMENT}
+pf.console.title=PingFederate
 
 #   HTML page background image
 #   ---------------
@@ -101,7 +95,7 @@ pf.console.login.mode=multiple
 #     RADIUS - External RADIUS authentication.
 #     OIDC   - External or Internal OIDC authentication.
 # Default is native.
-pf.console.authentication=${PF_CONSOLE_AUTHENTICATION}
+pf.console.authentication=LDAP
 
 # Authentication methods for the Admin API.
 #   Valid values are:
