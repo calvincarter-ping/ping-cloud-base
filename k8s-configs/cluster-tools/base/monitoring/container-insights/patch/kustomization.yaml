@@ -17,8 +17,12 @@ patchesStrategicMerge:
 
 patches:
   - target:
-      version: apps/v1
       kind: Deployment
-      name: kube-state-metrics
       namespace: kube-system
-    path: kube-state-metrics.yaml
+      name: kube-state-metrics
+    patch: |-
+      - op: merge
+        path: /spec/template/spec/containers/0/args/-
+        value:
+          - --resources=persistentvolumeclaims,persistentvolumes,pods,nodes,endpoints
+          - --namespaces-denylist=default, health, kube-node-lease, kube-public, kube-system, pod-reaper, newrelic
