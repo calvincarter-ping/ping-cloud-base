@@ -22,6 +22,7 @@ testNGINXService404(){
   # Get ingress URL to avoid hardcoding it
   nginx_service_url=$(kubectl get service ingress-nginx -n ingress-nginx-public -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
   assertNotNull "NGINX service load balancer URL was unexpectedly null!" "${nginx_service_url}"
+  echo "Got nginx service URL: ${nginx_service_url}"
 
   # Make a request against the URL, check the response code is 200
   # Retry because nginx is restarting during this time...
@@ -32,7 +33,7 @@ testNGINXService404(){
     exit 1
   fi
 
-  # When going directly to the service, we should get a 404 from NGINX. This tests NGINX directly while removing 
+  # When going directly to the service, we should get a 404 from NGINX. This tests NGINX directly while removing
   # dependencies on underlying applications which might have issues (metadata service, pa-was, etc...)
   assertEquals "NGINX service response code was not 404" "404" "${nginx_service_resp_code}"
 }
