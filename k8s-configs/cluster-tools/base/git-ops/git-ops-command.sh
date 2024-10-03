@@ -164,6 +164,20 @@ enable_external_ingress() {
 }
 
 ########################################################################################################################
+# Comments/Uncomment karpenter on base of flag
+#
+# Arguments
+#   $1 -> The directory containing kustomize file.
+########################################################################################################################
+toggleKarpenter(){
+  if [[ $(lowercase "${KARPENTER_ENABLED}") == "true" ]]; then
+        uncomment_lines_in_file "$1/base/cluster-tools/kustomization.yaml" "karpenter"
+      else
+        comment_lines_in_file "$1/base/cluster-tools/kustomization.yaml" "karpenter"
+      fi
+}
+
+########################################################################################################################
 # Disable grafana operator CRDs if not argo environment.
 ########################################################################################################################
 disable_grafana_crds() {
@@ -330,6 +344,7 @@ if test -f 'env_vars'; then
 
     feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
     enable_external_ingress
+    toggleKarpenter "${TMP_DIR}"
   )
   test $? -ne 0 && exit 1
 fi
