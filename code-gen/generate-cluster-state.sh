@@ -3,7 +3,7 @@
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
 "${EXIT_ON_FAILURE:-false}" && set -e
-
+exit 1
 ########################################################################################################################
 #
 # PREREQUISITES: Should be compatible with Debian.
