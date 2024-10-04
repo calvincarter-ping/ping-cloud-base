@@ -112,6 +112,7 @@ scan:
 ## Find cluster stage ##
 find-cluster:
   stage: find-cluster
+  # Run in parallel with compile stage
   needs: []
   tags:
     - default-gitlab-runner-ping-cloud
@@ -141,6 +142,7 @@ deploy:
 pre-check:
   stage: pre-check-test
   needs:
+    - find-cluster
     - deploy
   tags:
     - default-gitlab-runner-ping-cloud
