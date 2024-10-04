@@ -157,6 +157,7 @@ pa-was-integration-tests:
   stage: pa-was-test
   retry: 1
   needs:
+    - find-cluster
     - pre-check
   tags:
     - default-gitlab-runner-ping-cloud
