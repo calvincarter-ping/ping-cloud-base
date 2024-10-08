@@ -251,24 +251,6 @@ spec:
               memory: 100Mi
       terminationGracePeriodSeconds: 60
       volumes:
-<<<<<<< HEAD
-=======
-        # - name: logstash-pipeline-customer
-        #   configMap:
-        #     name: logstash-pipeline-customer
-        # - name: logstash-pipeline-s3
-        #   configMap:
-        #     name: logstash-pipeline-s3
-        # - name: logstash-pipeline-dlq
-        #   configMap:
-        #     name: logstash-pipeline-dlq
-        # - name: logstash-pipelines
-        #   configMap:
-        #     name: logstash-pipelines
-        # - name: logstash-search-template
-        #   configMap:
-        #     name: logstash-search-template
->>>>>>> c80d2e58f (Removing pipeline configMaps)
         - name: enrichment-cache
           configMap:
             name: enrichment-cache
