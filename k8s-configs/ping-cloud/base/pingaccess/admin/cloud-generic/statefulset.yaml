@@ -121,7 +121,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: pingaccess-upgrade
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess-was:pdo-4881-logger-fix
         imagePullPolicy: Always
         command: ["/bin/sh"]
         args: ["-c", " /opt/in/hooks/22-upgrade-server.sh "]
