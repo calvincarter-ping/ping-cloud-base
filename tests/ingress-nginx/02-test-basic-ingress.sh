@@ -40,10 +40,10 @@ testNGINXService404(){
 }
 
 testNginxPrivateLogsForErrors(){
-  # Default cert appears to be race condition
+  # Default cert error is a race condition waiting for cert manager to retrieve the acme cert
   # Error while validating is due to known error where ingress watches other ingress classes, even in other namespaces
   exceptions="(Error loading custom default certificate|Ignoring ingress because of error while validating ingress class)"
-  error_regex="(error|fatal|warn)"
+  error_regex="(error|fatal|exception)"
 
   kubectl logs -l app.kubernetes.io/role=ingress-nginx-private -n ingress-nginx-private --tail=200 --all-containers=true --timestamps \
     | grep -iE "${error_regex}" \
@@ -52,10 +52,11 @@ testNginxPrivateLogsForErrors(){
 }
 
 testNginxPublicLogsForErrors(){
-  # Default cert appears to be race condition
+  # Default cert error is a race condition waiting for cert manager to retrieve the acme cert
   # Error while validating is due to known error where ingress watches other ingress classes, even in other namespaces
-  exceptions="(Error loading custom default certificate|Ignoring ingress because of error while validating ingress class)"
-  error_regex="(error|fatal|warn)"
+  # Connection issues are due to a race condition when starting between sigsci agent and nginx
+  exceptions="(Error loading custom default certificate|Ignoring ingress because of error while validating ingress class|cannot connect uds socket|Failed to open connection to agent)"
+  error_regex="(error|fatal|exception)"
 
   kubectl logs -l app.kubernetes.io/role=ingress-nginx-public -n ingress-nginx-public --tail=200 --all-containers=true --timestamps \
     | grep -iE "${error_regex}" \

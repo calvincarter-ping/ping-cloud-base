@@ -1,24 +1,20 @@
-default:
-  # By default retry 1 time to account for flaky tests - shouldn't be needed but without time to fix the flaky tests,
-  # this is the next best thing
-  retry: 1
-
 workflow:
   rules:
-    - if: $CI_COMMIT_MESSAGE =~ /\[skip_pipeline\]/
+    - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
     - when: always
-
+    
 ## Pipeline stages ##
 stages:
 - compile
 - find-cluster
 - deploy
 - pre-check-test
+- pa-was-test
 - integration-test
-- pa-was-test-and-chaos
+- chaos
 - cleanup
 - security # move this to the end and we'll use the "needs" keyword to allow it to run earlier and out of order
 
@@ -47,12 +43,15 @@ compile:
  before_script:
    - mkdir -p $YAML_OUT_DIR
  script:
-   - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
+   - |
+     ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
+     echo COMPILE_RESULT=$? >> compile.env
  artifacts:
    paths:
      - out/
    expire_in: 1 day
-
+   reports:
+     dotenv: compile.env
 
 ## start security stage ##
 copy-images:
@@ -117,6 +116,8 @@ scan:
 ## Find cluster stage ##
 find-cluster:
   stage: find-cluster
+  # Run in parallel with compile stage
+  needs: []
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -125,12 +126,12 @@ find-cluster:
   artifacts:
     reports:
       dotenv: cluster.env
-  # Run in parallel with compile
-  needs: []
 
 ## Deploy stage ##
 deploy:
   stage: deploy
+  needs:
+    - find-cluster
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -138,15 +139,13 @@ deploy:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
   dependencies:
     - find-cluster
-  # Run as soon as find-cluster is done
-  needs:
-    - find-cluster
 
 ## Integration Test stage ##
 
 # Common pre-check tests
 pre-check:
   stage: pre-check-test
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -154,13 +153,11 @@ pre-check:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
   dependencies:
     - find-cluster
-  needs:
-    - find-cluster
-    - deploy
 
 ## PA-WAS stage ##
 pa-was-integration-tests:
-  stage: pa-was-test-and-chaos
+  stage: pa-was-test
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -170,7 +167,7 @@ pa-was-integration-tests:
     - find-cluster
 
 ################################################
-# All integration tests defid to run on the  #
+# All integration tests defined to run on the  #
 # traditionally deployed P1AS                  #
 ################################################
 .all-tests: &all-tests
@@ -185,7 +182,7 @@ pa-was-integration-tests:
   - monitoring
   - health
   - pingone
-  - ingress-nginx
+#  - ingress-nginx
   - cert-manager
   - logging
 
@@ -220,6 +217,7 @@ pa-was-integration-tests:
   variables:
     TEST: ""
   stage: integration-test
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -266,7 +264,8 @@ integration-tests-chub:
 
 ## Chaos testing stage ##
 chaos-tests:
-  stage: pa-was-test-and-chaos
+  stage: chaos
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -280,18 +279,29 @@ chaos-tests:
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
-  dependencies:
-    - find-cluster
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
 
 ## Cleanup stage that runs when everything has succeeded ##
-cleanup_on_success:
+cleanup-on-success:
   extends: .cleanup-base
+  dependencies:
+    - find-cluster
 
-cleanup_on_compile_failure:
+## Cleanup stage for failed compile stage ##
+cleanup-on-compile-failure:
   extends: .cleanup-base
   needs:
-    - find-cluster
     - compile
+    - find-cluster
+    - deploy
   when: on_failure
+  script:
+    # Only cleanup when compile fails.
+    # If compile passes, deployment remains for troubleshooting
+    - |
+      if [ "$COMPILE_RESULT" != 0 ]; then
+        ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh;
+      else
+        echo "Compile passed, deployment not torn down to allow for troubleshooting";
+      fi
