@@ -74,8 +74,8 @@ testSigSciVersion() {
   sigsci_expected_version="4.57.0"
   command_to_run="/home/sigsci/sigsci-agent --version"
   sigsci_found_version=$(kubectl exec -ti -n ingress-nginx-public deployment/nginx-ingress-controller -c sigsci-agent -- ${command_to_run})
-  echo "Found SigSci version: ${sigsci_found_version}"
-  command_filtered="echo ${sigsci_found_version} | tr -d '\r'"
+  # Remove carriage returns from output
+  command_filtered=$(echo "${sigsci_found_version}" | sed -e 's/\r//g')
   assertEquals "Correct SigSci version not found" "${sigsci_expected_version}" "${command_filtered}"
 }
 
