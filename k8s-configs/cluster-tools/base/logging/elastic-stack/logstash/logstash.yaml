@@ -221,7 +221,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.19-release-branch-latest
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/logstash:PDO-8404
           imagePullPolicy: Always
           args:
             - enrichment_sidecar
@@ -251,24 +251,6 @@ spec:
               memory: 100Mi
       terminationGracePeriodSeconds: 60
       volumes:
-<<<<<<< HEAD
-=======
-        # - name: logstash-pipeline-customer
-        #   configMap:
-        #     name: logstash-pipeline-customer
-        # - name: logstash-pipeline-s3
-        #   configMap:
-        #     name: logstash-pipeline-s3
-        # - name: logstash-pipeline-dlq
-        #   configMap:
-        #     name: logstash-pipeline-dlq
-        # - name: logstash-pipelines
-        #   configMap:
-        #     name: logstash-pipelines
-        # - name: logstash-search-template
-        #   configMap:
-        #     name: logstash-search-template
->>>>>>> 510eb55bf (Removing pipeline configMaps)
         - name: enrichment-cache
           configMap:
             name: enrichment-cache
