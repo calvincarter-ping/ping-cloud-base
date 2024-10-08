@@ -8,6 +8,7 @@ if skipTest "${0}"; then
   exit 0
 fi
 
+
 ### Basic tests to check that NGINX is working properly ###
 
 testNginxIngressClass(){
@@ -38,18 +39,24 @@ testNGINXService404(){
   assertEquals "NGINX service response code was not 404" "404" "${nginx_service_resp_code}"
 }
 
-testNginxLogsForErrors(){
+testNginxPrivateLogsForErrors(){
   # Default cert appears to be race condition
   # Error while validating is due to known error where ingress watches other ingress classes, even in other namespaces
   exceptions="(Error loading custom default certificate|Ignoring ingress because of error while validating ingress class)"
   error_regex="(error|fatal|warn)"
-  # Private
+
   kubectl logs -l app.kubernetes.io/role=ingress-nginx-private -n ingress-nginx-private --tail=200 --all-containers=true --timestamps \
     | grep -iE "${error_regex}" \
     | grep -vE "${exceptions}"
   assertEquals "Found errors in NGINX logs" 1 $?
+}
 
-  # Public
+testNginxPublicLogsForErrors(){
+  # Default cert appears to be race condition
+  # Error while validating is due to known error where ingress watches other ingress classes, even in other namespaces
+  exceptions="(Error loading custom default certificate|Ignoring ingress because of error while validating ingress class)"
+  error_regex="(error|fatal|warn)"
+
   kubectl logs -l app.kubernetes.io/role=ingress-nginx-public -n ingress-nginx-public --tail=200 --all-containers=true --timestamps \
     | grep -iE "${error_regex}" \
     | grep -vE "${exceptions}"
@@ -62,15 +69,15 @@ testNginxSigSciModule() {
   assertEquals "Module not found in NGINX public" 0 $?
 }
 
-# testSigSciVersion() {
-#   # NOTE: Version must be updated each time we upgrade SigSci... at least for now
-#   sigsci_expected_version="4.57.0"
-#   command_to_run="/home/sigsci/sigsci-agent --version"
-#   sigsci_found_version=$(kubectl exec -ti -n ingress-nginx-public deployment/nginx-ingress-controller -c sigsci-agent -- ${command_to_run})
-#   echo "Found SigSci version: ${sigsci_found_version}"
-#   command_filtered="echo ${sigsci_found_version} | tr -d '\r'"
-#   assertEquals "Correct SigSci version not found" "${sigsci_expected_version}" "${command_filtered}"
-# }
+testSigSciVersion() {
+  # NOTE: Version must be updated each time we upgrade SigSci... at least for now
+  sigsci_expected_version="4.57.0"
+  command_to_run="/home/sigsci/sigsci-agent --version"
+  sigsci_found_version=$(kubectl exec -ti -n ingress-nginx-public deployment/nginx-ingress-controller -c sigsci-agent -- ${command_to_run})
+  echo "Found SigSci version: ${sigsci_found_version}"
+  command_filtered="echo ${sigsci_found_version} | tr -d '\r'"
+  assertEquals "Correct SigSci version not found" "${sigsci_expected_version}" "${command_filtered}"
+}
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked

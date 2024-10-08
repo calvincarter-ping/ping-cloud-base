@@ -28,8 +28,7 @@ patchesStrategicMerge:
     name: nginx-configuration
     namespace: ingress-nginx-public
   data:
-    main-snippet: load_module /usr/lib/nginx/modules/ngx_http_sigsci_module.so;
+    # TODO: do we need to set either of these for other customer sizes???
+    # Removed config set by other patches to reduce duplication
     keep-alive-requests: "100000"
     upstream-keepalive-timeout: "30"
-    max-worker-connections: "0"
-    worker-processes: "4"
