@@ -85,6 +85,7 @@ spec:
       opensearch_security.multitenancy.enable_aggregation_view: "false"
       opensearch_security.openid.trust_dynamic_headers: "true"
       opensearch_security.multitenancy.enabled: "true"
+      opensearch_security.openid.base_redirect_url: "https://logs.crein-primary.ping-demo.com/"
       opensearch_security.openid.connect_url: "${OPENID_CONNECT_URL}"
       opensearch_security.openid.client_id: "${OPENID_CLIENT_ID}"
       opensearch_security.openid.client_secret: "${OPENID_CLIENT_SECRET}"
