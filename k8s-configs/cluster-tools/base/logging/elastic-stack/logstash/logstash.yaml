@@ -208,9 +208,6 @@ spec:
               name: http-cw-input
               protocol: TCP
           volumeMounts:
-            - name: logstash-pipeline-customer
-              mountPath: /usr/share/logstash/pipeline/customer
-              readOnly: true
             - name: enrichment-cache-files
               mountPath: /enrichment-cache-files
               readOnly: false
@@ -254,9 +251,6 @@ spec:
               memory: 100Mi
       terminationGracePeriodSeconds: 60
       volumes:
-        - name: logstash-pipeline-customer
-          configMap:
-            name: logstash-pipeline-customer
         - name: enrichment-cache
           configMap:
             name: enrichment-cache
