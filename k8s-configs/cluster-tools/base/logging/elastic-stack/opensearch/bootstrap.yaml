@@ -57,8 +57,6 @@ spec:
           - name: DASHBOARDS_PATH
             value: "/usr/share/opensearch/data/dashboards"
         volumeMounts:
-          - name: os-index-templates
-            mountPath: /usr/share/opensearch/data/index-templates
           - name: os-notifications-channels
             mountPath: /usr/share/opensearch/data/notifications
           - name: os-dashboards-pd
