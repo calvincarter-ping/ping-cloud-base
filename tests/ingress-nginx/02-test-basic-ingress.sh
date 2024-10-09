@@ -35,8 +35,9 @@ check_configmap_key_exists() {
   namespace=$1
   configmap=$2
   key=$3
-  assertTrue "Configmap '${configmap}' in namespace '${namespace}' missing key '${key}'" \
-    kubectl get cm "${configmap}" -n "${namespace}" -o yaml | yq -e ".data.${key}"
+  log "Checking for key '${key}' in configmap '${configmap}' in namespace '${namespace}'"
+  kubectl get cm "${configmap}" -n "${namespace}" -o yaml | yq -e ".data.${key}" > /dev/null
+  assertEquals "Configmap '${configmap}' in namespace '${namespace}' missing key '${key}'" 0 $?
 }
 
 ## Tests
@@ -104,14 +105,19 @@ testSigSciVersion() {
   assertEquals "Correct SigSci version not found" "${sigsci_expected_version}" "${command_filtered}"
 }
 
+testNginxPrivateConfigMap() {
+  check_configmap_key_exists "ingress-nginx-private" "nginx-configuration" "location-snippet"
+  check_configmap_key_exists "ingress-nginx-private" "nginx-configuration" "log-format-upstreaml"
+}
+
 testNginxPublicConfigMap() {
-  kubectl get cm nginx-configuration -n ingress-nginx-public -o yaml | yq -e '.data.location-snippet'
-  kubectl get cm nginx-configuration -n ingress-nginx-public -o yaml | yq -e '.data.log-format-upstream'
-  kubectl get cm nginx-configuration -n ingress-nginx-public -o yaml | yq -e '.data.main-snippet'
-  kubectl get cm nginx-configuration -n ingress-nginx-public -o yaml | yq -e '.data.max-worker-connections'
-  kubectl get cm nginx-configuration -n ingress-nginx-public -o yaml | yq -e '.data.sll-ciphers'
-  kubectl get cm nginx-configuration -n ingress-nginx-public -o yaml | yq -e '.data.ssl-dh-param'
-  kubectl get cm nginx-configuration -n ingress-nginx-public -o yaml | yq -e '.data.worker-processes'
+  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "location-snippet"
+  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "log-format-upstream"
+  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "main-snippet"
+  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "max-worker-connections"
+  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "ssl-ciphers"
+  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "ssl-dh-param"
+  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "worker-processes"
 }
 
 # When arguments are passed to a script you must
