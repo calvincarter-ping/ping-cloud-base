@@ -28,7 +28,5 @@ patchesStrategicMerge:
     name: nginx-configuration
     namespace: ingress-nginx-public
   data:
-    # TODO: do we need to set either of these for other customer sizes???
-    # Removed config set by other patches to reduce duplication
     keep-alive-requests: "100000"
     upstream-keepalive-timeout: "30"
