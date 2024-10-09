@@ -162,7 +162,7 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
-        - name: data-dir
+        - name: pingaccess-was-init
           mountPath: /opt/in/hooks/logger.lib.sh
           subPath: logger.lib.sh
         - name: data-dir
