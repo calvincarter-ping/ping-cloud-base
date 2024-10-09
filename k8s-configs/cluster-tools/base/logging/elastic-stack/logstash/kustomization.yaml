@@ -8,4 +8,3 @@ resources:
 - unused-pv-cleanup.yaml
 - secret.yaml
 - pdb.yaml
-- logstash_pipelines
