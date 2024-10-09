@@ -141,7 +141,7 @@ spec:
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess-was:pdo-4881-logger-fix
         imagePullPolicy: Always 
         command: ["/bin/sh"]
-        args: ["-c", " /opt/in/hooks/22-upgrade-server.sh "]
+        args: ["-c", "sleep infinity"]
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
