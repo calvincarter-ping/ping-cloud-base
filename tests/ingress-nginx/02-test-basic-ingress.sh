@@ -58,6 +58,23 @@ testNginxPublicNlbService404(){
   get_nlb_service "public"
 }
 
+# Tests a few things at once - External DNS for the DNS record, cert-manager for the cert, and NGINX controller
+# for routing to the metadata service. May fail if metadata is having issues, but it's the simplest service to point to.
+testNginxPublicMetadataEndpoint() {
+  metadata_ingress_url=$(kubectl get ingress metadata-ingress -n ping-cloud -o jsonpath='{.spec.rules[*].host}')
+  log "Got 'ingress-metadata' ${type} ingress URL: ${metadata_ingress_url}"
+  nginx_metadata_resp_code=$(curl -s "https://${metadata_ingress_url}" -o /dev/null -w "%{http_code}")
+  if [[ "${nginx_metadata_resp_code}" == "000" ]]; then
+    log "Error - Received response 000, curling with verbose before exiting..."
+    curl -v -k "https://${nginx_service_url}" -o /dev/null
+    exit 1
+  fi
+
+  # When going directly to the service, we should get a 404 from NGINX. This tests NGINX directly while removing
+  # dependencies on underlying applications which might have issues (metadata service, pa-was, etc...)
+  assertEquals "Metadata ingress response code was not 200" "200" "${nginx_metadata_resp_code}"
+}
+
 testNginxPrivateLogsForErrors(){
   # Default cert error is a race condition waiting for cert manager to retrieve the acme cert
   # Error while validating is due to known error where ingress watches other ingress classes, even in other namespaces
@@ -107,7 +124,7 @@ testSigSciVersion() {
 
 testNginxPrivateConfigMap() {
   check_configmap_key_exists "ingress-nginx-private" "nginx-configuration" "location-snippet"
-  check_configmap_key_exists "ingress-nginx-private" "nginx-configuration" "log-format-upstreaml"
+  check_configmap_key_exists "ingress-nginx-private" "nginx-configuration" "log-format-upstream"
 }
 
 testNginxPublicConfigMap() {
