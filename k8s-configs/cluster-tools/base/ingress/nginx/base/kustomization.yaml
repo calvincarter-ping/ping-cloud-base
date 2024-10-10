@@ -10,7 +10,7 @@ resources:
 images:
 - name: registry.k8s.io/ingress-nginx/controller
   newName: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev
-  newTag: v2.0-release-branch
+  newTag: v2.0-release-branch-latest
 - name: registry.k8s.io/ingress-nginx/kube-webhook-certgen
   newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/ingress-nginx/kube-webhook-certgen
   newTag: v1.4.3
