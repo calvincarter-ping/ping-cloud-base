@@ -32,6 +32,7 @@ _Changes:_
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
 - Disabling anonymous login for OpenSearch and removing prometheus_read role
+- CT Upg: Upgrade Karpenter to 0.37.3
 
 _Changes:_
 
