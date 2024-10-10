@@ -6,14 +6,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ingress-controller.yaml
 
-# Point to the ping-cloud-docker and ping-cluster-tools repo equivalents pushed to ECR
+# Point to the ping-cloud-docker repo equivalents pushed to ECR
 images:
 - name: registry.k8s.io/ingress-nginx/controller
   newName: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev
   newTag: v2.0-release-branch-latest
-- name: registry.k8s.io/ingress-nginx/kube-webhook-certgen
-  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/ingress-nginx/kube-webhook-certgen
-  newTag: v1.4.3
 
 # Removing the ingress-nginx namespace as we have two namespace in P1AS - ingress-nginx-private and nginx-nginx-public
 patches:
