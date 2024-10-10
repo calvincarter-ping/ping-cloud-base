@@ -13,6 +13,7 @@ spec:
       containers:
       - name: opensearch-bootstrap
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/os-bootstrap:PDO-8404
+        command: ["sleep", "1h"]
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true
