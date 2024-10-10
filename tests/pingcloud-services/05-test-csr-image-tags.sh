@@ -184,8 +184,11 @@ testOpensearchBootstrapImageTag() {
   $(test "${OPENSEARCH_BOOTSTRAP_IMAGE_TAG}")
   assertEquals "OPENSEARCH_BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
 
+<<<<<<< HEAD
   local osBootstrapImage=$(kubectl get pods -n elastic-stack-logging -l job-name=opensearch-bootstrap -o jsonpath='{.items[*].spec.containers[*].image}' | awk -F: '{print $2}')
   assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" "${OPENSEARCH_BOOTSTRAP_IMAGE_TAG}" "${osBootstrapImage}" 
+=======
+>>>>>>> 715c6da19 (Update tests for image versions)
   # unique_count=$(getUniqueTagCount "os-bootstrap")
   # assertEquals "OpensearchBootstrap is using multiple image tag versions" 1 "${unique_count}"
 
