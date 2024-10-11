@@ -13,13 +13,13 @@ fi
 get_nlb_service() {
   type=$1
   # Get ingress URL to avoid hardcoding it
-  local nginx_service_url=$(kubectl get service ingress-nginx -n "ingress-nginx-${type}" -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
+  nginx_service_url=$(kubectl get service ingress-nginx -n "ingress-nginx-${type}" -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
   assertNotNull "NGINX service load balancer URL was unexpectedly null!" "${nginx_service_url}"
   log "Got 'ingress-nginx' ${type} service URL: ${nginx_service_url}"
 
   # Make a request against the URL, check the response code is 200
   # Retry because nginx is restarting during this time...
-  local nginx_service_resp_code=$(curl -k -s "https://${nginx_service_url}" -o /dev/null -w "%{http_code}")
+  nginx_service_resp_code=$(curl -k -s "https://${nginx_service_url}" -o /dev/null -w "%{http_code}")
   if [[ "${nginx_service_resp_code}" == "000" ]]; then
     log "Error - Received response 000, curling with verbose before exiting..."
     curl -v -k "https://${nginx_service_url}" -o /dev/null
@@ -32,9 +32,9 @@ get_nlb_service() {
 }
 
 check_configmap_key_exists() {
-  local namespace=$1
-  local configmap=$2
-  local key=$3
+  namespace=$1
+  configmap=$2
+  key=$3
   log "Checking for key '${key}' in configmap '${configmap}' in namespace '${namespace}'"
   kubectl get cm "${configmap}" -n "${namespace}" -o yaml | yq -e ".data.${key}" > /dev/null
   assertEquals "Configmap '${configmap}' in namespace '${namespace}' missing key '${key}'" 0 $?
@@ -45,8 +45,8 @@ check_configmap_key_exists() {
 testNginxIngressClass(){
     log "Checking number of ingress classes"
     # Use xargs for whitespace trimming...
-    local num_ingress_classes=$(kubectl get ingressclass -A -o json | jq -r '.items[].metadata.name' | wc -l | xargs)
-    local expected_num_ingress_classes=2
+    num_ingress_classes=$(kubectl get ingressclass -A -o json | jq -r '.items[].metadata.name' | wc -l | xargs)
+    expected_num_ingress_classes=2
     assertEquals "Number of ingress classes should have been two - public and private" "${num_ingress_classes}" "${expected_num_ingress_classes}"
 }
 
@@ -61,9 +61,9 @@ testNginxPublicNlbService404(){
 # Tests a few things at once - External DNS for the DNS record, cert-manager for the cert, and NGINX controller
 # for routing to the metadata service. May fail if metadata is having issues, but it's the simplest service to point to.
 testNginxPublicMetadataEndpoint() {
-  local metadata_ingress_url=$(kubectl get ingress metadata-ingress -n ping-cloud -o jsonpath='{.spec.rules[*].host}')
+  metadata_ingress_url=$(kubectl get ingress metadata-ingress -n ping-cloud -o jsonpath='{.spec.rules[*].host}')
   log "Got 'ingress-metadata' ${type} ingress URL: ${metadata_ingress_url}"
-  local nginx_metadata_resp_code=$(curl -s "https://${metadata_ingress_url}" -o /dev/null -w "%{http_code}")
+  nginx_metadata_resp_code=$(curl -s "https://${metadata_ingress_url}" -o /dev/null -w "%{http_code}")
   if [[ "${nginx_metadata_resp_code}" == "000" ]]; then
     log "Error - Received response 000, curling with verbose before exiting..."
     curl -v -k "https://${metadata_ingress_url}" -o /dev/null
@@ -76,7 +76,7 @@ testNginxPublicMetadataEndpoint() {
 }
 
 testNginxSigSciModule() {
-  local command_to_run="grep sigsci_module /etc/nginx/nginx.conf"
+  command_to_run="grep sigsci_module /etc/nginx/nginx.conf"
   log "Checking for SigSci module loaded in config at /etc/nginx/nginx.conf"
   kubectl exec -ti -n ingress-nginx-public deployment/nginx-ingress-controller -c nginx-ingress-controller -- ${command_to_run}
   assertEquals "Module not found in NGINX public" 0 $?
@@ -84,12 +84,12 @@ testNginxSigSciModule() {
 
 testSigSciVersion() {
   # NOTE: Version must be updated each time we upgrade SigSci... at least for now
-  local sigsci_expected_version="4.57.0"
-  local command_to_run="/home/sigsci/sigsci-agent --version"
+  sigsci_expected_version="4.57.0"
+  command_to_run="/home/sigsci/sigsci-agent --version"
   log "Checking SigSci version in SigSci agent container against expected version: ${sigsci_expected_version}"
-  local sigsci_found_version=$(kubectl exec -ti -n ingress-nginx-public deployment/nginx-ingress-controller -c sigsci-agent -- ${command_to_run})
+  sigsci_found_version=$(kubectl exec -ti -n ingress-nginx-public deployment/nginx-ingress-controller -c sigsci-agent -- ${command_to_run})
   # Remove carriage returns from output
-  local command_filtered=$(echo "${sigsci_found_version}" | sed -e 's/\r//g')
+  command_filtered=$(echo "${sigsci_found_version}" | sed -e 's/\r//g')
   assertEquals "Correct SigSci version not found" "${sigsci_expected_version}" "${command_filtered}"
 }
 
