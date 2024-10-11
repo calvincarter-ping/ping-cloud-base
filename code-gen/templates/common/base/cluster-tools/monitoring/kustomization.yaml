@@ -2,7 +2,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/monitoring?ref=${K8S_GIT_BRANCH}
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/monitoring?ref=${K8S_GIT_BRANCH}
 - prometheus
 
 components:
@@ -11,31 +11,6 @@ components:
 patchesStrategicMerge:
 
 ### Cloud-watch logging and monitoring ###
-
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: cwagentconfig
-    namespace: amazon-cloudwatch
-  data:
-    # Configuration is in Json format. No matter what configure change you make,
-    # please keep the Json blob valid.
-    cwagentconfig.json: |
-      {
-        "agent": {
-          "region": "${REGION}"
-        },
-        "logs": {
-          "metrics_collected": {
-            "kubernetes": {
-              "cluster_name": "${CLUSTER_NAME}",
-              "metrics_collection_interval": 60
-            }
-          },
-          "force_flush_interval": 5
-        }
-      }
 
 - |-
   # Add IRSA role annotation to CloudWatch Agent service account
@@ -200,6 +175,7 @@ patchesStrategicMerge:
       http_server_enabled: true
       enable_process_metrics: true
       http_server_port: 8003
+
 - |-
   apiVersion: apps/v1
   kind: DaemonSet

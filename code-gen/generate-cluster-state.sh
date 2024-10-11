@@ -1329,13 +1329,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     echo >> "${BASE_ENV_VARS}"
     echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
 
-    # Resetting to empty string , once versent is done https://pingidentity.atlassian.net/browse/PP-5719 and will remove this code as per PDO-5136
-    export IRSA_PING_ANNOTATION_KEY_VALUE=""
-    export IRSA_PA_ANNOTATION_KEY_VALUE=""
-    export IRSA_PD_ANNOTATION_KEY_VALUE=""
-    export IRSA_PF_ANNOTATION_KEY_VALUE=""
-    export IRSA_CWAGENT_ANNOTATION_KEY_VALUE=""
-
     sed -i.bak -e "/disable-karpenter/ s|^#*|#|g" "${K8S_CONFIGS_DIR}/base/cluster-tools/karpenter/kustomization.yaml"
     sed -i.bak -e "/disable-kubedownscaler/ s|^#*|#|g" "${K8S_CONFIGS_DIR}/base/cluster-tools/kube-downscaler/kustomization.yaml"
 
@@ -1343,12 +1336,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     rm -f "${K8S_CONFIGS_DIR}/base/cluster-tools/kube-downscaler/kustomization.yaml.bak"
 
     # Update patches related to Beluga developer CDEs
-
-    # Do not disable CW and NR if in CI/CD
-    if test "${CI_SERVER}" != "yes"; then
-      sed -i.bak 's/^[[:space:]]*# \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
-    fi
-    rm -f "${PRIMARY_PING_KUST_FILE}.bak"
 
     # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
     echo "This is a Beluga Development Environment, copying ArgoCD into the CSR"
@@ -1385,6 +1372,12 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     yq 'del(select(.metadata.name | contains("pingcentral")))' "${CHUB_TEMPLATES_DIR}/base/secrets.yaml" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
     printf "\n# %%%% END automatically appended secrets from generate-cluster-state.sh\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
   fi
+
+  # Disable CW if non-GA
+  if test "${CI_SERVER}" != "yes" && test "${ACCOUNT_TYPE}" = "non-ga"; then
+    sed -i.bak 's/^[[:space:]]*#[[:space:]]*\(.*disable-cloudwatch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
+  fi
+  rm -f "${PRIMARY_PING_KUST_FILE}.bak"
 
   echo "Substituting env vars, this may take some time..."
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
