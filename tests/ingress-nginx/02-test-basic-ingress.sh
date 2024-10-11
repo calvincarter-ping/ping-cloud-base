@@ -66,7 +66,7 @@ testNginxPublicMetadataEndpoint() {
   local nginx_metadata_resp_code=$(curl -s "https://${metadata_ingress_url}" -o /dev/null -w "%{http_code}")
   if [[ "${nginx_metadata_resp_code}" == "000" ]]; then
     log "Error - Received response 000, curling with verbose before exiting..."
-    curl -v -k "https://${nginx_service_url}" -o /dev/null
+    curl -v -k "https://${metadata_ingress_url}" -o /dev/null
     exit 1
   fi
 
