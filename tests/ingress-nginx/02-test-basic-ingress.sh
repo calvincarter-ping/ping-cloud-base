@@ -52,12 +52,13 @@ testNginxPublicNlbService404(){
   get_nlb_service "public"
 }
 
-# Tests a few things at once - External DNS for the DNS record, cert-manager for the cert, and NGINX controller
+# Tests a few things at once - External DNS for the DNS record, and NGINX controller
 # for routing to the metadata service. May fail if metadata is having issues, but it's the simplest service to point to.
+# Does NOT test certificate - this is done in the cert-manager tests
 testNginxPublicMetadataEndpoint() {
   metadata_ingress_url=$(kubectl get ingress metadata-ingress -n ping-cloud -o jsonpath='{.spec.rules[*].host}')
   log "Got 'ingress-metadata' ${type} ingress URL: ${metadata_ingress_url}"
-  nginx_metadata_resp_code=$(curl -v "https://${metadata_ingress_url}" -o /dev/null -w "%{http_code}")
+  nginx_metadata_resp_code=$(curl -k -v "https://${metadata_ingress_url}" -o /dev/null -w "%{http_code}")
 
   # When going directly to the service, we should get a 404 from NGINX. This tests NGINX directly while removing
   # dependencies on underlying applications which might have issues (metadata service, pa-was, etc...)
