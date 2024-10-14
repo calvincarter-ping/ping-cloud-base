@@ -32,7 +32,6 @@ _Changes:_
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
 - Disabling anonymous login for OpenSearch and removing prometheus_read role
-- Remove oidc.properties.subst from PingFederate and use environment variables
 - Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 
 _Changes:_
@@ -53,7 +52,6 @@ _Changes:_
 - [X] PDO-7527 Grafana: Update PGO dashboards to be compatible with the current PGO version
 - [X] PDO-7608 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - [X] PDO-7669 Thanos: Storage Gateway crashlooping with OOM killed when choosing old range of data on Prometheus/Grafana UI
-- [X] PDO-8135 PingFederate SSO container set environment variables instead of .conf .property files
 - [X] PDO-8150 Improve Stability and Shutdown Handling
 - [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
