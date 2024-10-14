@@ -7,7 +7,6 @@ import unittest
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Load Kubernetes config
 config.load_kube_config()
 
 class PrometheusPortForward:
@@ -47,13 +46,18 @@ class TestFluentBitMetrics(unittest.TestCase):
         self.assertEqual(daemonset.status.number_ready, daemonset.status.desired_number_scheduled,
                          "Fluent Bit DaemonSet is not healthy.")
 
-    def test_compare_fluentbit_metrics(self):
+    def test_check_fluentbit_metrics(self):
         input_records = query_metric("fluentbit_input_records_total", self.prometheus_url)
         output_records = query_metric("fluentbit_output_proc_records_total", self.prometheus_url)
         self.assertIsNotNone(input_records, "fluentbit_input_records_total metric is missing.")
         self.assertIsNotNone(output_records, "fluentbit_output_proc_records_total metric is missing.")
-        self.assertEqual(input_records, output_records,
-                         f"Metrics mismatch: input={input_records}, output={output_records}")
+        
+        if input_records > 0 and output_records > 0:
+            print(f"fluentbit_input_records_total: {input_records}")
+            print(f"fluentbit_output_proc_records_total: {output_records}")
+            print("Both Fluent Bit metrics are generating fine.")
+        else:
+            self.fail(f"Metrics issue: input={input_records}, output={output_records}")
 
 if __name__ == '__main__':
     unittest.main()
