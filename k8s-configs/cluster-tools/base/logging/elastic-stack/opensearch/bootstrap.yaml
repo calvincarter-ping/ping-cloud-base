@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: opensearch-bootstrap
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/os-bootstrap:PDO-8404
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/os-bootstrap:v1.19-release-branch-latest
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true

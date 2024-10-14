@@ -200,10 +200,14 @@ metadata:
   name: customer-pipeline-custom
 data:
 <<<<<<< HEAD
+<<<<<<< HEAD
   <replace-me>.conf: |
 =======
   logstash-config.conf: |
 >>>>>>> 9e39431f0 (Save)
+=======
+  <replace-me>.conf: |
+>>>>>>> 64386dec7 (Add tests for image tag, revert image tag, wip custom-patches.sample)
     # Paste the contents of your logstash config here
     {
       "key": "value"
