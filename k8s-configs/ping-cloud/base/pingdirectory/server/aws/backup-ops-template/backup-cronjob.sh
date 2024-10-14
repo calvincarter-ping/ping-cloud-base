@@ -47,42 +47,68 @@ cleanup_resources() {
 }
 
 check_if_another_backup_is_running() {
-    # Determine if Cronjob Active
-    num_of_active_cronjobs=$(kubectl get cronjob pingdirectory-periodic-backup -n ping-cloud -o jsonpath='{.status.active}' 2>/dev/null)
+    # Determine if Cronjob is Active.
+    num_of_active_cronjobs=$(kubectl get cronjob pingdirectory-periodic-backup -n "${NAMESPACE}" -o jsonpath='{.status.active}' 2>/dev/null)
 
     if [ -n "${num_of_active_cronjobs}" ]; then
 
-        # Determine if Manual Job is also running
-        active_job_name=$(kubectl get jobs --selector=manual=true -o jsonpath='{.items[0].metadata.name}' -n ping-cloud 2>/dev/null)
+        # Entering this condition means there is an active Cronjob running.
 
-        if [ -z "${active_job_name}" ]; then
-            echo "Exiting because a second manual Job was not found"
-            return 0 # Exit as no other Jobs are running
+        # Determine if Manual Job is also running while Cronjob is running.
+        # Manual jobs can be found by filtering on "manual=true" label.
+        active_manual_job_name=$(kubectl get jobs --selector=manual=true -o jsonpath='{.items[0].metadata.name}' -n "${NAMESPACE}" 2>/dev/null)
+
+        if [ -z "${active_manual_job_name}" ]; then
+            echo "Exiting because a manual Job was not found. There is not collision with Cronjob and manual Job."
+            return 0
         fi
 
         # Manual Job has been detected and is running.
-        # Determine who ran 1st, Cronjob or Job? Avoid interrupting 1st backup that started.
-        active_cronjob_job_name=$(kubectl get jobs -o jsonpath='{.items[0].metadata.name}' -n ping-cloud 2>/dev/null | grep 'pingdirectory-periodic-backup-' | tail -n 1)
+        # Lets now get the Cronjob name because we'll need to determine who ran first at this point.
+        # Is it the Cronjob or Job?
+        # Get CronJob name
+        # CronJob names will always begin with "pingdirectory-periodic-backup"
+        active_cronjob_job_name=$(kubectl get jobs -o jsonpath='{.items[0].metadata.name}' -n "${NAMESPACE}" 2>/dev/null | grep 'pingdirectory-periodic-backup-' | tail -n 1)
 
-        second_job_by_name=$(kubectl get job "${active_cronjob_job_name}" "${active_job_name}" --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n ping-cloud 2>/dev/null | sed -n '2p')
+        # Now that we have both names (Cronjob and manual Job).
+        # We can sort the create timestamp and determine who ran first (Cronjob or manual Job).
+        second_job_by_name=$(kubectl get job "${active_cronjob_job_name}" "${active_manual_job_name}" --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n "${NAMESPACE}" 2>/dev/null | sed -n '2p')
 
-        # Delete Second Job
-        kubectl delete job "${second_job_by_name}" -n ping-cloud
+        # Avoid interrupting backup that started first. Delete the second backup only.
+        echo "There is a backup already running at the moment. Terminating ${second_job_by_name} Job"
 
-    else # Cronjob is not active
+        # Before deleting this Job pause so BeOps can see logs.
+        sleep 30
 
-        second_job_by_name=$(kubectl get job --selector=manual=true --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n ping-cloud 2>/dev/null | sed -n '2p')
+        # Terminate 2nd Job
+        kubectl delete job "${second_job_by_name}" -n "${NAMESPACE}"
 
-        if [ -z "${second_job_by_name}" ]; then
+    else
+
+        # Entering this condition means there is NOT an active Cronjob running.
+
+        # Determine if there is another Manual Job running. We also need to avoid 2 manual Jobs from running.
+        # Manual jobs can be found by filtering on "manual=true" label.
+        # We can sort the create timestamp and retrieve the 2nd manual Job if there is any.
+        second_manual_job_by_name=$(kubectl get job --selector=manual=true --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n "${NAMESPACE}" 2>/dev/null | sed -n '2p')
+
+        if [ -z "${second_manual_job_by_name}" ]; then
             echo "Exiting because a second manual Job was not found"
-            return 0 # Exit as no other Jobs are running
+            return 0
         fi
 
-        # Delete Second Job
-        kubectl delete job "${second_job_by_name}" -n ping-cloud
+        # Avoid interrupting manual backup Job that started first. Delete the second backup only.
+        echo "There is a manual backup already running at the moment. Terminating ${second_manual_job_by_name} Job"
+
+        # Before deleting this Job pause so BeOps can see logs.
+        sleep 30
+
+        # Terminate 2nd Job
+        kubectl delete job "${second_manual_job_by_name}" -n "${NAMESPACE}"
     fi
 
-    return 1 # Exit method as there is another Job running
+    return 1 # Default, exit method as there is another backup running.
+             # This should never happen if there is not collision with Cronjob and manual Job.
 }
 
 ### Script execution begins here. ###
@@ -91,8 +117,10 @@ check_if_another_backup_is_running() {
 trap "cleanup_resources" EXIT
 
 if ! check_if_another_backup_is_running; then
+  # Prepare to exit because there is a CronJob/manual Job collision.
+  # Avoid cleaning up resources because the 1st Job actually is using the PVC.
   SKIP_RESOURCE_CLEANUP="true"
-  exit 0 # Exit graceful
+  exit 0 # Exit graceful. Technically, this is not a backup error.
 fi
 
 # Before backup begins. Ensure lingering resources of Job and PVC have been removed when running prior backup
