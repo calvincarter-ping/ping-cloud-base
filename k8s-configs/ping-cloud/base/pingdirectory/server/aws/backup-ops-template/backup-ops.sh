@@ -1,8 +1,13 @@
 #!/bin/bash
 
-execution_type=${1-"manual-job"}
+execution_type="${1}"
 
-echo "Executed By: ${execution_type}"
+if [ "${execution_type}" != "p1as-automation" ]; then
+  echo "You are trying to execute backup-ops.sh script directly as it now being done through 'kubectl create Job' using P1AS automation."
+  echo "See v1.19.2 upgrade guide for more details."
+  sleep 30
+  exit 0
+fi
 
 # Set ping-cloud PING_CLOUD_NAMESPACE
 # Note: The regular expression \bping-cloud\S* matches any string that starts with "ping-cloud" (\bping-cloud) and has zero or more non-space characters after it (\S*).

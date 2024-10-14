@@ -127,7 +127,7 @@ fi
 cleanup_resources
 
 # Execute backup-ops.sh script (which kicks off the k8s pingdirectory-backup Job)
-test -x ${SCRIPT} && ${SCRIPT} "scheduled-cronjob"
+test -x ${SCRIPT} && ${SCRIPT} "p1as-automation"
 
 # Wait for Job to be in 'Complete' state
 while true; do
