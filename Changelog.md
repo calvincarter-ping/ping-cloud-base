@@ -32,6 +32,7 @@ _Changes:_
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
 - Disabling anonymous login for OpenSearch and removing prometheus_read role
+- Remove oidc.properties.subst from PingFederate and use environment variables
 - Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 
 _Changes:_
