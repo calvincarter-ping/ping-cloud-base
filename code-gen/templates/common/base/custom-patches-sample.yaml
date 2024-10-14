@@ -199,7 +199,11 @@ kind: ConfigMap
 metadata:
   name: customer-pipeline-custom
 data:
+<<<<<<< HEAD
   <replace-me>.conf: |
+=======
+  logstash-config.conf: |
+>>>>>>> 9e39431f0 (Save)
     # Paste the contents of your logstash config here
     {
       "key": "value"
