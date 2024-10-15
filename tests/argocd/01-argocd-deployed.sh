@@ -12,6 +12,7 @@ checkWorkloadStatus() {
   workload=$1
   # get workload name, available replicas, and desired replicas
   workloads=$(kubectl get "$workload" -n "$namespace" -o jsonpath='{range .items[*]}{.metadata.name} {.status.availableReplicas} {.spec.replicas}{"\n"}{end}')
+  log "$workloads"
 
   while IFS= read -r line; do
     workload_name=$(echo "$line" | awk '{print $1}')

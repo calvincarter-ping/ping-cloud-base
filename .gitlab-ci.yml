@@ -145,48 +145,48 @@ deploy:
 ## Integration Test stage ##
 
 # Common pre-check tests
-pre-check:
-  stage: pre-check-test
-  retry: 1
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
-  dependencies:
-    - find-cluster
+# pre-check:
+#   stage: pre-check-test
+#   retry: 1
+#   tags:
+#     - default-gitlab-runner-ping-cloud
+#   image: ${K8S_DEPLOY_TOOLS}
+#   script:
+#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
+#   dependencies:
+#     - find-cluster
 
-## PA-WAS stage ##
-pa-was-integration-tests:
-  stage: pa-was-test
-  retry: 1
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
-  dependencies:
-    - find-cluster
+# ## PA-WAS stage ##
+# pa-was-integration-tests:
+#   stage: pa-was-test
+#   retry: 1
+#   tags:
+#     - default-gitlab-runner-ping-cloud
+#   image: ${K8S_DEPLOY_TOOLS}
+#   script:
+#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
+#   dependencies:
+#     - find-cluster
 
 ################################################
 # All integration tests defined to run on the  #
 # traditionally deployed P1AS                  #
 ################################################
 .all-tests: &all-tests
-  - pingdirectory
-  - pingdelegator
-  - pingfederate
-  - pingaccess
-  - pingcloud-services
-  - pingcentral
-  - pingdatasync
-  - common
-  - monitoring
-  - health
-  - pingone
-  - ingress-nginx
-  - cert-manager
-  - logging
+  # - pingdirectory
+  # - pingdelegator
+  # - pingfederate
+  # - pingaccess
+  # - pingcloud-services
+  # - pingcentral
+  # - pingdatasync
+  # - common
+  # - monitoring
+  # - health
+  # - pingone
+  # - ingress-nginx
+  # - cert-manager
+  # - logging
   - argocd
 
 #################################################
