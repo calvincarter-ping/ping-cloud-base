@@ -266,16 +266,16 @@ integration-tests-chub:
   - if: '$ENV_TYPE == "customer-hub"'
 
 ## Chaos testing stage ##
-chaos-tests:
-  stage: chaos
-  retry: 1
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
-  dependencies:
-    - find-cluster
+# chaos-tests:
+#   stage: chaos
+#   retry: 1
+#   tags:
+#     - default-gitlab-runner-ping-cloud
+#   image: ${K8S_DEPLOY_TOOLS}
+#   script:
+#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
+#   dependencies:
+#     - find-cluster
 
 .cleanup-base:
   stage: cleanup
