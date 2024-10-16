@@ -1,5 +1,5 @@
 {
-   "name": "PingFederate PingID Connection Lost",
+   "name": "PingFederate Connection Lost",
    "type": "monitor",
    "monitor_type": "bucket_level_monitor",
    "enabled": true,
@@ -46,25 +46,20 @@
                            }
                         },
                         {
-                           "term": {
-                             "className.keyword": "com.pingidentity.adapters.pingid.DefaultHeartbeatService"
+                           "match_phrase": {
+                             "message": "error code 91 - An error occurred while attempting to connect to server"
                            }
                          },
                          {
-                            "match_phrase": {
-                              "message": "Connection refused"
-                            }
-                          },
-                          {
-                            "term": {
-                              "logLevel.keyword": "ERROR"
-                            }
-                          },
-                          {
-                            "term": {
-                              "kubernetes.labels.role.keyword": "pingfederate-engine"
-                            }
-                          }
+                           "term": {
+                             "logLevel.keyword": "ERROR"
+                           }
+                         },
+                         {
+                           "term": {
+                             "kubernetes.labels.role.keyword": "pingfederate-engine"
+                           }
+                         }
                      ]
                   }
                }
@@ -93,7 +88,7 @@
                     "name": "SREAPPALERTS",
                     "destination_id": "sns_sreappalerts",
                     "message_template": {
-                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154796220/ALERT+PingFederate+PingID+Connection+Lost+in+CDE\"\n}",
+                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154992826/ALERT+PingFederate+LDAP+Connection+Lost+in+CDE\"\n}",
                       "lang": "mustache"
                     },
                     "throttle_enabled": false,
@@ -115,7 +110,7 @@
                     "name": "CUSTOMERHUB",
                     "destination_id": "sns_customerhub",
                     "message_template": {
-                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154796220/ALERT+PingFederate+PingID+Connection+Lost+in+CDE\"\n}",
+                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154992826/ALERT+PingFederate+LDAP+Connection+Lost+in+CDE\"\n}",
                       "lang": "mustache"
                     },
                     "throttle_enabled": false,
