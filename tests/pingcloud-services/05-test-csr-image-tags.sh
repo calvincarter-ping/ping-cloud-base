@@ -166,11 +166,8 @@ testLogstashImageTag() {
   $(test "${LOGSTASH_IMAGE_TAG}")
   assertEquals "LOGSTASH_IMAGE_TAG missing from env_vars file" 0 $?
 
-<<<<<<< HEAD
   local logstashImage=$(kubectl get pod -n elastic-stack-logging logstash-elastic-0 -o jsonpath='{.spec.containers[?(@.name=="logstash")].image}' | awk -F: '{print $2}')
   assertEquals "logstash CSR image tag doesn't match Beluga default image tag" "${LOGSTASH_IMAGE_TAG}" "${logstashImage}" 
-=======
->>>>>>> 090ccfcb6 (Update tests for image versions)
   # unique_count=$(getUniqueTagCount "logstash")
   # assertEquals "Logstash is using multiple image tag versions" 1 "${unique_count}"
 
