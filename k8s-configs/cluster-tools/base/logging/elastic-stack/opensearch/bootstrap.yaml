@@ -78,9 +78,6 @@ spec:
             cpu: "500m"
       restartPolicy: OnFailure
       volumes:
-        - name: os-index-templates
-          configMap:
-            name: os-index-templates
         - name: os-notifications-channels
           configMap:
             name: os-notifications-channels
