@@ -136,7 +136,7 @@ is_required_label_for_manual_job_provided() {
       current_manual_job_name=$(kubectl get pod "${CURRENT_JOB_POD_NAME}" -n "${NAMESPACE}" -o jsonpath='{.metadata.ownerReferences[0].name}')
       # Verify that manual Job is labelled correctly as 'pd-manual=true'.
       kubectl get job "${current_manual_job_name}" -n "${NAMESPACE}" -o jsonpath='{.metadata.labels.pd-manual}' | grep -q "true"
-      if [ $? -ne 0 ]; then
+      if [ "$?" -ne "0" ]; then
         echo "Exiting. Manual Job must have the required label 'pd-manual=true'"
         sleep 30
         return 1
@@ -146,6 +146,11 @@ is_required_label_for_manual_job_provided() {
     fi
 
     return 0 # This is a CronJob or the correct label was found for manual Job
+}
+
+# Function to determine if the true PingDirectory Job that perform backup and its own PVC allocated is actively running.
+is_pingdirectory_backup_running() {
+  kubectl get job/"${BACKUP_NAME}" -o json -n "${NAMESPACE}" 2>/dev/null | jq -r '.items[] | select(.status.active == 1 and .status.ready == 1) | .metadata.name'
 }
 
 ### Script execution begins here. ###
@@ -172,6 +177,14 @@ test -x ${SCRIPT} && ${SCRIPT} "p1as-automation"
 
 # Wait for Job to be in 'Complete' state
 while true; do
+
+  sleep 5  # Wait for 5 seconds before checking PingDirectory backup status
+
+  pingdirectory_backup_name=$(is_pingdirectory_backup_running)
+  if [ -z "${pingdirectory_backup_name}" ]; then
+      echo "The kubernetes job/${BACKUP_NAME} that triggers PingDirectory backup and its own PVC was not found. This is mandatory as something unexpectedly has happened to the pingdirectory-backup Job and the PVC."
+      exit 1
+  fi
 
   # The pod of the Job is running. The following logic will now check for completion on the Job K8s object
   if is_job_complete; then
@@ -210,6 +223,4 @@ while true; do
       echo "Job failed ${failed_attempts} times, with backofflimit of ${backoff_limit}. ${BACKUP_NAME} Job is expected to retry."
     fi
   fi
-
-  sleep 5  # Wait for 5 seconds before checking again
 done
