@@ -149,8 +149,26 @@ is_required_label_for_manual_job_provided() {
 }
 
 # Function to determine if the true PingDirectory Job that perform backup and its own PVC allocated is actively running.
+# Will try up to 60 seconds before ending backup.
 is_pingdirectory_backup_running() {
-  kubectl get job/"${BACKUP_NAME}" -o json -n "${NAMESPACE}" 2>/dev/null | jq -r '.items[] | select(.status.active == 1 and .status.ready == 1) | .metadata.name'
+  count=1
+  attempts=6
+
+  while [ ${count} -le ${attempts} ]; do
+    kubectl get job/"${BACKUP_NAME}" -n "${NAMESPACE}"
+    pingdirectory_backup_job_status=$?
+
+    if [ "${pingdirectory_backup_job_status}" -eq "0" ]; then
+      return 0  # PingDirectory backup Job found continue
+    else
+      sleep 10  # PingDirectory backup Job not found try again in a few seconds
+    fi
+
+    count=$((count + 1))  # Increment the counter
+  done
+
+  echo "PingDirectory backup Job not found after ${attempts} attempts."
+  return 1
 }
 
 ### Script execution begins here. ###
@@ -178,10 +196,7 @@ test -x ${SCRIPT} && ${SCRIPT} "p1as-automation"
 # Wait for Job to be in 'Complete' state
 while true; do
 
-  sleep 5  # Wait for 5 seconds before checking PingDirectory backup status
-
-  pingdirectory_backup_name=$(is_pingdirectory_backup_running)
-  if [ -z "${pingdirectory_backup_name}" ]; then
+  if ! is_pingdirectory_backup_running; then
       echo "The kubernetes job/${BACKUP_NAME} that triggers PingDirectory backup and its own PVC was not found. This is mandatory as something unexpectedly has happened to the pingdirectory-backup Job and the PVC."
       exit 1
   fi
@@ -223,4 +238,5 @@ while true; do
       echo "Job failed ${failed_attempts} times, with backofflimit of ${backoff_limit}. ${BACKUP_NAME} Job is expected to retry."
     fi
   fi
+  sleep 5  # Wait for 5 seconds before checking PingDirectory backup status
 done
