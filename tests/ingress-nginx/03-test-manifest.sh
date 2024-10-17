@@ -7,7 +7,6 @@ if skipTest "${0}"; then
   log "Skipping test ${0}"
   exit 0
 fi
-set -x
 
 THIS_TEST=$(basename "$0")
 UBER_YAML_OUTPUT="/tmp/${THIS_TEST}/test-uber-output.yaml"
@@ -17,6 +16,13 @@ setUp() {
   this_test="$(basename "$0")"
   local csr_path="/tmp/${this_test}/test-csr"
   local csr_name=${CLUSTER_STATE_REPO_URL##*\/}
+
+  ## Special env setup for git-ops-command.sh to work properly in these tests ##
+  # Set LOCAL for to pull the PCB_PATH properly
+  export LOCAL="true"
+  # Use PROJECT_DIR if provided manually, otherwise use CI_PROJECT_DIR set by Gitlab,
+  # since PCB will already be checked out
+  export PCB_PATH=${PROJECT_DIR:-$CI_PROJECT_DIR}
 
   # Remove CSR if it exists, moved from tearDown as pwd errors were occurring
   rm -rf "${csr_path}"
