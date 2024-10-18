@@ -5,7 +5,6 @@ execution_type="${1}"
 if [ "${execution_type}" != "p1as-automation" ]; then
   echo "You are trying to execute backup-ops.sh script directly as it now being done through 'kubectl create Job' using P1AS automation."
   echo "See v1.19.2 upgrade guide for more details."
-  sleep 30
   exit 0
 fi
 
@@ -14,8 +13,8 @@ fi
 # e.g.
 # A CDE with ping-cloud namespace will set the variable NAMESPACE as 'ping-cloud'
 # A CDE with ping-cloud-username namespace will set the variable NAMESPACE as 'ping-cloud-username'
-if [ -z "${PING_CLOUD_NAMESPACE}" ]; then
-  export PING_CLOUD_NAMESPACE=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}{"\n"}' | grep -o -E "\bping-cloud\S*")
+if [ -z "${NAMESPACE}" ]; then
+  export NAMESPACE=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}{"\n"}' | grep -o -E "\bping-cloud\S*")
 fi
 
 # Get desired PingDirectory pod name

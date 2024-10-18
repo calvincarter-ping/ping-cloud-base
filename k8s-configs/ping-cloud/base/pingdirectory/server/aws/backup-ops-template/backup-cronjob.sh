@@ -71,7 +71,7 @@ is_only_one_backup_running() {
 
         # Determine if Manual Job is also running while Cronjob is running.
         # Manual jobs can be found by filtering on "pd-manual=true" label.
-        active_manual_job_name=$(get_actively_running_manual_jobs | head -n 1)
+        active_manual_job_name=$(get_actively_running_manual_jobs | head -n 1 | tr -d ' ')
         if [ -z "${active_manual_job_name}" ]; then
             echo "Manual Job was not found. There is not collision with Cronjob and manual Job. Ready to proceed."
             return 0
@@ -82,13 +82,23 @@ is_only_one_backup_running() {
         # Is it the Cronjob or Job?
         # Get CronJob name
         # CronJob name will always begin with "pingdirectory-periodic-backup" follow by a timestamp in its name.
-        active_cronjob_job_name=$(get_actively_running_cronjob | head -n 1)
+        active_cronjob_job_name=$(get_actively_running_cronjob | head -n 1 | tr -d ' ')
 
         # Now that we have both names (Cronjob and manual Job).
         # We can sort the create timestamp and determine who ran first (Cronjob or manual Job).
-        second_active_job_by_name=$(kubectl get jobs "${active_cronjob_job_name}" "${active_manual_job_name}" --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n "${NAMESPACE}" 2>/dev/null | sed -n '2p')
+        second_active_job_by_name=$(kubectl get jobs "${active_cronjob_job_name}" "${active_manual_job_name}" --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' -n "${NAMESPACE}" 2>/dev/null | sed -n '2p' | tr -d ' ')
 
-        # Avoid interrupting backup that started first. Delete the second backup only.
+        # Terminate second Job but the second Job should only terminate itself.
+        # This is rare to happen but I found if 2 Jobs created at the same time may hit this condition
+        # where they both will attempt to delete the 2nd Job. The 1st Job should simply ignore as the 2nd Job whose
+        # the problem will simply delete itself and error out.
+        current_job_name=$(get_current_job_name)
+        if [ "${current_job_name}" != "${second_active_job_by_name}" ]; then
+          echo "2 Jobs were triggered around the same time ${current_job_name} and ${second_active_job_by_name}. This Job ${current_job_name} is considered 1st. The Job ${second_active_job_by_name} will terminate itself. Ready to proceed with ${current_job_name}."
+          return 0
+        fi
+
+        # Avoid interrupting backup that started first. Terminate the second Job only.
         echo "There is a backup already running at the moment. Terminating ${second_active_job_by_name} Job"
 
         # Before deleting this Job that ran second pause so the person can see the logs.
@@ -96,7 +106,6 @@ is_only_one_backup_running() {
 
         # Terminate second Job
         kubectl delete job "${second_active_job_by_name}" -n "${NAMESPACE}"
-
     else
 
         # Entering this condition means there is NOT an active Cronjob running.
@@ -104,14 +113,24 @@ is_only_one_backup_running() {
         # Determine if there is another Manual Job running. We also need to avoid 2 manual Jobs from running.
         # Manual jobs can be found by filtering on "pd-manual=true" label.
         # We can sort the create timestamp and retrieve the 2nd manual Job if there is any.
-        second_active_manual_job_by_name=$(get_actively_running_manual_jobs | sed -n '2p')
+        second_active_manual_job_by_name=$(get_actively_running_manual_jobs | sed -n '2p' | tr -d ' ')
 
         if [ -z "${second_active_manual_job_by_name}" ]; then
             echo "Second manual Job was not found. Ready to proceed."
             return 0
         fi
 
-        # Avoid interrupting manual backup Job that started first. Delete the second backup only.
+        # Terminate second Job but the second Job should only terminate itself.
+        # This is rare to happen but I found if 2 Jobs created at the same time may hit this condition
+        # where they both will attempt to delete the 2nd Job. The 1st Job should simply ignore as the 2nd Job whose
+        # the problem will simply delete itself and error out.
+        current_job_name=$(get_current_job_name)
+        if [ "${current_job_name}" != "${second_active_manual_job_by_name}" ]; then
+          echo "2 Jobs were triggered around the same time ${current_job_name} and ${second_active_manual_job_by_name}. This Job ${current_job_name} is considered 1st. The Job ${second_active_manual_job_by_name} will terminate itself. Ready to proceed with ${current_job_name}."
+          return 0
+        fi
+
+        # Avoid interrupting manual backup Job that started first. Terminate the second Job only.
         echo "There is a manual backup already running at the moment. Terminating ${second_active_manual_job_by_name} Job"
 
         # Before deleting this Job that ran second pause so the person can see the logs.
@@ -125,6 +144,11 @@ is_only_one_backup_running() {
              # This should never happen if there is not collision with Cronjob and manual Job.
 }
 
+# Function that retrieves the parent Job name. This is the Job that creates the backup Job.
+get_current_job_name() {
+  kubectl get pod "${CURRENT_JOB_POD_NAME}" -n "${NAMESPACE}" -o jsonpath='{.metadata.ownerReferences[0].name}' 2>/dev/null | tr -d ' '
+}
+
 # Function ensures that the pd-manual=true label is attached to manual Jobs. This is the only way p1as automation
 # can filter out pingdirectory backups
 is_required_label_for_manual_job_provided() {
@@ -133,12 +157,18 @@ is_required_label_for_manual_job_provided() {
     active_cronjob_running=$(is_cronjob_running_now)
     if [ -z "${active_cronjob_running}" ]; then
       # This is a manual Job. To get the Job name use the pod metadata.ownerReferences
-      current_manual_job_name=$(kubectl get pod "${CURRENT_JOB_POD_NAME}" -n "${NAMESPACE}" -o jsonpath='{.metadata.ownerReferences[0].name}')
+      current_manual_job_name=$(get_current_job_name)
       # Verify that manual Job is labelled correctly as 'pd-manual=true'.
       kubectl get job "${current_manual_job_name}" -n "${NAMESPACE}" -o jsonpath='{.metadata.labels.pd-manual}' | grep -q "true"
       if [ "$?" -ne "0" ]; then
         echo "Exiting. Manual Job must have the required label 'pd-manual=true'"
+
+        # Before deleting this Job due to missing label pause so the person can see the logs.
         sleep 30
+
+        # Terminate Job with missing required label
+        kubectl delete job "${current_manual_job_name}" -n "${NAMESPACE}"
+
         return 1
       else
         echo "Required label 'pd-manual=true' was found for job. Proceeding with backup."
@@ -149,26 +179,28 @@ is_required_label_for_manual_job_provided() {
 }
 
 # Function to determine if the true PingDirectory Job that perform backup and its own PVC allocated is actively running.
-# Will try up to 60 seconds before ending backup.
+# The first argument allows you to try up to desired times before ending with an error.
 is_pingdirectory_backup_running() {
+  attempts="${1}"
   count=1
-  attempts=6
 
   while [ ${count} -le ${attempts} ]; do
-    kubectl get job/"${BACKUP_NAME}" -n "${NAMESPACE}"
+    kubectl get job/"${BACKUP_NAME}" -n "${NAMESPACE}" > /dev/null
     pingdirectory_backup_job_status=$?
 
-    if [ "${pingdirectory_backup_job_status}" -eq "0" ]; then
+    kubectl get pvc/"${BACKUP_NAME}" -n "${NAMESPACE}" > /dev/null
+    pingdirectory_backup_pvc_status=$?
+
+    if [ "${pingdirectory_backup_job_status}" -eq "0" ] && [ "${pingdirectory_backup_pvc_status}" -eq "0" ]; then
       return 0  # PingDirectory backup Job found continue
     else
-      sleep 10  # PingDirectory backup Job not found try again in a few seconds
+      sleep 5  # PingDirectory backup Job not found try again in a few seconds
     fi
 
     count=$((count + 1))  # Increment the counter
   done
 
-  echo "PingDirectory backup Job not found after ${attempts} attempts."
-  return 1
+  return 1 # Fail if Job and PVC is not found after several attempts
 }
 
 ### Script execution begins here. ###
@@ -184,7 +216,7 @@ sleep 15 # Allow users who create manual Job to attach label
 if ! is_only_one_backup_running || ! is_required_label_for_manual_job_provided; then
   # Avoid automation from deleting PVC. We need to avoid deleting if this is a CronJob/manual Job collision.
   SKIP_RESOURCE_CLEANUP="true"
-  exit 0 # Gracefully exit. This is not a PingDirectory backup error but a user error.
+  exit 1 # Technically, this is not a PingDirectory backup error but a CronJob/Manual Job collision or user error.
 fi
 
 # Before backup begins. Ensure lingering resources of Job and PVC have been removed when running prior backup
@@ -193,15 +225,11 @@ cleanup_resources
 # Execute backup-ops.sh script (which kicks off the k8s pingdirectory-backup Job)
 test -x ${SCRIPT} && ${SCRIPT} "p1as-automation"
 
-# Wait for Job to be in 'Complete' state
-while true; do
+# Ensure Job and PVC is available at all times. Try up to 10 times.
+# Will end with error if pingdirectory-backup Job and PVC isn't present.
+while is_pingdirectory_backup_running 10; do
 
-  if ! is_pingdirectory_backup_running; then
-      echo "The kubernetes job/${BACKUP_NAME} that triggers PingDirectory backup and its own PVC was not found. This is mandatory as something unexpectedly has happened to the pingdirectory-backup Job and the PVC."
-      exit 1
-  fi
-
-  # The pod of the Job is running. The following logic will now check for completion on the Job K8s object
+  # The Job is running. The following logic will now check for completion on the Job K8s object
   if is_job_complete; then
     echo "${BACKUP_NAME} Job successfully completed. Cronjob will clean up the backup job PVC and Job resources"
     exit 0
@@ -238,5 +266,9 @@ while true; do
       echo "Job failed ${failed_attempts} times, with backofflimit of ${backoff_limit}. ${BACKUP_NAME} Job is expected to retry."
     fi
   fi
+
   sleep 5  # Wait for 5 seconds before checking PingDirectory backup status
 done
+
+echo "The kubernetes job/${BACKUP_NAME} that triggers PingDirectory backup and its own PVC was not found. This is mandatory as something unexpectedly has happened to the pingdirectory-backup Job and the PVC."
+exit 1
