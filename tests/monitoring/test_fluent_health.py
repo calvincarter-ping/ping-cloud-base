@@ -48,7 +48,7 @@ class TestFluentBitMetrics(unittest.TestCase):
 
     def test_check_fluentbit_metrics(self):
         retry_attempts = 5
-        sleep_interval = 20  # 20 seconds between retries
+        sleep_interval = 30  # 30 seconds between retries
         
         for attempt in range(retry_attempts):
             input_records = query_metric("fluentbit_input_records_total", self.prometheus_url)
