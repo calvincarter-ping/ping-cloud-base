@@ -16,7 +16,7 @@ class PrometheusPortForward:
             ["kubectl", "port-forward", "svc/prometheus", "9090:9090", "-n", "prometheus"],
             stdout=subprocess.PIPE
         )
-        time.sleep(5)  # Allow time for port-forward to establish
+        time.sleep(60)  # Allow time for port-forward to establish
         return process
 
     @staticmethod
@@ -47,17 +47,29 @@ class TestFluentBitMetrics(unittest.TestCase):
                          "Fluent Bit DaemonSet is not healthy.")
 
     def test_check_fluentbit_metrics(self):
-        input_records = query_metric("fluentbit_input_records_total", self.prometheus_url)
-        output_records = query_metric("fluentbit_output_proc_records_total", self.prometheus_url)
-        self.assertIsNotNone(input_records, "fluentbit_input_records_total metric is missing.")
-        self.assertIsNotNone(output_records, "fluentbit_output_proc_records_total metric is missing.")
+        retry_attempts = 5
+        sleep_interval = 20  # 20 seconds between retries
         
-        if input_records > 0 and output_records > 0:
-            print(f"fluentbit_input_records_total: {input_records}")
-            print(f"fluentbit_output_proc_records_total: {output_records}")
-            print("Both Fluent Bit metrics are generating fine.")
-        else:
-            self.fail(f"Metrics issue: input={input_records}, output={output_records}")
+        for attempt in range(retry_attempts):
+            input_records = query_metric("fluentbit_input_records_total", self.prometheus_url)
+            output_records = query_metric("fluentbit_output_proc_records_total", self.prometheus_url)
+
+            if input_records is not None and output_records is not None:
+                if input_records > 0 and output_records > 0:
+                    print(f"Attempt {attempt+1}: Metrics found.")
+                    print(f"fluentbit_input_records_total: {input_records}")
+                    print(f"fluentbit_output_proc_records_total: {output_records}")
+                    print("Both Fluent Bit metrics are generating fine.")
+                    return  # Success, exit test case
+                else:
+                    print(f"Attempt {attempt+1}: Metrics issue: input={input_records}, output={output_records}")
+            else:
+                print(f"Attempt {attempt+1}: Metrics not found yet. Waiting {sleep_interval} seconds before retrying...")
+
+            time.sleep(sleep_interval)  # Wait before retrying
+
+        # If we exhaust all retry attempts, fail the test
+        self.fail(f"Metrics issue after {retry_attempts} attempts: input={input_records}, output={output_records}")
 
 if __name__ == '__main__':
     unittest.main()
