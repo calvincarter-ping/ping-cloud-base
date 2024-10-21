@@ -56,7 +56,7 @@ class TestFluentBitMetrics(unittest.TestCase):
 
         # Wait for 2 minutes before starting the metrics test
         print("All pods are up. Waiting 2 minutes before checking the metrics...")
-        time.sleep(120)  # 2-minute delay
+        time.sleep(120)  # 2-min delay
 
         retry_attempts = 5
         sleep_interval = 30  # 30 seconds between retries
