@@ -208,8 +208,6 @@ is_pingdirectory_backup_running() {
 # This guarantees that cleanup_resources method will always run, even if the script exits due to an error
 trap "cleanup_resources" EXIT
 
-sleep 15 # Allow users who create manual Job to attach label
-
 # Before kicking off the PD backup. Check the following conditions:
 # 1) If there is a CronJob/manual Job collision.
 # 2) If user created manual Job but without the appropriate label.
