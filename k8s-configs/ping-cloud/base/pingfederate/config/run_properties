@@ -5,11 +5,6 @@
 # PF_CONSOLE_AUTHENTICATION
 # PF_CONSOLE_ENVIRONMENT
 
-# PDO-3791
-# PF_PROVISIONER_MODE
-# PF_PROVISIONER_NODE_ID
-# PF_PROVISIONER_GRACE_PERIOD
-
 PF_RUN_pf_console_bind_address=0.0.0.0
 PF_RUN_pf_console_show_background_images=true
 PF_RUN_pf_pingone_admin_url_region=
