@@ -40,13 +40,24 @@ class TestFluentBitMetrics(unittest.TestCase):
     def tearDownClass(cls):
         PrometheusPortForward.stop(cls.port_forward_process)
 
-    def test_fluentbit_daemonset_status(self):
+    def check_fluentbit_daemonset_status(self):
         api = client.AppsV1Api()
         daemonset = api.read_namespaced_daemon_set_status("fluent-bit", "elastic-stack-logging")
-        self.assertEqual(daemonset.status.number_ready, daemonset.status.desired_number_scheduled,
-                         "Fluent Bit DaemonSet is not healthy.")
+        return daemonset.status.number_ready == daemonset.status.desired_number_scheduled
+
+    def test_fluentbit_daemonset_status(self):
+        print("Checking Fluent Bit DaemonSet status...")
+        self.assertTrue(self.check_fluentbit_daemonset_status(), "Fluent Bit DaemonSet is not healthy.")
+        print("All Fluent Bit pods are up and running.")
 
     def test_check_fluentbit_metrics(self):
+        # First, ensure all Fluent Bit pods are up before proceeding
+        self.assertTrue(self.check_fluentbit_daemonset_status(), "Fluent Bit DaemonSet is not fully ready.")
+
+        # Wait for 2 minutes before starting the metrics test
+        print("All pods are up. Waiting 2 minutes before checking the metrics...")
+        time.sleep(120)  # 2-minute delay
+
         retry_attempts = 5
         sleep_interval = 30  # 30 seconds between retries
         
