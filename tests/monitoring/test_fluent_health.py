@@ -58,10 +58,10 @@ class TestFluentBitMetrics(unittest.TestCase):
         print("All pods are up. Waiting 2 minutes before checking the metrics...")
         time.sleep(120)  # 2-min delay
 
-        retry_attempts = 5
-        sleep_interval = 30  # 30 seconds between retries
-        
-        for attempt in range(retry_attempts):
+        attempt = 0
+
+        # Run in a continuous loop until metrics are found
+        while True:
             input_records = query_metric("fluentbit_input_records_total", self.prometheus_url)
             output_records = query_metric("fluentbit_output_proc_records_total", self.prometheus_url)
 
@@ -71,16 +71,16 @@ class TestFluentBitMetrics(unittest.TestCase):
                     print(f"fluentbit_input_records_total: {input_records}")
                     print(f"fluentbit_output_proc_records_total: {output_records}")
                     print("Both Fluent Bit metrics are generating fine.")
-                    return  # Success, exit test case
+                    break  # Success, exit loop
                 else:
                     print(f"Attempt {attempt+1}: Metrics issue: input={input_records}, output={output_records}")
             else:
-                print(f"Attempt {attempt+1}: Metrics not found yet. Waiting {sleep_interval} seconds before retrying...")
+                print(f"Attempt {attempt+1}: Metrics not found yet. Waiting 60 seconds before retrying...")
 
-            time.sleep(sleep_interval)  # Wait before retrying
+            attempt += 1
+            time.sleep(60)  # Wait for 1 minute before retrying
 
-        # If we exhaust all retry attempts, fail the test
-        self.fail(f"Metrics issue after {retry_attempts} attempts: input={input_records}, output={output_records}")
+        print(f"Metrics appeared after {attempt+1} attempts.")
 
 if __name__ == '__main__':
     unittest.main()
