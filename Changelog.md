@@ -73,6 +73,7 @@ _Changes:_
 
 _Changes:_
 
+- [X] PDO-8404 Integrate Logstash and OpenSearch Config into container Image
 - [X] PDO-8730 Prevent customer-p1-connection job from running on upgrades
 
 ### 1.19.1.0
@@ -107,7 +108,6 @@ _Changes:_
 - [X] PDO-8072 ingress-nginx to use topologySpreadConstaints
 - [X] PDO-8128 Correct sample patch for Pingaccess-WAS engine HPA min/max replicas
 - [X] PDO-8164 OpenSearch: Implement Version 2.11.1
-- [X] PDO-8404 Integrate Logstash and OpenSearch Config into container Image
 
 ### 1.19.0.0
 
