@@ -3,7 +3,7 @@ import time
 import requests
 from kubernetes import client, config
 import urllib3
-import unittest  # Ensure unittest is imported
+import unittest 
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
