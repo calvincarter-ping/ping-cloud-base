@@ -33,6 +33,10 @@ _Changes:_
 - Upgrade External DNS to v0.14.2
 - Disabling anonymous login for OpenSearch and removing prometheus_read role
 - Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
+- Upgrade cert-manager to v1.16.1
+- Upgrade Argocd to v2.12.4
+- Upgrade Kubectl to v1.30.4
+- Add p1as-self-service microservice
 
 _Changes:_
 
@@ -53,6 +57,7 @@ _Changes:_
 - [X] PDO-7608 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - [X] PDO-7669 Thanos: Storage Gateway crashlooping with OOM killed when choosing old range of data on Prometheus/Grafana UI
 - [X] PDO-8150 Improve Stability and Shutdown Handling
+- [X] PDO-8158 Add p1as-self-service microservice
 - [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
