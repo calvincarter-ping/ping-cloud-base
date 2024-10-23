@@ -1,3 +1,14 @@
+import subprocess
+import time
+import requests
+from kubernetes import client, config
+import urllib3
+import unittest  # Ensure unittest is imported
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+config.load_kube_config()
+
 class PrometheusPortForward:
     process = None
 
@@ -9,7 +20,8 @@ class PrometheusPortForward:
             ["kubectl", "port-forward", "svc/prometheus", "9090:9090", "-n", "prometheus"],
             stdout=subprocess.PIPE
         )
-        time.sleep(60)  # Allow time for port-forward to establish
+        time.sleep(60)
+        return PrometheusPortForward.process
 
     @staticmethod
     def stop():
@@ -31,30 +43,23 @@ class TestFluentBitMetrics(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.prometheus_url = "http://localhost:9090/api/v1/query"
-        PrometheusPortForward.start()
-
-    @classmethod
-    def tearDownClass(cls):
-        PrometheusPortForward.stop()
-
-    def check_fluentbit_pod_health(self):
-        api = client.CoreV1Api()
-        pods = api.list_namespaced_pod(namespace="elastic-stack-logging", label_selector="k8s-app=fluent-bit").items
-        all_pods_ready = True
-        for pod in pods:
-            pod_name = pod.metadata.name
-            pod_status = all([container.ready for container in pod.status.container_statuses])
-            print(f"Pod {pod_name} is {'ready' if pod_status else 'not ready'}")
-            all_pods_ready = all_pods_ready and pod_status
-        return all_pods_ready
 
     def test_fluentbit_pods_health(self):
-        self.assertTrue(self.check_fluentbit_pod_health(), "Not all Fluent Bit pods are healthy.")
+        api = client.CoreV1Api()
+        pods = api.list_namespaced_pod("elastic-stack-logging", label_selector="k8s-app=fluent-bit").items
+        for pod in pods:
+            pod_name = pod.metadata.name
+            pod_status = pod.status.conditions[-1].status
+            self.assertTrue(pod_status == "True", f"Pod {pod_name} is not ready")
+            print(f"Pod {pod_name} is ready")
+        print("All pods are up and running.")
 
     def test_check_fluentbit_metrics(self):
-        self.assertTrue(self.check_fluentbit_pod_health(), "Fluent Bit DaemonSet is not fully ready.")
-        print("All pods are up. Waiting 2 minutes before checking the metrics...")
-        time.sleep(120)
+        self.test_fluentbit_pods_health()
+
+        time.sleep(120)  # 2-minute wait
+
+        PrometheusPortForward.start()
 
         attempt = 0
         while True:
@@ -68,7 +73,6 @@ class TestFluentBitMetrics(unittest.TestCase):
                 print(f"Attempt {attempt+1}: Metrics found.")
                 print(f"fluentbit_input_records_total: {input_records}")
                 print(f"fluentbit_output_proc_records_total: {output_records}")
-                print("Both Fluent Bit metrics are generating fine.")
                 break
             else:
                 print(f"Attempt {attempt+1}: Metrics issue: input={input_records}, output={output_records}")
@@ -77,6 +81,7 @@ class TestFluentBitMetrics(unittest.TestCase):
             time.sleep(60)
 
         print(f"Metrics appeared after {attempt+1} attempts.")
+        PrometheusPortForward.stop()
 
 if __name__ == '__main__':
     unittest.main()
