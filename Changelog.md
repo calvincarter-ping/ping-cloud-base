@@ -30,6 +30,7 @@
 - Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 - Upgrade cert-manager to v1.16.1
 - Upgrade Argocd to v2.12.4
+- Upgrade Kubectl to v1.30.4
 - Add p1as-self-service microservice
 
 _Changes:_
@@ -37,6 +38,7 @@ _Changes:_
 - [X] PDO-5729 Update version regexes
 - [X] PDO-5888 Implement p1as-pingdirectory pipeline deploy stage
 - [X] PDO-5900 Add p1as-pingdirectory code-gen directory to PCB
+- [X] PDO-5901 Pingdirectory Monorepo Cleanup
 - [X] PDO-6511 Update static files in PF upgrade to v12.1.0 
 - [X] PDO-6573 Support customer bringing their own certificate for their external server and adding it to PingDataSync truststore
 - [X] PDO-6744 Refactor update and generate scripts to pull from microservice repo mirrors
@@ -59,6 +61,7 @@ _Changes:_
 - [X] PDO-7672 Thanos: Metrics older than 15 days are still present
 - [X] PDO-7683 Enable runtime bulkhead via API for PingFederate
 - [X] PDO-7717 Upgrade cert-manager to v1.16.1
+- [X] PDO-7738 Upgrade kubectl to v1.30.4
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
 - [X] PDO-8121 log4j2.xml.subst root logger follows PF_DEBUG_LEVEL
 - [X] PDO-8150 Improve Stability and Shutdown Handling
@@ -75,6 +78,7 @@ _Changes:_
 
 _Changes:_
 
+- [X] PDO-8404 Integrate Logstash and OpenSearch Config into container Image
 - [X] PDO-8730 Prevent customer-p1-connection job from running on upgrades
 
 ### 1.19.1.0
