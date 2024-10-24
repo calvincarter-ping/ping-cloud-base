@@ -84,8 +84,8 @@ spec:
         resources: {}
         securityContext:
           allowPrivilegeEscalation: false
-          runAsGroup: 0
-          runAsNonRoot: true
+          runAsGroup: 9999
+          runAsNonRoot: false
           runAsUser: 9031
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
@@ -125,13 +125,13 @@ spec:
         - secretRef:
             name: newrelic-license-key
             optional: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.19-release-branch-latest
         imagePullPolicy: IfNotPresent
         resources: {}
         securityContext:
           allowPrivilegeEscalation: false
-          runAsGroup: 0
-          runAsNonRoot: true
+          runAsGroup: 9999
+          runAsNonRoot: false
           runAsUser: 9031
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
@@ -165,7 +165,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           runAsGroup: 0
-          runAsNonRoot: true
+          runAsNonRoot: false
           runAsUser: 9031
       - image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/python-topology:0.0.1
         imagePullPolicy: IfNotPresent
@@ -324,7 +324,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           runAsGroup: 0
-          runAsNonRoot: true
+          runAsNonRoot: false
           runAsUser: 9031
       containers:
       - env:
@@ -393,7 +393,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           runAsGroup: 0
-          runAsNonRoot: true
+          runAsNonRoot: false
           runAsUser: 9031
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
@@ -445,7 +445,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           runAsGroup: 0
-          runAsNonRoot: true
+          runAsNonRoot: false
           runAsUser: 9031
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
@@ -454,7 +454,7 @@ spec:
           name: pingdirectory-statsd-mapping
       securityContext:
         fsGroup: 0
-        runAsGroup: 0
+        runAsGroup: 9999
       volumes:
       - name: server-profile
         emptyDir: {}
