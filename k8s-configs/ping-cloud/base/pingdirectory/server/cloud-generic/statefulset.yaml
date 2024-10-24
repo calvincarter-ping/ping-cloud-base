@@ -8,7 +8,7 @@ metadata:
     class: pingdirectory-server
 spec:
   serviceName: pingdirectory
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       class: pingdirectory-server
@@ -453,7 +453,7 @@ spec:
         - mountPath: /tmp/mapping/
           name: pingdirectory-statsd-mapping
       securityContext:
-        fsGroup: 9999
+        fsGroup: 0
         runAsGroup: 0
       volumes:
       - name: server-profile
