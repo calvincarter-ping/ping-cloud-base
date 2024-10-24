@@ -12961,7 +12961,7 @@ spec:
           image: "quay.io/jetstack/cert-manager-cainjector:v1.16.1"
           imagePullPolicy: IfNotPresent
           args:
-          - --v=2
+          - --v=4
           - --leader-election-namespace=kube-system
           ports:
           - containerPort: 9402
@@ -13024,7 +13024,7 @@ spec:
           image: "quay.io/jetstack/cert-manager-controller:v1.16.1"
           imagePullPolicy: IfNotPresent
           args:
-          - --v=2
+          - --v=
           - --cluster-resource-namespace=$(POD_NAMESPACE)
           - --leader-election-namespace=kube-system
           - --acme-http01-solver-image=quay.io/jetstack/cert-manager-acmesolver:v1.16.1
@@ -13106,7 +13106,7 @@ spec:
           image: "quay.io/jetstack/cert-manager-webhook:v1.16.1"
           imagePullPolicy: IfNotPresent
           args:
-          - --v=2
+          - --v=4
           - --secure-port=10250
           - --dynamic-serving-ca-secret-namespace=$(POD_NAMESPACE)
           - --dynamic-serving-ca-secret-name=cert-manager-webhook-ca
