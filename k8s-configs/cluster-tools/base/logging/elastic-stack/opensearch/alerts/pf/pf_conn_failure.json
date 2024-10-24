@@ -1,5 +1,5 @@
 {
-   "name": "PingDirectory Replication Replay Operation Failed",
+   "name": "PingFederate Connection Failure",
    "type": "monitor",
    "monitor_type": "bucket_level_monitor",
    "enabled": true,
@@ -13,7 +13,7 @@
       {
          "search": {
             "indices": [
-               "pd-errors-*"
+               "pf-server-*"
             ],
             "query": {
                "size": 0,
@@ -46,15 +46,20 @@
                            }
                         },
                         {
-                          "match_phrase": {
-                            "kubernetes.container_name": "pingdirectory"
-                          }
-                        },
-                        {
-                          "match_phrase": {
-                            "msg": "\"alert type=replication-replay-failed\""
-                          }
-                        }
+                           "match_phrase": {
+                             "message": "resultCode=91 (connect error)"
+                           }
+                         },
+                         {
+                           "term": {
+                             "logLevel.keyword": "ERROR"
+                           }
+                         },
+                         {
+                           "term": {
+                             "kubernetes.labels.role.keyword": "pingfederate-engine"
+                           }
+                         }
                      ]
                   }
                }
@@ -65,7 +70,7 @@
    "triggers": [
       {
          "bucket_level_trigger": {
-            "name": "Count more than 0",
+            "name": "Count more than 1",
             "severity": "1",
             "condition": {
                "buckets_path": {
@@ -73,7 +78,7 @@
                },
                "parent_bucket_path": "composite_agg",
                "script": {
-                  "source": "params._count > 0",
+                  "source": "params._count > 1",
                   "lang": "painless"
                },
                "gap_policy": "skip"
@@ -83,7 +88,7 @@
                     "name": "SREAPPALERTS",
                     "destination_id": "sns_sreappalerts",
                     "message_template": {
-                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154796114/ALERT+PingDirectory+Replication+Replay+Operation+Failed+in+CDE\"\n}",
+                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154992826/ALERT+PingFederate+LDAP+Connection+Lost+in+CDE\"\n}",
                       "lang": "mustache"
                     },
                     "throttle_enabled": false,
@@ -105,7 +110,7 @@
                     "name": "CUSTOMERHUB",
                     "destination_id": "sns_customerhub",
                     "message_template": {
-                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154796114/ALERT+PingDirectory+Replication+Replay+Operation+Failed+in+CDE\"\n}",
+                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154992826/ALERT+PingFederate+LDAP+Connection+Lost+in+CDE\"\n}",
                       "lang": "mustache"
                     },
                     "throttle_enabled": false,
