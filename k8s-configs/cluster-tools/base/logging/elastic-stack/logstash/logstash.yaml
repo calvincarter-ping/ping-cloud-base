@@ -54,7 +54,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.0-release-branch-latest
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/enrichment-bootstrap:pdo-7738v2
           imagePullPolicy: Always
           args:
             - create_enrichment_cache_files
@@ -224,7 +224,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.0-release-branch-latest
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/enrichment-bootstrap:pdo-7738v2
           imagePullPolicy: Always
           args:
             - enrichment_sidecar
