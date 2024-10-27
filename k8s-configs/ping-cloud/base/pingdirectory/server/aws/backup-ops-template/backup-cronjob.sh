@@ -153,9 +153,14 @@ get_current_job_name() {
 # can filter out pingdirectory backups
 is_required_label_for_manual_job_provided() {
 
+    echo "Checking to see if this is a manual job"
+
     # Determine if Cronjob is actively running. This will be empty if CronJob is not running.
     active_cronjob_running=$(is_cronjob_running_now)
     if [ -z "${active_cronjob_running}" ]; then
+
+      echo "This is a manual job. Evaluate that the job has the label 'pd-manual=true'"
+
       # This is a manual Job. To get the Job name use the pod metadata.ownerReferences
       current_manual_job_name=$(get_current_job_name)
       # Verify that manual Job is labelled correctly as 'pd-manual=true'.
@@ -173,6 +178,8 @@ is_required_label_for_manual_job_provided() {
       else
         echo "Required label 'pd-manual=true' was found for job. Proceeding with backup."
       fi
+    else
+      echo "This is a cronjob. Continue to proceed and ignore evaluating label"
     fi
 
     return 0 # This is a CronJob or the correct label was found for manual Job
