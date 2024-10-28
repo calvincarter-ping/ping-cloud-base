@@ -137,7 +137,6 @@ spec:
       containers:
       - name: pingfederate
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingfederate:pdo-6732
-        
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
