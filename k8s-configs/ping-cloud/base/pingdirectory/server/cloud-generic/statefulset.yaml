@@ -82,11 +82,11 @@ spec:
         imagePullPolicy: IfNotPresent
         name: wait-for-services
         resources: {}
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsGroup: 9999
-          runAsNonRoot: false
-          runAsUser: 9031
+#        securityContext:
+#          allowPrivilegeEscalation: false
+#          runAsGroup: 9999
+#          runAsNonRoot: false
+#          runAsUser: 9031
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
@@ -128,11 +128,11 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.19-release-branch-latest
         imagePullPolicy: IfNotPresent
         resources: {}
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsGroup: 9999
-          runAsNonRoot: false
-          runAsUser: 9031
+#        securityContext:
+#          allowPrivilegeEscalation: false
+#          runAsGroup: 9999
+#          runAsNonRoot: false
+#          runAsUser: 9031
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
@@ -162,11 +162,11 @@ spec:
             name: server-profile
           - mountPath: /secrets/key
             name: ssh-id-key-secret
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsGroup: 0
-          runAsNonRoot: false
-          runAsUser: 9031
+#        securityContext:
+#          allowPrivilegeEscalation: false
+#          runAsGroup: 0
+#          runAsNonRoot: false
+#          runAsUser: 9031
       - image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/python-topology:0.0.1
         imagePullPolicy: IfNotPresent
         name: topology-generation
@@ -321,11 +321,11 @@ spec:
         - mountPath: /usr/local/secrets/truststore_certs
           name: pingdirectory-truststore-certs
           readOnly: true
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsGroup: 0
-          runAsNonRoot: false
-          runAsUser: 9031
+#        securityContext:
+#          allowPrivilegeEscalation: false
+#          runAsGroup: 0
+#          runAsNonRoot: false
+#          runAsUser: 9031
       containers:
       - env:
         - name: POD_NAME
@@ -390,11 +390,11 @@ spec:
           requests:
             cpu: "2"
             memory: 4Gi
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsGroup: 0
-          runAsNonRoot: false
-          runAsUser: 9031
+#        securityContext:
+#          allowPrivilegeEscalation: false
+#          runAsGroup: 0
+#          runAsNonRoot: false
+#          runAsUser: 9031
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
@@ -442,19 +442,19 @@ spec:
           requests:
             cpu: 100m
             memory: 100Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          runAsGroup: 0
-          runAsNonRoot: false
-          runAsUser: 9031
+#        securityContext:
+#          allowPrivilegeEscalation: false
+#          runAsGroup: 0
+#          runAsNonRoot: false
+#          runAsUser: 9031
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
         - mountPath: /tmp/mapping/
           name: pingdirectory-statsd-mapping
-      securityContext:
-        fsGroup: 0
-        runAsGroup: 9999
+#      securityContext:
+#        fsGroup: 0
+#        runAsGroup: 9999
       volumes:
       - name: server-profile
         emptyDir: {}
