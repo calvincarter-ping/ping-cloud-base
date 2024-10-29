@@ -33,12 +33,15 @@ _Changes:_
 - Upgrade External DNS to v0.14.2
 - Disabling anonymous login for OpenSearch and removing prometheus_read role
 - Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
+- Upgrade cert-manager to v1.16.1
+- Upgrade Kubectl to v1.30.4
 
 _Changes:_
 
 - [X] PDO-5729 Update version regexes
 - [X] PDO-5888 Implement p1as-pingdirectory pipeline deploy stage
 - [X] PDO-5900 Add p1as-pingdirectory code-gen directory to PCB
+- [X] PDO-5901 Pingdirectory Monorepo Cleanup
 - [X] PDO-6511 Update static files in PF upgrade to v12.1.0 
 - [X] PDO-6573 Support customer bringing their own certificate for their external server and adding it to PingDataSync truststore
 - [X] PDO-6744 Refactor update and generate scripts to pull from microservice repo mirrors
@@ -52,6 +55,8 @@ _Changes:_
 - [X] PDO-7527 Grafana: Update PGO dashboards to be compatible with the current PGO version
 - [X] PDO-7608 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - [X] PDO-7669 Thanos: Storage Gateway crashlooping with OOM killed when choosing old range of data on Prometheus/Grafana UI
+- [X] PDO-7717 Upgrade cert-manager to v1.16.1
+- [X] PDO-7738 Upgrade kubectl to v1.30.4
 - [X] PDO-8150 Improve Stability and Shutdown Handling
 - [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
@@ -62,6 +67,7 @@ _Changes:_
 
 _Changes:_
 
+- [X] PDO-8404 Integrate Logstash and OpenSearch Config into container Image
 - [X] PDO-8730 Prevent customer-p1-connection job from running on upgrades
 
 ### 1.19.1.0

@@ -108,11 +108,11 @@
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
 #                                  |                                                    |
 # EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingaccess pingaccess-was        | No defaults
-#                                  | pingdirectory pingdelegator pingfederate) for      |
-#                                  | which you can enable external ingress(the values   |
-#                                  | are ping app names)                                |
-#                                  | Examplelist:"pingaccess pingdirectory pingfederate |
-#                                  | pingaccess-was pingdelegator"                      |
+#                                  | pingdelegator pingfederate) for which you can      |
+#                                  | enable external ingress(the values are ping app    |
+#                                  | names)                                             |
+#                                  | Examplelist:"pingaccess pingfederate pingdelegator |
+#                                  | pingaccess-was              "                      |
 #                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                                  | routing.                                           | the TENANT_DOMAIN value with the
@@ -278,6 +278,12 @@
 #                                  | must also be provided and correspond to this       |
 #                                  | public key.                                        |
 #                                  |                                                    |
+# STAGE                            | The environment's "stage".                         | lab-us1
+#                                  | Lab/Preview/GA/Field/etc                           |
+#                                  | It is initially set by Versent as stage-region -   |
+#                                  | for example: ga-us1, then we consume only the      |
+#                                  | portion containing the stage in this script        |
+#                                  |                                                    |
 # SUPPORTED_ENVIRONMENT_TYPES      | The environment types that will be supported for   | dev test stage prod customer-hub
 #                                  | the customer                                       |
 #                                  |                                                    |
@@ -423,8 +429,9 @@ ${PINGCENTRAL_IMAGE_TAG}
 ${PINGACCESS_IMAGE_TAG}
 ${PINGACCESS_WAS_IMAGE_TAG}
 ${PINGFEDERATE_IMAGE_TAG}
-${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
+${OPENSEARCH_BOOTSTRAP_IMAGE_TAG}
+${LOGSTASH_IMAGE_TAG}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
 ${IRSA_PA_ANNOTATION_KEY_VALUE}
 ${IRSA_PD_ANNOTATION_KEY_VALUE}
@@ -795,6 +802,11 @@ export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
 export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN_NO_DOT_SUFFIX}}"
 export SECONDARY_TENANT_DOMAINS="${SECONDARY_TENANT_DOMAINS}"
+
+# Default stage to lab-us1
+STAGE="${STAGE:-lab-us1}"
+# Versent passes STAGE as "stage-region" (e.g. "ga-us1") so we need to strip the region suffix
+export STAGE="${STAGE%%-*}"
 
 if "${IS_BELUGA_ENV}"; then
   DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"

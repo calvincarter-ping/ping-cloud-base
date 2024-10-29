@@ -28,11 +28,10 @@ variables:
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
     pingdelegator/01-admin-user-login.sh
-    pingdirectory/03-backup-restore.sh
-    pingdirectory/08-test-http-connection-handler.sh
     monitoring/03-nri-kubernetes.sh
     monitoring/test_cloudwatch_logs.py
     ingress-nginx/01-test-ocsp-stapling.sh
+    monitoring/test_fluent_health.py
 
 ## Compile stage ##
 compile:
@@ -218,6 +217,7 @@ pa-was-integration-tests:
 .integration-tests-base:
   variables:
     TEST: ""
+    UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   stage: integration-test
   retry: 1
   tags:
@@ -228,6 +228,7 @@ pa-was-integration-tests:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${TEST}
   dependencies:
     - find-cluster
+    - compile
   artifacts:
     name: "integration_test_logs"
     paths:
