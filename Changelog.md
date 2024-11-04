@@ -26,7 +26,6 @@
 - CT Upg: Upgrade Karpenter to 0.37.3
 - Adding FluentBit timestamp to standard log data for all log streams
 - Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
-- Upgrade cert-manager to v1.16.1
 - Upgrade Argocd to v2.12.4
 - Upgrade Kubectl to v1.30.4
 - Add p1as-self-service microservice
@@ -56,8 +55,6 @@ _Changes:_
 - [X] PDO-7564 Update number of shards for ingress index
 - [X] PDO-7608 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - [X] PDO-7683 Enable runtime bulkhead via API for PingFederate
-- [X] PDO-7717 Upgrade cert-manager to v1.16.1
-- [X] PDO-7738 Upgrade kubectl to v1.30.4
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
 - [X] PDO-8121 log4j2.xml.subst root logger follows PF_DEBUG_LEVEL
 - [X] PDO-8150 Improve Stability and Shutdown Handling
