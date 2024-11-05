@@ -33,7 +33,10 @@ def query_metric(metric_name, prometheus_url):
         response = requests.get(f"{prometheus_url}?query={metric_name}", verify=False)
         if response.status_code == 200:
             result = response.json()['data']['result']
-            total = sum(float(item['value'][1]) for item in result)
+            # Data at [value] is a pair of timestamp and value.
+            # Sum all non-timestamp values to verify we are getting data, 
+            # even if it is low or intermittent.
+            total = sum(float(item['value'][1]) for item in result if result)
             return total
     except requests.exceptions.ConnectionError as e:
         print(f"Error querying Prometheus: {e}")
@@ -69,7 +72,6 @@ class TestFluentBitMetrics(unittest.TestCase):
             while attempt < max_attempts:
                 input_records = query_metric("fluentbit_input_records_total", self.prometheus_url)
                 output_records = query_metric("fluentbit_output_proc_records_total", self.prometheus_url)
-                print(output_records)
                 if input_records is None or output_records is None:
                     print("Metrics not found or connection issue. Restarting port-forward and retrying...")
                     PrometheusPortForward.start()
