@@ -7,17 +7,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 class TestLogstash(unittest.TestCase):
     namespace = "elastic-stack-logging"
-    pipeline_configmaps = [
-        "logstash-pipeline-customer-tkfmg2b5f9",
-        "logstash-pipeline-main-26mmhgk2cc"
-    ]
     required_plugins = ["logstash-input-http", "logstash-output-elasticsearch"]
+    pipeline_patterns = ["logstash-pipeline-customer", "logstash-pipeline-main"]
 
     @classmethod
     def setUpClass(cls):
         config.load_kube_config()
         cls.v1 = client.CoreV1Api()
         cls.logstash_pods = cls.fetch_logstash_pods()
+        cls.pipeline_configmaps = cls.fetch_pipeline_configmaps()
 
         if not cls.logstash_pods:
             message = "No Logstash pods found in the namespace. Marking test as failed."
@@ -31,6 +29,22 @@ class TestLogstash(unittest.TestCase):
         pod_list = cls.v1.list_namespaced_pod(namespace=cls.namespace)
         return [pod.metadata.name for pod in pod_list.items if "logstash" in pod.metadata.name]
 
+    @classmethod
+    def fetch_pipeline_configmaps(cls):
+        pipeline_configmaps = []
+        configmaps = cls.v1.list_namespaced_config_map(namespace=cls.namespace)
+        
+        for cm in configmaps.items:
+            for pattern in cls.pipeline_patterns:
+                if cm.metadata.name.startswith(pattern):
+                    pipeline_configmaps.append(cm.metadata.name)
+        
+        if not pipeline_configmaps:
+            logging.error("No Logstash pipeline ConfigMaps found in the namespace.")
+        else:
+            logging.info(f"Detected Logstash pipeline ConfigMaps: {', '.join(pipeline_configmaps)}")
+        return pipeline_configmaps
+
     def test_logstash_pods_running(self):
         logging.info("Checking if all Logstash pods are running.")
         for pod_name in self.logstash_pods:
@@ -42,6 +56,10 @@ class TestLogstash(unittest.TestCase):
 
     def test_logstash_pipeline_verification(self):
         logging.info("Verifying existence of Logstash pipeline ConfigMaps.")
+        
+        if not self.pipeline_configmaps:
+            self.fail("No Logstash pipeline ConfigMaps were found, but they are required for correct operation.")
+        
         for configmap_name in self.pipeline_configmaps:
             try:
                 config_map = self.v1.read_namespaced_config_map(configmap_name, self.namespace)
