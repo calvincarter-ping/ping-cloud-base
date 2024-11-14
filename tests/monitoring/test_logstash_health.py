@@ -52,6 +52,13 @@ class TestLogstash(unittest.TestCase):
             logging.info(f"Detected Logstash pipeline ConfigMaps: {', '.join(pipeline_configmaps)}")
         return pipeline_configmaps
 
+    def get_logstash_container_name(self, pod_name):
+        pod = self.v1.read_namespaced_pod(name=pod_name, namespace=self.namespace)
+        for container in pod.spec.containers:
+            if "logstash" in container.name:
+                return container.name
+        self.fail(f"No 'logstash' container found in pod '{pod_name}'.")
+
     def check_all_logstash_pods_ready(self):
         pods_ready = self.k8s_utils.wait_for_pod_ready("logstash", self.namespace)
         self.assertTrue(pods_ready, "Not all Logstash pods are ready.")
@@ -74,13 +81,14 @@ class TestLogstash(unittest.TestCase):
             self.fail("No Logstash pipeline ConfigMaps were found, but they are required for correct operation.")
         
         pod_name = self.logstash_pods[0]
+        container_name = self.get_logstash_container_name(pod_name)
         command = ["curl", "-s", "http://localhost:9600/_node/pipelines?pretty"]
 
         try:
             pipeline_data = stream(self.v1.connect_get_namespaced_pod_exec,
                                    pod_name,
                                    self.namespace,
-                                   container="logstash",
+                                   container=container_name,
                                    command=command,
                                    stderr=True, stdin=False,
                                    stdout=True, tty=False)
@@ -96,13 +104,14 @@ class TestLogstash(unittest.TestCase):
     def test_plugin_existence(self):
         logging.info("Checking for required plugins in Logstash.")
         pod_name = self.logstash_pods[0]
+        container_name = self.get_logstash_container_name(pod_name)
         command = ["curl", "-s", "http://localhost:9600/_node/plugins?pretty"]
         
         try:
             plugin_data = stream(self.v1.connect_get_namespaced_pod_exec,
                                  pod_name,
                                  self.namespace,
-                                 container="logstash",
+                                 container=container_name,
                                  command=command,
                                  stderr=True, stdin=False,
                                  stdout=True, tty=False)
