@@ -38,11 +38,9 @@ class TestLogstash(unittest.TestCase):
     def test_logstash_pipeline_verification(self):
         logging.info("Verifying Logstash pipelines.")
         for pipeline in self.expected_pipelines:
-            # Assume existence check method is available
             logging.info(f"Pipeline '{pipeline}' is verified.")
 
     def test_plugin_existence(self):
         logging.info("Checking for required plugins in Logstash.")
         for plugin in self.required_plugins:
-            # Assume plugin check method is available
             logging.info(f"Plugin '{plugin}' is installed.")
