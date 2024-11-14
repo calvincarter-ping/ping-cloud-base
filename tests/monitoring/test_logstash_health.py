@@ -1,13 +1,16 @@
 import unittest
 import logging
-import re
 from kubernetes import client, config
+from kubernetes.stream import stream
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class TestLogstash(unittest.TestCase):
     namespace = "elastic-stack-logging"
-    expected_pipelines = ["logstash-pipeline-customer", "logstash-pipeline-main"]
+    pipeline_configmaps = [
+        "logstash-pipeline-customer-tkfmg2b5f9",
+        "logstash-pipeline-main-26mmhgk2cc"
+    ]
     required_plugins = ["logstash-input-http", "logstash-output-elasticsearch"]
 
     @classmethod
@@ -17,7 +20,9 @@ class TestLogstash(unittest.TestCase):
         cls.logstash_pods = cls.fetch_logstash_pods()
 
         if not cls.logstash_pods:
-            raise unittest.SkipTest("No Logstash pods found in the namespace. Skipping all tests.")
+            message = "No Logstash pods found in the namespace. Marking test as failed."
+            logging.error(message)
+            raise unittest.SkipTest(message)
         
         logging.info(f"Detected Logstash pods: {', '.join(cls.logstash_pods)}")
 
@@ -36,11 +41,33 @@ class TestLogstash(unittest.TestCase):
                 self.fail(f"{pod_name} is not in Running state.")
 
     def test_logstash_pipeline_verification(self):
-        logging.info("Verifying Logstash pipelines.")
-        for pipeline in self.expected_pipelines:
-            logging.info(f"Pipeline '{pipeline}' is verified.")
+        logging.info("Verifying existence of Logstash pipeline ConfigMaps.")
+        for configmap_name in self.pipeline_configmaps:
+            try:
+                config_map = self.v1.read_namespaced_config_map(configmap_name, self.namespace)
+                logging.info(f"Pipeline ConfigMap '{configmap_name}' is present and verified.")
+            except client.exceptions.ApiException as e:
+                self.fail(f"Pipeline ConfigMap '{configmap_name}' is missing or inaccessible: {e}")
 
     def test_plugin_existence(self):
         logging.info("Checking for required plugins in Logstash.")
-        for plugin in self.required_plugins:
-            logging.info(f"Plugin '{plugin}' is installed.")
+        pod_name = self.logstash_pods[0]
+        command = ["bin/logstash-plugin", "list"]
+        
+        try:
+            plugin_list = stream(self.v1.connect_get_namespaced_pod_exec,
+                                 pod_name,
+                                 self.namespace,
+                                 container="logstash",
+                                 command=command,
+                                 stderr=True, stdin=False,
+                                 stdout=True, tty=False)
+            
+            for plugin in self.required_plugins:
+                self.assertIn(plugin, plugin_list, f"Plugin '{plugin}' is not installed in Logstash.")
+                logging.info(f"Plugin '{plugin}' is verified.")
+        except client.exceptions.ApiException as e:
+            self.fail(f"Failed to execute command in Logstash pod: {e}")
+
+if __name__ == '__main__':
+    unittest.main()
