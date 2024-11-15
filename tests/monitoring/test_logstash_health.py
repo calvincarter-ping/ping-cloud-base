@@ -96,7 +96,6 @@ class TestLogstash(unittest.TestCase):
     def test_plugin_existence(self):
         logging.info("Checking for required plugins in Logstash.")
         
-        # Only check plugins on the first Logstash pod
         pod_name = self.logstash_pods[0]
         container_name = self.get_logstash_container_name(pod_name)
         command = ["curl", "-s", "http://localhost:9600/_node/plugins?pretty"]
