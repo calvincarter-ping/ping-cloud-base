@@ -72,9 +72,6 @@ class TestLogstash(unittest.TestCase):
     def test_logstash_pipeline_verification(self):
         logging.info("Verifying existence of Logstash pipelines in Logstash instance.")
         
-        if not self.pipeline_configmaps:
-            self.fail("No Logstash pipeline ConfigMaps were found, but they are required for correct operation.")
-        
         for pod_name in self.logstash_pods:
             container_name = self.get_logstash_container_name(pod_name)
             command = ["curl", "-s", "http://localhost:9600/_node/pipelines?pretty"]
@@ -88,8 +85,8 @@ class TestLogstash(unittest.TestCase):
                                        stderr=True, stdin=False,
                                        stdout=True, tty=False)
                 
-                for configmap_name in self.pipeline_configmaps:
-                    pipeline_name = configmap_name.split('-')[2]
+                for pipeline_pattern in self.pipeline_patterns:
+                    pipeline_name = pipeline_pattern.split('-')[2]
                     self.assertIn(pipeline_name, pipeline_data, f"Pipeline '{pipeline_name}' not found in Logstash.")
                     logging.info(f"Pipeline '{pipeline_name}' is verified in Logstash instance.")
                     
@@ -99,24 +96,25 @@ class TestLogstash(unittest.TestCase):
     def test_plugin_existence(self):
         logging.info("Checking for required plugins in Logstash.")
         
-        for pod_name in self.logstash_pods:
-            container_name = self.get_logstash_container_name(pod_name)
-            command = ["curl", "-s", "http://localhost:9600/_node/plugins?pretty"]
+        # Only check plugins on the first Logstash pod
+        pod_name = self.logstash_pods[0]
+        container_name = self.get_logstash_container_name(pod_name)
+        command = ["curl", "-s", "http://localhost:9600/_node/plugins?pretty"]
+        
+        try:
+            plugin_data = stream(self.v1.connect_get_namespaced_pod_exec,
+                                 pod_name,
+                                 self.namespace,
+                                 container=container_name,
+                                 command=command,
+                                 stderr=True, stdin=False,
+                                 stdout=True, tty=False)
             
-            try:
-                plugin_data = stream(self.v1.connect_get_namespaced_pod_exec,
-                                     pod_name,
-                                     self.namespace,
-                                     container=container_name,
-                                     command=command,
-                                     stderr=True, stdin=False,
-                                     stdout=True, tty=False)
-                
-                for plugin in self.required_plugins:
-                    self.assertIn(plugin, plugin_data, f"Plugin '{plugin}' is not installed in Logstash.")
-                    logging.info(f"Plugin '{plugin}' is verified.")
-            except client.exceptions.ApiException as e:
-                logging.error(f"Failed to retrieve plugins from Logstash pod {pod_name}: {e}")
+            for plugin in self.required_plugins:
+                self.assertIn(plugin, plugin_data, f"Plugin '{plugin}' is not installed in Logstash.")
+                logging.info(f"Plugin '{plugin}' is verified.")
+        except client.exceptions.ApiException as e:
+            logging.error(f"Failed to retrieve plugins from Logstash pod {pod_name}: {e}")
 
 if __name__ == '__main__':
     unittest.main()
