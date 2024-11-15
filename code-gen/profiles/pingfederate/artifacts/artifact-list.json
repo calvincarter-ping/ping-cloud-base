@@ -9,67 +9,54 @@
   },
   {
     "name": "pf-pingone-risk-management-integration-kit",
-    "version": "1.2",
-    "is_myping_only": "true"
+    "version": "1.2"
   },
   {
     "name": "pf-pingone-verify-integration-kit",
-    "version": "1.0",
-    "is_myping_only": "true"
+    "version": "1.0"
   },
   {
     "name": "pf-pingone-integration-kit",
-    "version": "2.2",
-    "is_myping_only": "true"
+    "version": "2.2"
   },
   {
     "name": "pf-pingid-sdk-integration-kit",
-    "version": "1.9",
-    "is_myping_only": "true"
+    "version": "1.9"
   },
   {
     "name": "pf-apple-cloud-identity-connector",
-    "version": "1.1.0",
-    "is_myping_only": "true"
+    "version": "1.1.0"
   },
   {
     "name": "pf-aws-connector",
-    "version": "2.0",
-    "is_myping_only": "true"
+    "version": "2.0"
   },
   {
     "name": "pf-box-connector",
-    "version": "2.5",
-    "is_myping_only": "true"
+    "version": "2.5"
   },
   {
     "name": "pf-google-connector",
-    "version": "3.1.1",
-    "is_myping_only": "true"
+    "version": "3.1.1"
   },
   {
     "name": "pf-office365-connector",
-    "version": "2.2",
-    "is_myping_only": "true"
+    "version": "2.2"
   },
   {
     "name": "pf-salesforce-connector",
-    "version": "7.0.1",
-    "is_myping_only": "true"
+    "version": "7.0.1"
   },
   {
     "name": "pf-slack-connector",
-    "version": "3.0.2",
-    "is_myping_only": "true"
+    "version": "3.0.2"
   },
   {
     "name": "pf-webex-connector",
-    "version": "2.1",
-    "is_myping_only": "true"
+    "version": "2.1"
   },
   {
     "name": "pf-zoom-connector",
-    "version": "1.0",
-    "is_myping_only": "true"
+    "version": "1.0"
   }
 ]
