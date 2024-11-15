@@ -4,7 +4,6 @@ from k8s_utils import K8sUtils
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-
 class TestLogstash(unittest.TestCase):
     namespace = "elastic-stack-logging"
     pipeline_patterns = ["logstash-pipeline-customer"]
@@ -18,35 +17,15 @@ class TestLogstash(unittest.TestCase):
     def setUpClass(cls):
         cls.k8s_utils = K8sUtils()
         cls.core_client = cls.k8s_utils.core_client
-        
         pod_list = cls.core_client.list_namespaced_pod(namespace=cls.namespace)
         cls.logstash_pods = [pod.metadata.name for pod in pod_list.items if "logstash" in pod.metadata.name]
-        cls.pipeline_configmaps = cls.fetch_pipeline_configmaps()
-
         if not cls.logstash_pods:
-            logging.error("No Logstash pods found in the namespace. Failing the test.")
             raise RuntimeError("No Logstash pods found in the namespace.")
-        
         logging.info(f"Detected Logstash pods: {', '.join(cls.logstash_pods)}")
-
-    @classmethod
-    def fetch_pipeline_configmaps(cls):
-        configmaps = cls.core_client.list_namespaced_config_map(namespace=cls.namespace)
-        pipeline_configmaps = [
-            cm.metadata.name for cm in configmaps.items
-            if cm.metadata.name.startswith("logstash-pipeline-customer")
-        ]
-
-        if not pipeline_configmaps:
-            logging.error("No Logstash pipeline ConfigMaps found in the namespace. Failing the test.")
-            raise RuntimeError("No Logstash pipeline ConfigMaps found in the namespace.")
-        
-        logging.info(f"Detected Logstash pipeline ConfigMaps: {', '.join(pipeline_configmaps)}")
-        return pipeline_configmaps
 
     def test_logstash_pods_running(self):
         for pod_name in self.logstash_pods:
-            pod = self.k8s_utils.core_client.read_namespaced_pod(name=pod_name, namespace=self.namespace)
+            pod = self.core_client.read_namespaced_pod(name=pod_name, namespace=self.namespace)
             container_statuses = pod.status.container_statuses
             self.assertIsNotNone(container_statuses, f"Pod '{pod_name}' has no container statuses.")
             for container_status in container_statuses:
@@ -55,15 +34,10 @@ class TestLogstash(unittest.TestCase):
 
     def test_logstash_pipeline_verification(self):
         logging.info("Verifying existence of Logstash pipelines in Logstash instance.")
-        
         for pod_name in self.logstash_pods:
+            command = ["curl", "-s", "http://localhost:9600/_node/pipelines?pretty"]
             try:
-                pipeline_data = self.k8s_utils.exec_command(
-                    pod_name=pod_name,
-                    namespace=self.namespace,
-                    container="logstash",
-                    command=["curl", "-s", "http://localhost:9600/_node/pipelines?pretty"]
-                )
+                pipeline_data = self.k8s_utils.exec_command(pod_name, self.namespace, command)
                 for pipeline_pattern in self.pipeline_patterns:
                     pipeline_name = pipeline_pattern.split('-')[2]
                     self.assertIn(pipeline_name, pipeline_data, f"Pipeline '{pipeline_name}' not found in Logstash.")
@@ -73,22 +47,15 @@ class TestLogstash(unittest.TestCase):
 
     def test_plugin_existence(self):
         logging.info("Checking for required plugins in Logstash.")
-        
-        # Check plugins on the first Logstash pod only
         pod_name = self.logstash_pods[0]
+        command = ["curl", "-s", "http://localhost:9600/_node/plugins?pretty"]
         try:
-            plugin_data = self.k8s_utils.exec_command(
-                pod_name=pod_name,
-                namespace=self.namespace,
-                container="logstash",
-                command=["curl", "-s", "http://localhost:9600/_node/plugins?pretty"]
-            )
+            plugin_data = self.k8s_utils.exec_command(pod_name, self.namespace, command)
             for plugin in self.required_plugins:
                 self.assertIn(plugin, plugin_data, f"Plugin '{plugin}' is not installed in Logstash.")
                 logging.info(f"Plugin '{plugin}' is verified.")
         except Exception as e:
             logging.error(f"Failed to retrieve plugins from Logstash pod {pod_name}: {e}")
-
 
 if __name__ == '__main__':
     unittest.main()
