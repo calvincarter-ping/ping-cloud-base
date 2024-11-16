@@ -25,7 +25,7 @@ class TestLogstash(unittest.TestCase):
 
     def test_logstash_pods_running(self):
         for pod_name in self.logstash_pods:
-            pod = self.core_client.read_namespaced_pod(name=pod_name, namespace=self.namespace)
+            pod = self.k8s_utils.core_client.read_namespaced_pod(name=pod_name, namespace=self.namespace)
             container_statuses = pod.status.container_statuses
             self.assertIsNotNone(container_statuses, f"Pod '{pod_name}' has no container statuses.")
             for container_status in container_statuses:
