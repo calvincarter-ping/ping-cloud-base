@@ -4,6 +4,7 @@ from k8s_utils import K8sUtils
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+
 class TestLogstash(unittest.TestCase):
     namespace = "elastic-stack-logging"
     container_name = "logstash"
@@ -26,6 +27,7 @@ class TestLogstash(unittest.TestCase):
         try:
             result = self.k8s_utils.exec_command(pod_name, self.namespace, command).strip()
             logging.info(f"Executed command in pod '{pod_name}': {command}")
+            logging.info(f"Command output: {result}")
             return result
         except Exception as e:
             logging.error(f"Failed to execute command in pod '{pod_name}': {e}")
