@@ -4,6 +4,7 @@ from k8s_utils import K8sUtils
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+
 class TestLogstash(unittest.TestCase):
     namespace = "elastic-stack-logging"
     pipeline_patterns = ["logstash-pipeline-customer"]
@@ -23,61 +24,54 @@ class TestLogstash(unittest.TestCase):
             raise RuntimeError("No Logstash pods found in the namespace.")
         logging.info(f"Detected Logstash pods: {', '.join(cls.logstash_pods)}")
 
-    def check_logstash_pods_ready(self):
-        all_pods_ready = True
+    def test_logstash_pods_status(self):
+        logging.info("Checking Logstash pod status...")
         for pod_name in self.logstash_pods:
-            pod = self.k8s_utils.core_client.read_namespaced_pod(name=pod_name, namespace=self.namespace)
-            container_statuses = pod.status.container_statuses
-            if not container_statuses or not all(cs.ready for cs in container_statuses):
-                all_pods_ready = False
-                logging.error(f"Pod '{pod_name}' is not ready.")
-            else:
-                logging.info(f"Pod '{pod_name}' is ready.")
-        self.assertTrue(all_pods_ready, "Not all Logstash pods are ready.")
+            command = [
+                "kubectl", "get", "pod", pod_name, "-n", self.namespace,
+                "-o", "jsonpath={.status.phase}"
+            ]
+            status = self.k8s_utils.exec_command(pod_name, self.namespace, command)
+            logging.info(f"Pod '{pod_name}' status: {status}")
+            self.assertEqual(status, "Running", f"Pod '{pod_name}' is not running.")
 
-    def test_logstash_pods_running(self):
-        self.check_logstash_pods_ready()
-
-    def test_logstash_pipeline_verification(self):
-        logging.info("Verifying existence of Logstash pipelines in Logstash instance.")
+    def test_logstash_container_status(self):
+        logging.info("Checking Logstash container status...")
         for pod_name in self.logstash_pods:
-            command = ["curl", "-s", "http://localhost:9600/_node/pipelines?pretty"]
-            try:
-                pipeline_data = self.k8s_utils.exec_command(pod_name, self.namespace, command)
-                missing_pipelines = []
-                for pipeline_pattern in self.pipeline_patterns:
-                    if pipeline_pattern not in pipeline_data:
-                        missing_pipelines.append(pipeline_pattern)
-                        logging.error(f"Pipeline '{pipeline_pattern}' is missing in pod '{pod_name}'.")
-                    else:
-                        logging.info(f"Pipeline '{pipeline_pattern}' is present in pod '{pod_name}'.")
-                if missing_pipelines:
-                    self.fail(f"Missing pipelines in pod '{pod_name}': {', '.join(missing_pipelines)}")
-            except Exception as e:
-                logging.error(f"Failed to retrieve pipelines from Logstash pod {pod_name}: {e}")
-                self.fail(f"Test failed for pod '{pod_name}'")
+            command = [
+                "kubectl", "get", "pod", pod_name, "-n", self.namespace,
+                "-o", "jsonpath={.status.containerStatuses[?(@.name=='logstash')].state}"
+            ]
+            container_state = self.k8s_utils.exec_command(pod_name, self.namespace, command)
+            logging.info(f"Container 'logstash' in pod '{pod_name}' state: {container_state}")
+            self.assertIn("running", container_state.lower(), f"Container 'logstash' in pod '{pod_name}' is not running.")
 
-    def test_plugin_existence(self):
-        logging.info("Checking for required plugins in Logstash.")
-        all_pods_checked = True
+    def test_plugins_existence(self):
+        logging.info("Checking required plugins in Logstash...")
         for pod_name in self.logstash_pods:
             command = ["curl", "-s", "http://localhost:9600/_node/plugins?pretty"]
-            try:
-                plugin_data = self.k8s_utils.exec_command(pod_name, self.namespace, command)
-                missing_plugins = []
-                for plugin in self.required_plugins:
-                    if plugin not in plugin_data:
-                        missing_plugins.append(plugin)
-                        logging.error(f"Plugin '{plugin}' is missing in pod '{pod_name}'.")
-                    else:
-                        logging.info(f"Plugin '{plugin}' is present in pod '{pod_name}'.")
-                if missing_plugins:
-                    all_pods_checked = False
-                    self.fail(f"Missing plugins in pod '{pod_name}': {', '.join(missing_plugins)}")
-            except Exception as e:
-                logging.error(f"Failed to retrieve plugins from Logstash pod {pod_name}: {e}")
-                self.fail(f"Test failed for pod '{pod_name}'")
-        self.assertTrue(all_pods_checked, "Plugins check failed for one or more pods.")
+            plugin_data = self.k8s_utils.exec_command(pod_name, self.namespace, command)
+            logging.info(f"Plugins in pod '{pod_name}': {plugin_data}")
+            missing_plugins = [plugin for plugin in self.required_plugins if plugin not in plugin_data]
+            self.assertFalse(missing_plugins, f"Missing plugins in pod '{pod_name}': {', '.join(missing_plugins)}")
+
+    def test_logstash_pipeline_verification(self):
+        logging.info("Checking Logstash pipelines...")
+        for pod_name in self.logstash_pods:
+            command = ["curl", "-s", "http://localhost:9600/_node/pipelines?pretty"]
+            pipeline_data = self.k8s_utils.exec_command(pod_name, self.namespace, command)
+            logging.info(f"Pipelines in pod '{pod_name}': {pipeline_data}")
+            missing_pipelines = [pattern for pattern in self.pipeline_patterns if pattern not in pipeline_data]
+            self.assertFalse(missing_pipelines, f"Missing pipelines in pod '{pod_name}': {', '.join(missing_pipelines)}")
+
+    def test_customer_pipeline_status(self):
+        logging.info("Checking customer pipeline status...")
+        for pod_name in self.logstash_pods:
+            command = ["curl", "-s", "http://localhost:9600/_node/stats/pipelines/customer?pretty"]
+            pipeline_data = self.k8s_utils.exec_command(pod_name, self.namespace, command)
+            status = next((line for line in pipeline_data.splitlines() if '"status"' in line), None)
+            logging.info(f"Customer pipeline status in pod '{pod_name}': {status}")
+            self.assertIsNotNone(status, f"Customer pipeline status not found in pod '{pod_name}'.")
 
 if __name__ == '__main__':
     unittest.main()
