@@ -72,7 +72,7 @@ class TestLogstash(unittest.TestCase):
 
         for pod in self.logstash_pods:
             logging.info(f"Verifying plugins in pod: {pod}")
-            command = f"kubectl exec {pod} -n {self.namespace} -- curl -s http://localhost:9600/_node/plugins?pretty"
+            command = f'kubectl exec {pod} -n {self.namespace} -- curl -s "http://localhost:9600/_node/plugins?pretty"'
             plugins_output = subprocess.check_output(command, shell=True, text=True)
             installed_plugins = [plugin.strip() for plugin in plugins_output.splitlines() if plugin.strip()]
             missing_plugins = [plugin for plugin in required_plugins if plugin not in installed_plugins]
