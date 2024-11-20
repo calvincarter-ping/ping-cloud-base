@@ -55,12 +55,18 @@ class TestLogstash(unittest.TestCase):
 
     def test_plugins_existence(self):
         required_plugins = [
-            "logstash-filter-opensearch-manticore",
-            "logstash-input-opensearch",
-            "logstash-output-awslogs",
-            "logstash-output-newrelic",
+            "logstash-input-dead_letter_queue",
+            "logstash-input-http",
+            "logstash-filter-date",
+            "logstash-filter-dissect",
+            "logstash-filter-drop",
+            "logstash-filter-geoip",
+            "logstash-filter-grok",
+            "logstash-filter-kv",
+            "logstash-filter-mutate",
+            "logstash-filter-translate",
+            "logstash-filter-useragent",
             "logstash-output-opensearch",
-            "logstash-output-syslog",
         ]
         plugin_check_results = []
 
