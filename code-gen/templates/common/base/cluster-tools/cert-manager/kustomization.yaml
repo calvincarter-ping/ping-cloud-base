@@ -19,6 +19,11 @@ patchesStrategicMerge:
       solvers:
       - dns01:
           route53:
+          selector:
+            dnsZones:
+            - ${GLOBAL_TENANT_DOMAIN}
+      - dns01:
+          route53:
             region: ${REGION}
         selector:
           dnsZones:
@@ -33,6 +38,7 @@ patchesStrategicMerge:
     namespace: cert-manager
   spec:
     dnsNames:
+    - '*.${ENV}.${GLOBAL_TENANT_DOMAIN}'
     - '*.${DNS_ZONE}'
     keystores:
       pkcs12:
