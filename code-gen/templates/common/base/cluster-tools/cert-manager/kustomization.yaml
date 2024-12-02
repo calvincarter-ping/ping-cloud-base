@@ -19,9 +19,9 @@ patchesStrategicMerge:
       solvers:
       - dns01:
           route53:
-          selector:
-            dnsZones:
-            - ${GLOBAL_TENANT_DOMAIN}
+        selector:
+          dnsZones:
+          - ${GLOBAL_TENANT_DOMAIN}
       - dns01:
           route53:
             region: ${REGION}
