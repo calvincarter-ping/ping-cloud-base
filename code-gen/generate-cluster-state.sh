@@ -1287,7 +1287,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
           "${KARPENTER_ROLE_TEMPLATE}/${KARPENTER_CONTROLLER_IAM_ROLE}"
 
   set_var "CLUSTER_ENDPOINT" "" "${ACCOUNT_BASE_PATH}${ENV}" "/cluster_endpoint"
-  set_var "GLOBAL_DNS_IAMROLE" "" "${ACCOUNT_BASE_PATH}" "/global-dns/iam-role/cert-manager/arn"
+  set_var "GLOBAL_DNS_IAMROLE" "" "${ACCOUNT_BASE_PATH}" "global-dns/iam-role/cert-manager/arn"
 
   # shellcheck disable=SC2016
   NLB_TEMPLATE='service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}'
