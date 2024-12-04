@@ -19,7 +19,6 @@
 - Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
-- Disabling anonymous login for OpenSearch and removing prometheus_read role
 - log4j2.xml.subst root logger follows PF_DEBUG_LEVEL
 - Enable runtime bulkhead via API for PingFederate
 - Upgrade Cluster Autoscaler to v1.30.2
@@ -43,7 +42,6 @@ _Changes:_
 - [X] PDO-6744 Refactor update and generate scripts to pull from microservice repo mirrors
 - [X] PDO-6877 Update HPAs to prevent flapping on short bursting CPU loads
 - [X] PDO-7073 Update RBAC for p14c-bootstrap to allow ops on ingress resources
-- [X] PDO-7221 OpenSearch: OpenSearch: Disable anonymous login
 - [X] PDO-7248 NewRelic: Upgrade APM agent to latest version
 - [X] PDO-7428 Update seal-secret-values.py to seal with namespace only. Update secret structure
 - [X] PDO-7445 Remove toplogy-descriptor volume mount from products where not needed
@@ -68,8 +66,10 @@ _Changes:_
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
 - [X] PDO-8144 Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 - [X] PDO-8373 Upgrade Argocd to v2.12.4
+- [x] PDO-8416 Implement OIDC auth with RBAC in self-service
 - [X] PDO-8418 Create and add TLS roles to PingOne
 - [X] PDO-8788 Thanos: Disable in 2.0 Release
+- [X] PDO-8944 Exclude ping-cloud-dashboards repo from git branch reference replacement
 
 ### 1.19.2.0
 
@@ -121,6 +121,7 @@ _Changes:_
 - [X] PDO-8072 ingress-nginx to use topologySpreadConstaints
 - [X] PDO-8128 Correct sample patch for Pingaccess-WAS engine HPA min/max replicas
 - [X] PDO-8164 OpenSearch: Implement Version 2.11.1
+- [X] PDO-8190 Update to include ingresses metrics
 
 ### 1.19.0.0
 
