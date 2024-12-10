@@ -128,7 +128,7 @@ pf.console.authentication=${PF_CONSOLE_AUTHENTICATION}
 #      PingFederate will fail on startup.
 # Please find the documentation for details about using multiple authentication
 # sources.
-pf.admin.api.authentication=LDAP
+pf.admin.api.authentication=JWT
 
 #
 # When LDAP administrative-console authentication is enabled, this property 
@@ -154,6 +154,8 @@ oidc.properties.file=oidc.properties
 # When OAuth 2.0 administrative-API authentication is enabled, this property
 # indicates the name of the file containing configuration properties.
 oauth2.properties.file=oauth2.properties
+
+jwt.properties.file=jwt.properties
 
 
 # -------------------------

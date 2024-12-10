@@ -10,6 +10,6 @@ resources:
 - ../../../../base/pingfederate/admin/aws
 
 patchesStrategicMerge:
-- admin-init-env.yaml
+#- admin-init-env.yaml
 - admin-limits.yaml
 - backup-limits.yaml

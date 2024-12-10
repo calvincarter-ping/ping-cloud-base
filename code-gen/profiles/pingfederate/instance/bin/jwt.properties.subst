@@ -1,0 +1,151 @@
+###############################################################################
+#                                                                             #
+# JWT based Administrative API Authorization                                  #
+#                                                                             #
+# This authorization mechanism requires all requests to the PingFederate      #
+# administrative API to include an OAuth access token (AT) in the HTTP        #
+# "Authorization" request header with a "Bearer" type (following RFC 6750).   #
+#                                                                             #
+# AT signatures are validated by retrieving the keys from the JWKS endpoint   #
+# of the issuing OAuth Authorization Server (AS). Token claims dictate the    #
+# username and administrative roles of the API caller.                        #
+#                                                                             #
+###############################################################################
+#
+#   Some special characters in the value that need to be evaluated must be escaped (e.g., "\ " for " ").  This is also true for
+#   spaces that occur at the beginning. See the Javadoc for the load method of the java.util.Properties class for a definitive
+#   description of what characters need to be escaped and how to do so.
+#   ---------------------------------------
+#   Issuer Identifiers (REQUIRED)
+#   ---------------------------------------
+#   A comma separated list of issuer identifiers for this properties file.
+#   For each defined issuer identifier, each of the following fields must be configured for it.
+#
+#   Each issuer identifier must be unique and must only contain alphanumeric characters and underscores,
+#   and cannot begin with a number.
+#
+#   (replacing {issuerId} with the actual issuer identifier):
+#       - {issuerId}.issuer
+#       - {issuerId}.aud
+#       - {issuerId}.jwks.endpoint
+#       - {issuerId}.required.scopes
+#       - {issuerId}.username.attribute.name
+#
+#   Example:
+#     issuerIds=i1,i2
+#
+issuerIds=i1,i2
+
+#   ---------------------------------------
+#   Issuer (REQUIRED)
+#   ---------------------------------------
+#   The issuer of the AT.
+#
+#   Example:
+#     i1.issuer=issuer1
+#     i2.issuer=issuer2
+#
+i1.issuer=https://auth-staging.pingone.com/b9b5b6f5-3440-4adc-8dc4-46593f1263f7/as
+i2.issuer=https://auth-staging.pingone.com/3c4b99d8-9847-48f8-9ef8-475745e791b8/as
+
+#   ---------------------------------------
+#   Audience (REQUIRED)
+#   ---------------------------------------
+#   The intended recipient (audience) of the AT.
+#
+#   Example:
+#     i1.aud=audience1
+#     i2.aud=audience2
+#
+i1.aud=4b853747-3490-4a1e-97c1-4f1aa121c616
+i2.aud=6959d29d-a998-4110-9aef-284291eef55a
+
+#   ---------------------------------------
+#   JWKS Endpoint (REQUIRED)
+#   ---------------------------------------
+#   The JWKS endpoint for AT signature validation.
+#
+#   Example:
+#     i1.jwks.endpoint=https://example.com/issuer1/JWKS
+#     i2.jwks.endpoint=https://example.com/issuer2/JWKS
+#
+i1.jwks.endpoint=https://auth-staging.pingone.com/b9b5b6f5-3440-4adc-8dc4-46593f1263f7/as/jwks
+i2.jwks.endpoint=https://auth-staging.pingone.com/3c4b99d8-9847-48f8-9ef8-475745e791b8/as/jwks
+
+#   -----------------
+#   Scopes (REQUIRED)
+#   -----------------
+#   The required scopes of validated ATs authorized to call the PingFederate administrative API. Space delimit multiple values.
+#
+#   Example:
+#     i1.required.scopes=scope1
+#     i2.required.scopes=scope2
+#
+
+#   ----------------------------------
+#   Username Attribute Name (REQUIRED)
+#   ----------------------------------
+#   The name of the claim in the AT that contains the username of the administrator. The value of the
+#   username claim is used in administrative API logs.
+#   This value can be specified using JSON pointer syntax (RFC 6901), and it must be a string.
+#
+#   Example:
+#     i1.username.attribute.name=username1
+#     i2.username.attribute.name=username2
+#
+i1.username.attribute.name=name
+i2.username.attribute.name=name
+
+#   ------------------------------
+#   Role Attribute Name (REQUIRED)
+#   ------------------------------
+#   The name of the claim in the AT that determines the administrative role.
+#   This value can be specified using JSON pointer syntax (RFC 6901) and it can be a string or an array.
+#
+#   Example:
+#     i1.role.attribute.name=admin_role1
+#     i2.role.attribute.name=admin_role2
+#
+i1.role.attribute.name=groups
+i2.role.attribute.name=groups
+
+#   -------------------------------------
+#   Administrator Role Mapping (REQUIRED)
+#   -------------------------------------
+#   The following set of properties maps the AT to roles to determine administrative permissions.
+#
+#   Example:
+#   Assume that admin_role is set for the Role Attribute Name (role.attribute.name) and mappings are set as follows:
+#
+#   role.admin=admin
+#   role.cryptoManager=cryptoadmin
+#   role.userAdmin=useradmin
+#   role.expressionAdmin=expressionadmin
+#
+#   When admin_role claim has a single value:
+#   admin_role : "admin"
+#   The caller will be granted the admin role.
+#
+#   When the admin_role claim has an array containing multiple values:
+#   admin_role : ["admin","cryptoadmin","useradmin"]
+#   The caller will be granted the admin, crypto and user administrator roles.
+#
+#   Only one value can be entered per line. If multiple values need to be mapped to a single PingFederate role, then multiple
+#   properties must be created using a numeric, incremental suffix, starting with 1. Example:
+#     role.admin.1=
+#     role.admin.2=
+#     role.admin.3=
+#
+role.admin=dev-pf-roleadmin
+role.cryptoManager=dev-pf-crypto
+role.userAdmin=dev-pf-useradmin
+
+# The expressionAdmin role must only be granted to the administrators with admin role.
+role.expressionAdmin=dev-pf-expression
+
+#   -----------------------------------------------
+#   Auditor Role Attribute Value Mapping (OPTIONAL)
+#   -----------------------------------------------
+#   The auditor role overrides the privileges associated with the assignment of any other role for the same caller.
+#
+role.auditor=dev-pf-auditor
