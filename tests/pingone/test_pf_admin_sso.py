@@ -23,6 +23,8 @@ class TestPFAdminSSO(p1_test_base.P1TestBase):
         self.auth_policy_name = f"client-{self.tenant_name}"
         self.k8s = K8sUtils()
         self.namespace = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
+        self.operator_resource_name = f"client-{self.tenant_name}-pf-operator"
+        self.operator_scope_name = "p1asPFOperatorRoles"
 
     def test_roles_created(self):
         existing_attribute_names = self.get_user_attribute_values(self.user_attribute_name)
@@ -61,6 +63,40 @@ class TestPFAdminSSO(p1_test_base.P1TestBase):
                                                            configmap_name="pingfederate-sso-status")
         self.assertTrue(json.loads(sso_configmap_data["sso.configured"].lower()))
 
+
+    def test_operator_resource_created(self):
+        resource = self.get(self.cluster_env_endpoints.resources, self.operator_resource_name)
+        self.assertTrue(resource, f"Resource '{self.operator_resource_name}' not created")
+
+    def test_operator_scope_granted_to_app(self):
+        app = self.get(self.cluster_env_endpoints.applications, self.app_name)
+        grants = self.get(
+            f"{self.cluster_env_endpoints.applications}/{app['id']}/grants"
+        )
+        # Get granted resource and scope IDs
+        granted_resource_ids = []
+        granted_scope_ids = []
+        for grant in grants:
+            granted_resource_ids.append(grant["resource"]["id"])
+            granted_scope_ids += [scope["id"] for scope in grant["scopes"]]
+
+        # Get account_type scope IDs from granted resources
+        operator_scope_ids = []
+        for resource_id in granted_resource_ids:
+            scope = self.get(
+                endpoint=f"{self.cluster_env_endpoints.resources}/{resource_id}/scopes",
+                name=self.operator_scope_name,
+            )
+            operator_scope_ids.append(scope["id"])
+
+        # Check that one of the granted scope IDs is an account_type scope
+        self.assertTrue(
+            any(
+                granted_scope_id in operator_scope_ids
+                for granted_scope_id in granted_scope_ids
+            ),
+            f"No grant for scope '{self.operator_scope_name}' found for application '{self.app_name}'",
+        )
 
 if __name__ == "__main__":
     unittest.main()
