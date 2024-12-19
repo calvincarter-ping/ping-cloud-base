@@ -1,0 +1,90 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: pingdirectory-restore
+spec:
+  workflowMetadata:
+    labels:
+      pingdirectory_workflow_task: restore
+  serviceAccountName: ping-serviceaccount
+  templates:
+    - name: run-kubectl
+      inputs:
+        parameters:
+          - name: cmd
+          - name: server
+      container:
+        image: bitnami/kubectl:latest  # kubectl pre-installed
+        command: [sh, -c]
+        args: ["kubectl exec -n ping-cloud -c pingdirectory {{inputs.parameters.server}} -- {{inputs.parameters.cmd}} > /tmp/result.txt; cat /tmp/result.txt"]
+      outputs:
+        parameters:
+          - name: result
+            valueFrom:
+              path: /tmp/result.txt
+
+    - name: get-pods
+      container:
+        image: bitnami/kubectl:latest  # kubectl pre-installed
+        command: [sh, -c]
+        args:
+          - |
+            pods="["  # Initialize the string with the opening bracket
+            
+            replica_count=$(kubectl get statefulset pingdirectory -o jsonpath='{.spec.replicas}')
+            
+            for replica in $(seq 0 $((replica_count - 1))); do
+              if [ "$replica" -eq 0 ]; then
+                pods="${pods}\"pingdirectory-${replica}\""  # Add first pod without a comma
+              else
+                pods="${pods},\"pingdirectory-${replica}\""  # Add subsequent pods with a comma
+              fi
+            done
+            
+            pods="${pods}]"  # Close the array with a closing bracket
+            
+            echo "$pods" > /tmp/pods.json
+      outputs:
+        parameters:
+          - name: pods-list
+            valueFrom:
+              path: /tmp/pods.json
+
+    - name: wait-for-all-pods-to-start
+      container:
+        image: bitnami/kubectl:latest  # kubectl pre-installed
+        command: [ sh, -c ]
+        args:
+          - |
+            is_pod_ready=false
+            while [ "${is_pod_ready}" != "true" ]; do
+              is_pod_ready=$(kubectl get pod {{inputs.parameters.pingdirectory_pod_name}} -n ping-cloud -o jsonpath='{.status.containerStatuses[?(@.name=="pingdirectory")].ready}')
+              echo "Waiting for {{inputs.parameters.pingdirectory_pod_name}} to be ready..."
+              sleep 2
+            done
+            echo "{{inputs.parameters.pingdirectory_pod_name}} is ready!"
+      inputs:
+        parameters:
+          - name: pingdirectory_pod_name
+
+    - name: set-argo-workflow-configmap
+      container:
+        image: bitnami/kubectl:latest  # kubectl pre-installed
+        command: [ sh, -c ]
+        args: ["kubectl patch configmap argo-workflow-operator --type merge -p '{\"data\":{\"ARGO_WORKFLOW\":\"{{inputs.parameters.argo_workflow_type}}\"}}' -n ping-cloud" ]
+      inputs:
+        parameters:
+          - name: argo_workflow_type
+
+    - name: cleanup-pingdirectory-workspace
+      container:
+        image: bitnami/kubectl:latest  # kubectl pre-installed
+        command: [sh, -c]
+        args:
+          - |
+            echo "Deleting {{inputs.parameters.pingdirectory_pod_name}} pod and out-dir-{{inputs.parameters.pingdirectory_pod_name}} PVC..."
+            
+            kubectl delete pod,pvc {{inputs.parameters.pingdirectory_pod_name}} out-dir-{{inputs.parameters.pingdirectory_pod_name}} -n ping-cloud
+      inputs:
+        parameters:
+          - name: pingdirectory_pod_name

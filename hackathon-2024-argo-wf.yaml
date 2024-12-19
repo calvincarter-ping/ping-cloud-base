@@ -1,25 +1,48 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName: pd-cmds-
+  generateName: step-
 spec:
+  ttlStrategy:
+    secondsAfterSuccess: 30
   serviceAccountName: ping-serviceaccount
-  entrypoint: pd-cmds # What first task/template you will run
+  entrypoint: main # What first task/template you will run
   templates:
-    - name: pd-cmds
+    - name: main
       steps:
         - - name: get-pods
-            template: get-pods
+            templateRef:
+              name: pingdirectory-restore
+              template: get-pods
+
+          - name: set-argo-workflow-configmap-to-restore
+            templateRef:
+              name: pingdirectory-restore
+              template: set-argo-workflow-configmap
+            arguments:
+              parameters:
+                - name: argo_workflow_type
+                  value: "RESTORE"
+
+          - name: cleanup
+            templateRef:
+              name: pingdirectory-restore
+              template: cleanup-pingdirectory-workspace
+            dependencies: [ set-argo-workflow-configmap-to-restore ]
 
         - - name: restoring-pingdirectory
-            template: wait-for-all-pods-to-start
+            templateRef:
+              name: pingdirectory-restore
+              template: wait-for-all-pods-to-start
             arguments:
               parameters:
                 - name: pingdirectory_pod_name
                   value: "pingdirectory-0"
 
-        - - name: pingdirectory-server-status-after-restore
-            template: run-kubectl
+        - - name: verify-pingdirectory-0-server-status-after-restore
+            templateRef:
+              name: pingdirectory-restore
+              template: run-kubectl
             arguments:
               parameters:
                 - name: server
@@ -28,7 +51,9 @@ spec:
                   value: "status"
 
         - - name: wait-for-the-other-pingdirectory-servers-to-start
-            template: wait-for-all-pods-to-start
+            templateRef:
+              name: pingdirectory-restore
+              template: wait-for-all-pods-to-start
             arguments:
               parameters:
                 - name: pingdirectory_pod_name
@@ -36,7 +61,9 @@ spec:
             withParam: "{{steps.get-pods.outputs.parameters.pods-list}}"
 
         - - name: dsreplication-status
-            template: run-kubectl
+            templateRef:
+              name: pingdirectory-restore
+              template: run-kubectl
             arguments:
               parameters:
                 - name: server
@@ -45,78 +72,11 @@ spec:
                   value: "dsreplication status"
             withParam: "{{steps.get-pods.outputs.parameters.pods-list}}"
 
-        - - name: set-argo-workflow-configmap
-            template: set-argo-workflow-configmap
+        - - name: reset-argo-workflow-configmap
+            templateRef:
+              name: pingdirectory-restore
+              template: set-argo-workflow-configmap
             arguments:
               parameters:
                 - name: argo_workflow_type
                   value: ""
-
-    - name: run-kubectl
-      inputs:
-        parameters:
-          - name: cmd
-          - name: server
-      container:
-        image: bitnami/kubectl:latest  # kubectl pre-installed
-        command: [sh, -c]
-        args: ["kubectl exec -n ping-cloud -c pingdirectory {{inputs.parameters.server}} -- {{inputs.parameters.cmd}} > /tmp/result.txt; cat /tmp/result.txt"]
-        #args: ["kubectl exec pingdirectory-0 -c pingdirectory -n ping-cloud -- sh -c status | grep 'Operational Status'"]
-      outputs:
-        parameters:
-          - name: result
-            valueFrom:
-              path: /tmp/result.txt
-
-    - name: get-pods
-      container:
-        image: bitnami/kubectl:latest  # kubectl pre-installed
-        command: [sh, -c]
-        args:
-          - |
-            pods="["  # Initialize the string with the opening bracket
-            
-            replica_count=$(kubectl get statefulset pingdirectory -o jsonpath='{.spec.replicas}')
-            
-            for replica in $(seq 0 $((replica_count - 1))); do
-              if [ "$replica" -eq 0 ]; then
-                pods="${pods}\"pingdirectory-${replica}\""  # Add first pod without a comma
-              else
-                pods="${pods},\"pingdirectory-${replica}\""  # Add subsequent pods with a comma
-              fi
-            done
-            
-            pods="${pods}]"  # Close the array with a closing bracket
-            
-            echo "$pods" > /tmp/pods.json
-      outputs:
-        parameters:
-          - name: pods-list
-            valueFrom:
-              path: /tmp/pods.json
-
-    - name: wait-for-all-pods-to-start
-      container:
-        image: bitnami/kubectl:latest  # kubectl pre-installed
-        command: [ sh, -c ]
-        args:
-          - |
-            is_pod_ready=false
-            while [ "${is_pod_ready}" != "true" ]; do
-              is_pod_ready=$(kubectl get pod {{inputs.parameters.pingdirectory_pod_name}} -n ping-cloud -o jsonpath='{.status.containerStatuses[?(@.name=="pingdirectory")].ready}')
-              echo "Waiting for {{inputs.parameters.pingdirectory_pod_name}} to be ready..."
-              sleep 2
-            done
-            echo "{{inputs.parameters.pingdirectory_pod_name}} is ready!"
-      inputs:
-        parameters:
-          - name: pingdirectory_pod_name
-
-    - name: set-argo-workflow-configmap
-      container:
-        image: bitnami/kubectl:latest  # kubectl pre-installed
-        command: [ sh, -c ]
-        args: ["kubectl patch configmap argo-workflow-operator --type merge -p '{\"data\":{\"ARGO_WORKFLOW\":\"{{inputs.parameters.argo_workflow_type}}\"}}' -n ping-cloud" ]
-      inputs:
-        parameters:
-          - name: argo_workflow_type
