@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName: step-
+  generateName: performing-pingdirectory-restore-
 spec:
   ttlStrategy:
     secondsAfterSuccess: 30
@@ -24,11 +24,16 @@ spec:
                 - name: argo_workflow_type
                   value: "RESTORE"
 
-          - name: cleanup
+        - - name: cleanup
             templateRef:
               name: pingdirectory-restore
               template: cleanup-pingdirectory-workspace
-            dependencies: [ set-argo-workflow-configmap-to-restore ]
+              dependencies: [ set-argo-workflow-configmap-to-restore ]
+            arguments:
+              parameters:
+                - name: pingdirectory_pod_name
+                  value: "{{item}}"
+            withParam: "{{steps.get-pods.outputs.parameters.pods-list}}"
 
         - - name: restoring-pingdirectory
             templateRef:

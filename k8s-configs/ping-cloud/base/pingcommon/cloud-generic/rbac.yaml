@@ -40,9 +40,18 @@ rules:
     - watch
     - patch
   - apiGroups:
+      - ""
+    resources:
+      - "pods"
+    verbs:
+      - get
+      - create
+      - delete
+      - list
+      - watch
+  - apiGroups:
     - ""
     resources:
-    - "pods"
     - "pods/log"
     verbs:
     - get

@@ -32,13 +32,13 @@ spec:
             pods="["  # Initialize the string with the opening bracket
             
             replica_count=$(kubectl get statefulset pingdirectory -o jsonpath='{.spec.replicas}')
-            pod_counter=$((replica_count - 1))
+            pod_count=$((replica_count - 1))
             
-            for replica in $(seq $pod_counter -1 0); do
-              if [ "$replica" -eq $pod_counter ]; then
+            for replica in $(seq $pod_count -1 0); do
+              if [ "$replica" -eq $pod_count ]; then
                 pods="${pods}\"pingdirectory-${replica}\""  # Add first pod without a comma
               else
-                pods="${pods},\"pingdirectory-${replica}\""  # Add subsequent pods with a comma
+                pods="${pods}, \"pingdirectory-${replica}\""  # Add subsequent pods with a comma
               fi
             done
             
@@ -86,6 +86,8 @@ spec:
             echo "Deleting {{inputs.parameters.pingdirectory_pod_name}} pod and out-dir-{{inputs.parameters.pingdirectory_pod_name}} PVC..."
             
             kubectl delete pod,pvc {{inputs.parameters.pingdirectory_pod_name}} out-dir-{{inputs.parameters.pingdirectory_pod_name}} -n ping-cloud
+            
+            exit 0 # Explicitly set to avoid kubectl delete status error due to resources not existing
       inputs:
         parameters:
           - name: pingdirectory_pod_name
