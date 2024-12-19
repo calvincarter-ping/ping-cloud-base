@@ -32,9 +32,10 @@ spec:
             pods="["  # Initialize the string with the opening bracket
             
             replica_count=$(kubectl get statefulset pingdirectory -o jsonpath='{.spec.replicas}')
+            pod_counter=$((replica_count - 1))
             
-            for replica in $(seq 0 $((replica_count - 1))); do
-              if [ "$replica" -eq 0 ]; then
+            for replica in $(seq $pod_counter -1 0); do
+              if [ "$replica" -eq $pod_counter ]; then
                 pods="${pods}\"pingdirectory-${replica}\""  # Add first pod without a comma
               else
                 pods="${pods},\"pingdirectory-${replica}\""  # Add subsequent pods with a comma

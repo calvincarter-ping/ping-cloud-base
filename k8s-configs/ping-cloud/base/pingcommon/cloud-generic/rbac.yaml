@@ -104,6 +104,17 @@ rules:
     verbs:
       - create
       - patch
+  - apiGroups:
+      - ""
+    resources:
+      - "persistentvolumeclaims"
+    verbs:
+      - delete
+      - get
+      - create
+      - patch
+      - list
+      - watch
 
 ---
 
