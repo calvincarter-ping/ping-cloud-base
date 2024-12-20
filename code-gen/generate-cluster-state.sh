@@ -608,6 +608,7 @@ organize_code_for_csr() {
     local app_name=$(basename "${app_path}")
 
     # set default env vars to prevent errors if they are not set
+    unset INSTALL_CHART
     unset CDE_DEPLOY
     unset CHUB_DEPLOY
     unset DEVELOPER_DEPLOY
@@ -618,11 +619,17 @@ organize_code_for_csr() {
 
     echo ---
     echo "For app '${app_name}':"
+    echo "Using INSTALL_CHART: ${INSTALL_CHART}"
     echo "Using CDE_DEPLOY: ${CDE_DEPLOY}"
     echo "Using CHUB_DEPLOY:  ${CHUB_DEPLOY}"
     echo "Using DEVELOPER_DEPLOY: ${DEVELOPER_DEPLOY}"
     echo "Using PRIMARY_REGION_ONLY_DEPLOY: ${PRIMARY_REGION_ONLY_DEPLOY}"
     echo
+
+    # exclude anything with INSTALL_CHART set to false
+    if test "${INSTALL_CHART}" = "false"; then
+      continue
+    fi
 
     # exclude anything that shouldn't deploy to dev envs
     if (${IS_BELUGA_ENV} && test "${DEVELOPER_DEPLOY}" = "false"); then

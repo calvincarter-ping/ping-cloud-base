@@ -1,2 +1,3 @@
+export INSTALL_CHART=${BELUGA_TOOLS_ENABLED:-true}
 export CDE_DEPLOY=true
 export CHUB_DEPLOY=true
