@@ -21,7 +21,7 @@ metadata:
       SecAuditLogFormat JSON
       SecAuditLog /dev/stdout
 spec:
-  ingressClassName: nginx-public
+  ingressClassName: nginx-private
   tls:
     - hosts:
         - pingaccess-admin-dev.ping-demo.com
