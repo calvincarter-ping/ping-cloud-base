@@ -982,6 +982,22 @@ fi
 
 export ARGOCD_SLACK_TOKEN_BASE64=$(base64_no_newlines "${ARGOCD_SLACK_TOKEN}")
 
+# Get product entitlements from SSM
+if ! ssm_value=$(get_ssm_value "${CUSTOMER_SSM_PATH_PREFIX}/product-entitlements"); then
+  echo "Warn: Product Entitlements SSM not set"
+  ENTITLEMENTS="{}"
+else
+  ENTITLEMENTS="${ssm_value}"
+fi
+
+# Set Feature Flags based on entitlements
+PD_ENTITLEMENT=$(echo "${ENTITLEMENTS}" |  jq '.productEntitlements.pingdirectory.licenseType')
+if [[ "${PD_ENTITLEMENT}" == "full" ]] ; then
+  export PING_DIRECTORY_ENABLED=true
+else
+  export PING_DIRECTORY_ENABLED=false
+fi
+
 set_ssh_key_pair
 
 # Get the known hosts contents for the cluster state repo host to pass it into the CD container.
@@ -1070,6 +1086,7 @@ echo "Using ARGOCD_BOOTSTRAP_ENABLED: ${ARGOCD_BOOTSTRAP_ENABLED}"
 echo "Using EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
 echo "Using HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
 echo "Using CUSTOMER_PINGONE_ENABLED: ${CUSTOMER_PINGONE_ENABLED}"
+echo "Using PING_DIRECTORY_ENABLED: ${PING_DIRECTORY_ENABLED}"
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 
@@ -1467,6 +1484,13 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       sed -i.bak 's/^\(.*health\/remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
       rm -f "${PRIMARY_PING_KUST_FILE}.bak"
     fi
+  fi
+
+  # Product Entitlements updates
+  GRANULAR_UPDATES_KUST_FILE="${K8S_CONFIGS_DIR}/base/ping-cloud/granular-updates/kustomization.yaml"
+  if test "${PING_DIRECTORY_ENABLED}" = "false"; then
+    sed -i.bak 's/^\(.*pingdatasync\/server\)$/# \1/g' "${GRANULAR_UPDATES_KUST_FILE}"
+    rm -f "${GRANULAR_UPDATES_KUST_FILE}.bak"
   fi
 
   ########################################################################################################################

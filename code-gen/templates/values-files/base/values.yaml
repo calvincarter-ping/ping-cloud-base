@@ -203,6 +203,8 @@ global:
 
   # Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
   healthchecksEnabled: ${HEALTHCHECKS_ENABLED}
+
+  pingDirectoryEnabled: ${PING_DIRECTORY_ENABLED}
   #####################################################################################################################
 
   ########################################################

@@ -255,6 +255,8 @@ EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 HEALTHCHECKS_ENABLED=${HEALTHCHECKS_ENABLED}
 
 CUSTOMER_PINGONE_ENABLED=${CUSTOMER_PINGONE_ENABLED}
+
+PING_DIRECTORY_ENABLED=${PING_DIRECTORY_ENABLED}
 ########################################################################################################################
 
 # For ArgoCD-status slack notifications (notifications.argoproj.io/subscribe.on-sync-failed.slack)
