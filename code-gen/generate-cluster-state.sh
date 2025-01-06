@@ -1531,6 +1531,13 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     cp -r "${PROFILE_REPO_MIRROR_DIR}/${app_repo}/profile/." "${ENV_PROFILES_DIR}/${product_name}"
   done
 
+  if test "${PING_DIRECTORY_ENABLED}" = "false"; then
+    # Remove the pingdirectory, pingdatasync, & pingdelegator profiles
+    rm -rf "${ENV_PROFILES_DIR}/pingdirectory"
+    rm -rf "${ENV_PROFILES_DIR}/pingdatasync"
+    # add pingdelegator here
+  fi
+
   if test "${ENV}" = "${CUSTOMER_HUB}"; then
     echo "CHUB deploy identified, retaining only PingCentral and PingAccess profiles"
     # Retain only the pingcentral & pingaccess profiles
