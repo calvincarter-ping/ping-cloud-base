@@ -10,9 +10,11 @@ resources:
   - ../base/custom-resources
   - custom-resources
 
+helmGlobals:
+  configHome: /helm-working-dir
+
 helmCharts:
   - name: p1as-self-service
-    namespace: ${PING_CLOUD_NAMESPACE}
     additionalValuesFiles:
       - ../../values-files/base/values.yaml   # base values.yaml
       - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
