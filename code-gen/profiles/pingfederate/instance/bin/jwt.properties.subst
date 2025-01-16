@@ -34,7 +34,7 @@
 #   Example:
 #     issuerIds=i1,i2
 #
-issuerIds=i1,i2
+issuerIds=i1
 
 #   ---------------------------------------
 #   Issuer (REQUIRED)
@@ -46,7 +46,8 @@ issuerIds=i1,i2
 #     i2.issuer=issuer2
 #
 i1.issuer=https://auth-staging.pingone.com/b9b5b6f5-3440-4adc-8dc4-46593f1263f7/as
-i2.issuer=https://auth-staging.pingone.com/3c4b99d8-9847-48f8-9ef8-475745e791b8/as
+#i2.issuer=https://auth-staging.pingone.com/3c4b99d8-9847-48f8-9ef8-475745e791b8/as
+i2.issuer=
 
 #   ---------------------------------------
 #   Audience (REQUIRED)
@@ -58,7 +59,6 @@ i2.issuer=https://auth-staging.pingone.com/3c4b99d8-9847-48f8-9ef8-475745e791b8/
 #     i2.aud=audience2
 #
 i1.aud=4b853747-3490-4a1e-97c1-4f1aa121c616
-i2.aud=6959d29d-a998-4110-9aef-284291eef55a
 
 #   ---------------------------------------
 #   JWKS Endpoint (REQUIRED)
@@ -70,7 +70,8 @@ i2.aud=6959d29d-a998-4110-9aef-284291eef55a
 #     i2.jwks.endpoint=https://example.com/issuer2/JWKS
 #
 i1.jwks.endpoint=https://auth-staging.pingone.com/b9b5b6f5-3440-4adc-8dc4-46593f1263f7/as/jwks
-i2.jwks.endpoint=https://auth-staging.pingone.com/3c4b99d8-9847-48f8-9ef8-475745e791b8/as/jwks
+#i2.jwks.endpoint=https://auth-staging.pingone.com/3c4b99d8-9847-48f8-9ef8-475745e791b8/as/jwks
+i2.jwks.endpoint=
 
 #   -----------------
 #   Scopes (REQUIRED)
