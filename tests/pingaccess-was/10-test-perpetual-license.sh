@@ -24,8 +24,8 @@ fi
 
 test_valid_perpetual_license() {
   local license_file="pingaccess.lic"
-  local pod_name="pingaccess-admin-0"
-  local container_name="pingaccess-admin"
+  local pod_name="pingaccess-was-admin-0"
+  local container_name="pingaccess-was-admin"
   local license_dir="/opt/license"
   local temp_file="/tmp/license_test_output.txt"
 
