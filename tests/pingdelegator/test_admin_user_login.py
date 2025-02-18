@@ -176,7 +176,18 @@ class TestAccessTokenFlow(unittest.TestCase):
 
         # At this point you should have been redirected to https://PF_ENGINE_PUBLIC_HOSTNAME/as/authorization.oauth2
         # The PingFederate HTML form requires a username and password.
-        # This is the delegated admin that was configured in PingDirectory.
+        # This user is the delegated admin that is configured in PingDirectory by default.
+
+        # There's essentially 2 things that configures this default admin user.
+        # 1) User is automatically configured as the dedicated admin in P1AS OOTB.
+        #    See file: profile-repo/profiles/pingdirectory/pd.profile/dsconfig/12-delegated-admin.dsconfig
+        #    Where the default admin user is configured using 'dsconfig':
+        #    dsconfig create-delegated-admin-rights \
+        #        --set "admin-user-dn:uid=admin,${USER_BASE_DN}"
+
+        # 2) User has to be added to PingDirectory.
+        #    This is not done OOTB but this unit test has added 'admin' user to PingDirectory.
+        #    See 'add_users' method which was called beforehand in setupClass method.
 
         # Step 2: Fill out the login form that's presented by PingFederate.
         # Find the <input name="pf.username"> element that is present in PingFederate HTML form to fill in the username.
