@@ -18,6 +18,7 @@
 - Cost Savings: NGINX  (public and private): Reduce CPU and mem requests
 - Properly handle failures for cluster-state and profile-repo scripts
 - Add volume mounts for PA admin and engines for pingaccess-admin-p14c secret
+- Support new folder structure /deploy for PingAccess upgrades
 
 _Changes:_
 
@@ -39,7 +40,7 @@ _Changes:_
 - [X] PDO-8958 Global DNS: Implement Changes in PCB
 - [X] PDO-8981 Add self-service URL to env_vars
 - [X] PDO-9122 Revise the ISM and remove WARM node pools and its components
-- [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Allow Hook Overrides for PingAccess Upgrade
+- [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
 
 ### 2.0.0
 
