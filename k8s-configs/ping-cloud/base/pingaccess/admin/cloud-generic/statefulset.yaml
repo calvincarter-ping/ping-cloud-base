@@ -155,7 +155,7 @@ spec:
           # 3. Download server profile (02-get-remote-server-profile.sh).
           # 4. Expand all .subst and .default extensions (05-expand-templates.sh).
           # 5. Upgrade PingAccess server (22-upgrade-server.sh).
-          - "cd /opt/staging/hooks && source ./pingcommon.lib.sh && apply_local_server_profile && ./02-get-remote-server-profile.sh && ./05-expand-templates.sh && ./22-upgrade-server.sh && sleep infinity"
+          - "cd /opt/staging/hooks && source ./pingcommon.lib.sh && apply_local_server_profile && ./02-get-remote-server-profile.sh && ./05-expand-templates.sh && ./22-upgrade-server.sh"
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
