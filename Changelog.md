@@ -19,6 +19,7 @@
 - Properly handle failures for cluster-state and profile-repo scripts
 - Add volume mounts for PA admin and engines for pingaccess-admin-p14c secret
 - Support new folder structure /deploy for PingAccess upgrades
+- Migrate PingOne ORT URLs to ort-one-pingone.com
 
 _Changes:_
 
@@ -41,6 +42,7 @@ _Changes:_
 - [X] PDO-8981 Add self-service URL to env_vars
 - [X] PDO-9122 Revise the ISM and remove WARM node pools and its components
 - [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
+- [X] PDO-9310 Migrate PingOne ORT URLs
 
 ### 2.0.0
 
