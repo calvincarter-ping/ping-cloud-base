@@ -22,7 +22,7 @@ stages:
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
   CLUSTER_POSTFIXES: '_9 _10 _11 _12'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@sha256:2d0924c06c1614d0412ac4cfc87a030a91bb21e187d821198b2bad7a00a2012c
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@sha256:78ff5a4d1e4a605e515ed74600815f22808ffac53701d17347d10d9b59cccb97
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   # 01-test-ocsp-stapling.sh causes other failures due to NGINX restart - ticket to fix is PDO-8100
   BRANCH_SKIP_TESTS: >
