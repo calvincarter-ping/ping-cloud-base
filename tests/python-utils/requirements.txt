@@ -20,3 +20,6 @@ tenacity==8.2.3
 git-remote-codecommit==1.16
 
 cryptography == 43.0.3
+
+# HTTP library
+responses
