@@ -188,8 +188,20 @@ global:
   ########################################################
   # Public Hostnames
   ########################################################
+  pfAdminApiPublicHostname: "pingfederate-admin-api.${PRIMARY_DNS_ZONE}"
+  paAdminApiPublicHostname: "pingaccess-admin-api.${PRIMARY_DNS_ZONE}"
+  pfAdminPublicHostname: "pingfederate-admin.${PRIMARY_DNS_ZONE}"
+  pcAdminPrivateSiteHostname: "pingcentral.${PRIMARY_DNS_ZONE}"
+
+  pfClusterPublicHostname: "pingfederate-cluster.${PRIMARY_DNS_ZONE}"
   pdClusterPublicHostname: "pingdirectory-cluster.${PRIMARY_DNS_ZONE}"
   selfServicePublicHostname: "self-service-api.${PRIMARY_DNS_ZONE}"
+
+  pdHttpPublicHostname: "pingdirectory.${DNS_ZONE}"
+  pdDelegatorPublicHostname: "pingdelegator.${DNS_ZONE}"
+  pfEnginePublicHostname: "pingfederate.${DNS_ZONE}"
+
+  delegatedAdminEnabled: true
 
 
   #### FEATURE FLAGS ##################################################################################################
@@ -199,8 +211,6 @@ global:
   # !!! Provisioning for PingFederate is not yet available for multi-region customers !!!
   # Runbook: https://confluence.pingidentity.com/display/PingCloud/How+to+Enable+and+Configure+PingFederate+Provisioning
   pfProvisioningEnabled: ${PF_PROVISIONING_ENABLED}
-
-  radiusProxyEnabled: ${RADIUS_PROXY_ENABLED}
 
   external_ingress_enabled: ${EXTERNAL_INGRESS_ENABLED}
 
