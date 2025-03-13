@@ -1,19 +1,35 @@
+from kubernetes import client, config
 import http
 import unittest
-from unittest.mock import patch, MagicMock
-
 import responses
 import requests
 import os
+
+# Load Kubernetes config (use load_incluster_config() if running inside a cluster)
+config.load_kube_config()
+
+# Create an API client for the Core V1 API
+v1 = client.CoreV1Api()
+
+# Specify the name and namespace of your ConfigMap
+configmap_name = "pingfederate-admin-environment-variables"
+namespace = "ping-cloud"
+
+# Retrieve the ConfigMap
+configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespace)
+
+# Extract values for paHost and pfHost
+paHost = configmap.data.get("PA_ADMIN_API_PUBLIC_HOSTNAME")
+pfHost = configmap.data.get("PF_ADMIN_API_PUBLIC_HOSTNAME")
+
+# Print for debugging
+print(f"paHost from ConfigMap: {paHost}")
+print(f"pfHost from ConfigMap: {pfHost}")
 
 # Configuration
 PINGCENTRAL_HOST = f"https://{os.getenv('PC_ADMIN_PRIVATE_SITE_HOSTNAME')}"
 USERNAME = "administrator"
 PASSWORD = "2Federate"
-paHost = os.getenv("PA_ADMIN_API_PUBLIC_HOSTNAME")
-pfHost = os.getenv("PF_ADMIN_API_PUBLIC_HOSTNAME")
-print(f"paHost: {paHost}")
-print(f"pfHost: {pfHost}")
 
 class TestPingCentralAPI(unittest.TestCase):
     """System test for verifying PingFederate and PingAccess environments in PingCentral"""
@@ -45,7 +61,6 @@ class TestPingCentralAPI(unittest.TestCase):
             200, 
             f"Expected status 200 but got {response.status_code}. Response body: {response.text}"
         )
-
 
     @responses.activate
     def test_pingcentral_environment_endpoints_exist(self):
