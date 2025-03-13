@@ -53,8 +53,8 @@ class TestPingCentralAPI(unittest.TestCase):
         response = requests.get(self.url, headers=self.headers, auth=self.auth, verify=False)
         
         # Print actual response for debugging
-        print(f"Received status code: {response.status_code}")
-        print(f"Response body: {response.json()}")
+        print(f"Received status code in test 1: {response.status_code}")
+        print(f"Response body in test 1: {response.text}")
 
         self.assertEqual(
             response.status_code, 
@@ -69,8 +69,8 @@ class TestPingCentralAPI(unittest.TestCase):
         response = requests.get(self.url, headers=self.headers, auth=self.auth, verify=False)
 
         # Print actual response for debugging
-        print(f"Received status code: {response.status_code}")
-        print(f"Response body: {response.json()}")
+        print(f"Received status code in test 2: {response.status_code}")
+        print(f"Response body in test 2: {response.text}")
 
         self.assertEqual(response.status_code, 200, "Failed to retrieve environments")
 
