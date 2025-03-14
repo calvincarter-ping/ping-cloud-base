@@ -4,7 +4,6 @@ pytest==8.3.3
 # Web browser testing
 seleniumbase==4.32.9
 chromedriver-autoinstaller
-selenium
 
 # AWS Boto3 library
 boto3~=1.25.0

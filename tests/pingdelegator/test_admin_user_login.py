@@ -12,9 +12,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from kubernetes import client, config, stream
 
-# Disable only InsecureRequestWarning warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 # Delegated Admin User
 DELEGATED_ADMIN_USER = "admin"
 DELEGATED_ADMIN_PASSWORD = "password"
@@ -35,61 +32,61 @@ def check_required_env_vars():
 
 class TestAccessTokenFlow(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
+        # Disable only InsecureRequestWarning warnings
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
         # ----------------------------
         # Kubernetes Pre-Test Setup
         # ----------------------------
         # Load the Kubernetes configuration and set the active context to desired
         config.load_kube_config()
-        cls.core_v1 = client.CoreV1Api()
+        self.core_v1 = client.CoreV1Api()
 
         # Define the pod and namespace you want to exec into.
         # Adjust these values as needed.
-        cls.pingdirectory_pod_name = "pingdirectory-0"
-        cls.namespace = "ping-cloud"
-        cls.pingdirectory_container_name = "pingdirectory"
+        self.pingdirectory_pod_name = "pingdirectory-0"
+        self.namespace = "ping-cloud"
+        self.pingdirectory_container_name = "pingdirectory"
 
         # Make required environment variables accessible in test.
-        cls.PD_DELEGATOR_PUBLIC_HOSTNAME = os.getenv("PD_DELEGATOR_PUBLIC_HOSTNAME")
-        cls.PD_HTTP_PUBLIC_HOSTNAME = os.getenv("PD_HTTP_PUBLIC_HOSTNAME")
-        cls.PF_ENGINE_PUBLIC_HOSTNAME = os.getenv("PF_ENGINE_PUBLIC_HOSTNAME")
+        self.PD_DELEGATOR_PUBLIC_HOSTNAME = os.getenv("PD_DELEGATOR_PUBLIC_HOSTNAME")
+        self.PD_HTTP_PUBLIC_HOSTNAME = os.getenv("PD_HTTP_PUBLIC_HOSTNAME")
+        self.PF_ENGINE_PUBLIC_HOSTNAME = os.getenv("PF_ENGINE_PUBLIC_HOSTNAME")
 
         # ----------------------------
         # Selenium Setup
         # ----------------------------
         # Configure Chrome options for headless mode
         chrome_options = Options()
+
+        # Comment line below if you are running locally. Python will open your Chrome browser and perform test in UI.
         chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
 
         # Initialize the Selenium Wire WebDriver
-        cls.driver = webdriver.Chrome(options=chrome_options)
+        self.driver = webdriver.Chrome(options=chrome_options)
 
         # Copy local file templates/add-users.ldif to pingdirectory-0 pod
         pingdirectory_add_users_local_file = "templates/add-users.ldif"
         pingdirectory_pod_add_users_remote_file_path = "/tmp/add-users.ldif"
-        cls.copy_ldap_users_to_pingdirectory_pod(pingdirectory_add_users_local_file, pingdirectory_pod_add_users_remote_file_path)
+        self.copy_ldap_users_to_pingdirectory_pod(pingdirectory_add_users_local_file, pingdirectory_pod_add_users_remote_file_path)
 
         # Execute ldapmodify on pingdirectory-0 pod which will add users
-        cls.add_users(pingdirectory_pod_add_users_remote_file_path)
+        self.add_users(pingdirectory_pod_add_users_remote_file_path)
 
-    @classmethod
-    def tearDownClass(cls):
+    def tearDownA(self):
         # Clean up the Selenium driver
-        cls.driver.quit()
+        self.driver.quit()
 
         # Copy local file templates/delete-users.ldif to pingdirectory-0 pod
         pingdirectory_delete_users_local_file = "templates/delete-users.ldif"
         pingdirectory_pod_delete_users_remote_file_path = "/tmp/delete-users.ldif"
-        cls.copy_ldap_users_to_pingdirectory_pod(pingdirectory_delete_users_local_file, pingdirectory_pod_delete_users_remote_file_path)
+        self.copy_ldap_users_to_pingdirectory_pod(pingdirectory_delete_users_local_file, pingdirectory_pod_delete_users_remote_file_path)
 
         # Execute ldapdelete on pingdirectory-0 pod which will add users
-        cls.delete_users(pingdirectory_pod_delete_users_remote_file_path)
+        self.delete_users(pingdirectory_pod_delete_users_remote_file_path)
 
-    @classmethod
-    def copy_ldap_users_to_pingdirectory_pod(cls, local_file_path, pingdirectory_pod_remote_file_path):
+    def copy_ldap_users_to_pingdirectory_pod(self, local_file_path, pingdirectory_pod_remote_file_path):
 
         # Resolve the absolute path of the local file.
         local_ldap_file = os.path.abspath(local_file_path)
@@ -100,9 +97,9 @@ class TestAccessTokenFlow(unittest.TestCase):
 
         # Construct the kubectl cp command
         cmd = [
-            "kubectl", "cp", local_ldap_file, f"{cls.pingdirectory_pod_name}:{pingdirectory_pod_remote_file_path}",
-            "-c", cls.pingdirectory_container_name,
-            "-n", cls.namespace
+            "kubectl", "cp", local_ldap_file, f"{self.pingdirectory_pod_name}:{pingdirectory_pod_remote_file_path}",
+            "-c", self.pingdirectory_container_name,
+            "-n", self.namespace
         ]
         # Run the command
         result = subprocess.run(cmd, capture_output=True, text=True)
@@ -110,17 +107,16 @@ class TestAccessTokenFlow(unittest.TestCase):
         if result.returncode != 0:
             raise Exception(f"kubectl cp failed: {result.stderr}")
 
-    @classmethod
-    def add_users(cls, add_users_file):
+    def add_users(self, add_users_file):
         # Execute 'ldapmodify' in the pingdirectory-0 pod using Kubernetes exec API.
         # No need to worry about doing this in other PingDirectory pods because PingDirectory will replicate users to
         # the other pods automatically.
         try:
             resp = stream.stream(
-                cls.core_v1.connect_get_namespaced_pod_exec,
-                cls.pingdirectory_pod_name,
-                cls.namespace,
-                container=cls.pingdirectory_container_name,
+                self.core_v1.connect_get_namespaced_pod_exec,
+                self.pingdirectory_pod_name,
+                self.namespace,
+                container=self.pingdirectory_container_name,
                 command=["ldapmodify", "--defaultAdd", "--ldifFile", f"{add_users_file}", "-c"],
                 stderr=True,
                 stdin=False,
@@ -134,42 +130,45 @@ class TestAccessTokenFlow(unittest.TestCase):
 
             pod_output = resp.read_stdout()
 
-            print(f"Output of adding users:\n{pod_output}")
+            # Enable print when needed: stdout of PingDirectory pod for adding users
+            # print(f"Output of adding users:\n{pod_output}")
         except Exception as e:
-            raise Exception(f"Failed to exec into pod {cls.pingdirectory_pod_name} and add users: {e}")
+            raise Exception(f"Failed to exec into pod {self.pingdirectory_pod_name} and add users: {e}")
 
-    @classmethod
-    def delete_users(cls, delete_users_file):
+    def delete_users(self, delete_users_file):
         # Execute 'ldapdelete' in the pingdirectory-0 pod using Kubernetes exec API.
         # No need to worry about doing this in other PingDirectory pods because PingDirectory will replicate changes to
         # the other pods automatically.
         try:
             pod_output = stream.stream(
-                cls.core_v1.connect_get_namespaced_pod_exec,
-                cls.pingdirectory_pod_name,
-                cls.namespace,
-                container=cls.pingdirectory_container_name,
+                self.core_v1.connect_get_namespaced_pod_exec,
+                self.pingdirectory_pod_name,
+                self.namespace,
+                container=self.pingdirectory_container_name,
                 command=["ldapdelete", "--filename", f"{delete_users_file}", "-c"],
                 stderr=True,
                 stdin=False,
                 stdout=True,
                 tty=False
             )
-            print(f"Output of deleting users:\n{pod_output}")
+
+            # Enable print when needed: stdout of PingDirectory pod for deleting users
+            # print(f"Output of deleting users:\n{pod_output}")
+
         except Exception as e:
-            raise Exception(f"Failed to exec into pod {cls.pingdirectory_pod_name} and add users: {e}")
+            raise Exception(f"Failed to exec into pod {self.pingdirectory_pod_name} and add users: {e}")
 
     def test_log_into_delegated_admin(self):
 
         # Step 1: Make a request to Delegated Admin
-        self.__class__.driver.get(self.__class__.PD_DELEGATOR_PUBLIC_HOSTNAME)
+        self.driver.get(self.PD_DELEGATOR_PUBLIC_HOSTNAME)
 
         # Use WebDriverWait to wait until Delegated Admin redirect of PingFederate endpoint '/as/authorization.oauth2' is returned.
-        wait = WebDriverWait(self.__class__.driver, 10)  # wait up to 10 seconds
-        wait.until(lambda d: f"{self.__class__.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2" in d.current_url)
+        wait = WebDriverWait(self.driver, 10)  # wait up to 10 seconds
+        wait.until(lambda d: f"{self.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2" in d.current_url)
 
-        self.assertIn(f"{self.__class__.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2", self.__class__.driver.current_url,
-                      f"The browser did not navigate to a URL containing '{self.__class__.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2'")
+        self.assertIn(f"{self.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2", self.driver.current_url,
+                      f"The browser did not navigate to a URL containing '{self.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2'")
 
         # After redirect. Wait until the form is done loading in UI.
         form_element = wait.until(EC.presence_of_element_located((By.TAG_NAME, "form")))
@@ -191,27 +190,27 @@ class TestAccessTokenFlow(unittest.TestCase):
 
         # Step 2: Fill out the login form that's presented by PingFederate.
         # Find the <input name="pf.username"> element that is present in PingFederate HTML form to fill in the username.
-        self.__class__.driver.find_element(By.NAME, "pf.username").clear()
-        self.__class__.driver.find_element(By.NAME, "pf.username").send_keys(DELEGATED_ADMIN_USER)
+        self.driver.find_element(By.NAME, "pf.username").clear()
+        self.driver.find_element(By.NAME, "pf.username").send_keys(DELEGATED_ADMIN_USER)
 
         # Find the <input name="pf.pass"> element that is present in PingFederate HTML form to fill in the password.
-        self.__class__.driver.find_element(By.NAME, "pf.pass").clear()
-        self.__class__.driver.find_element(By.NAME, "pf.pass").send_keys(DELEGATED_ADMIN_PASSWORD)
+        self.driver.find_element(By.NAME, "pf.pass").clear()
+        self.driver.find_element(By.NAME, "pf.pass").send_keys(DELEGATED_ADMIN_PASSWORD)
 
         # Step 3: Submit login form.
         # Submit the form element directly.
         form_element.submit()
 
         # Step 4: Wait for authentication check of PingFederate and redirect back to Delegated Admin UI.
-        wait.until(lambda d: f"{self.__class__.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/callback" in d.current_url)
+        wait.until(lambda d: f"{self.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/callback" in d.current_url)
 
-        self.assertIn(f"{self.__class__.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/callback", self.__class__.driver.current_url,
-                      f"The browser did not navigate to a URL containing '{self.__class__.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/callback'")
+        self.assertIn(f"{self.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/callback", self.driver.current_url,
+                      f"The browser did not navigate to a URL containing '{self.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/callback'")
 
-        wait.until(lambda d: f"{self.__class__.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/search/users" in d.current_url)
+        wait.until(lambda d: f"{self.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/search/users" in d.current_url)
 
-        self.assertIn(f"{self.__class__.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/search/users", self.__class__.driver.current_url,
-                      f"The browser did not navigate to a URL containing '{self.__class__.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/search/users'")
+        self.assertIn(f"{self.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/search/users", self.driver.current_url,
+                      f"The browser did not navigate to a URL containing '{self.PD_DELEGATOR_PUBLIC_HOSTNAME}/delegator#/search/users'")
 
         # At this point you will be successfully in Delegated Admin UI app.
         # We are now extending the test to do 1 more thing.
@@ -223,8 +222,8 @@ class TestAccessTokenFlow(unittest.TestCase):
 
 
         # From Delegated Admin UI retrieve the session storage value for the key "oidc.user:PF_ENGINE_PUBLIC_HOSTNAME:dadmin"
-        session_value = self.__class__.driver.execute_script(
-            f"return window.sessionStorage.getItem('oidc.user:{self.__class__.PF_ENGINE_PUBLIC_HOSTNAME}:dadmin');"
+        session_value = self.driver.execute_script(
+            f"return window.sessionStorage.getItem('oidc.user:{self.PF_ENGINE_PUBLIC_HOSTNAME}:dadmin');"
         )
         self.assertIsNotNone(session_value, "Delegated Admin failed to set Session Storage in web page")
 
@@ -235,7 +234,7 @@ class TestAccessTokenFlow(unittest.TestCase):
 
         # Make a request to PD_HTTP_PUBLIC_HOSTNAME user API.
         # We will query john.0 which this user was added beforehand in setUpClass method
-        url = f"{self.__class__.PD_HTTP_PUBLIC_HOSTNAME}/dadmin/v2/users?filter={JOHN_THE_TEST_USER}"
+        url = f"{self.PD_HTTP_PUBLIC_HOSTNAME}/dadmin/v2/users?filter={JOHN_THE_TEST_USER}"
 
         # Create the headers with the Authorization header which will include the access_token.
         headers = {
@@ -247,8 +246,8 @@ class TestAccessTokenFlow(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200,
                          f"Resource request failed with status code {response.status_code}")
-        print("Resource request successful. Response:")
 
+        print("Delegated Admin login was successful")
         # Only needed for troubleshooting locally
         # print(response.text)
 
