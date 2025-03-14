@@ -24,6 +24,7 @@
 - Removing existing CW refs from Monorepo
 - Removing existing NewRelic refs from Monorepo
 - Update to use kube-rbac-proxy from ECR
+- Added more resource to OS data nodes
 
 _Changes:_
 
