@@ -50,6 +50,8 @@ class TestPingCentralAPI(unittest.TestCase):
             match=[responses.matchers.header_matcher(self.headers)],
         )
 
+        print(f"Received URL: {self.url}")
+
         response = requests.get(self.url, headers=self.headers, auth=self.auth, verify=False)
         
         # Print actual response for debugging
