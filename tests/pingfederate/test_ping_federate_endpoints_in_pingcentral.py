@@ -21,13 +21,15 @@ configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespa
 # Extract values for paHost and pfHost
 paHost = configmap.data.get("PA_ADMIN_API_PUBLIC_HOSTNAME")
 pfHost = configmap.data.get("PF_ADMIN_API_PUBLIC_HOSTNAME")
+pcHost = configmap.data.get("PC_ADMIN_PRIVATE_SITE_HOSTNAME")
 
 # Print for debugging
 print(f"paHost from ConfigMap: {paHost}")
 print(f"pfHost from ConfigMap: {pfHost}")
+print(f"pcAdminHost from ConfigMap: {pcAdminHost}")
 
 # Configuration
-PINGCENTRAL_HOST = f"https://{os.getenv('PC_ADMIN_PRIVATE_SITE_HOSTNAME')}"
+PINGCENTRAL_HOST = f"https://{pcHost}"
 USERNAME = "administrator"
 PASSWORD = "2Federate"
 
