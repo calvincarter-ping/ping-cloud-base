@@ -26,7 +26,7 @@ pcHost = configmap.data.get("PC_ADMIN_PRIVATE_SITE_HOSTNAME")
 # Print for debugging
 print(f"paHost from ConfigMap: {paHost}")
 print(f"pfHost from ConfigMap: {pfHost}")
-print(f"pcAdminHost from ConfigMap: {pcAdminHost}")
+print(f"pcHost from ConfigMap: {pcHost}")
 
 # Configuration
 PINGCENTRAL_HOST = f"https://{pcHost}"
