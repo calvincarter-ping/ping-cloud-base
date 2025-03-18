@@ -111,19 +111,19 @@ spec:
       priorityClassName: system-node-critical
       probes:
         liveness:
-          initialDelaySeconds: 30 # Allow more time for the node to stabilize before liveness checks begin
-          periodSeconds: 20
+          initialDelaySeconds: 60 # Allow more time for the node to stabilize before liveness checks begin
+          periodSeconds: 30
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 10
         startup:
-          initialDelaySeconds: 60 # Allow more startup time, as OpenSearch nodes can take longer to start
+          initialDelaySeconds: 120 # Allow more startup time, as OpenSearch nodes can take longer to start
           periodSeconds: 20
           timeoutSeconds: 10 # Allow extra time for a response during startup
           successThreshold: 1
           failureThreshold: 10
         readiness:
-          initialDelaySeconds: 120 # Ensure the node has joined the cluster before readiness checks
+          initialDelaySeconds: 180 # Ensure the node has joined the cluster before readiness checks
           periodSeconds: 90 # Increase the interval to avoid frequent checks
           timeoutSeconds: 30
           failureThreshold: 5
