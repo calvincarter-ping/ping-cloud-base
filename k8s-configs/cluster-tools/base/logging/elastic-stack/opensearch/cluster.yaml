@@ -5,7 +5,6 @@ metadata:
 spec:
   bootstrap:
     additionalConfig:
-      annotations:
         priorityClassName: system-node-critical
   security:
     tls:
