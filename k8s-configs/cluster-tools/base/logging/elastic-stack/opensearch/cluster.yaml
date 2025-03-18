@@ -108,6 +108,7 @@ spec:
         app.kubernetes.io/instance: opensearch-cluster-hot
       replicas: 3
       diskSize: "50Gi"
+      priorityClassName: system-node-critical
       jvm: -Xmx3000M -Xms3000M
       pdb:
         enable: true
