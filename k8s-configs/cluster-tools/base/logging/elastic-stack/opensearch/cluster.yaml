@@ -122,7 +122,7 @@ spec:
           successThreshold: 1
           failureThreshold: 10
         readiness:
-          initialDelaySeconds: 90 # Ensure the node has joined the cluster before readiness checks
+          initialDelaySeconds: 120 # Ensure the node has joined the cluster before readiness checks
           periodSeconds: 60 # Increase the interval to avoid frequent checks
           timeoutSeconds: 30
           failureThreshold: 5
