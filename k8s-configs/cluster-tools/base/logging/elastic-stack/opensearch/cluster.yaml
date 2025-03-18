@@ -3,9 +3,6 @@ kind: OpenSearchCluster
 metadata:
   name: opensearch-cluster
 spec:
-  bootstrap:
-    additionalConfig:
-        priorityClassName: system-node-critical
   security:
     tls:
       transport:
@@ -111,6 +108,7 @@ spec:
         app.kubernetes.io/instance: opensearch-cluster-hot
       replicas: 3
       diskSize: "50Gi"
+      priorityClassName: system-node-critical
       probes:
         liveness:
           initialDelaySeconds: 30 # Allow more time for the node to stabilize before liveness checks begin
