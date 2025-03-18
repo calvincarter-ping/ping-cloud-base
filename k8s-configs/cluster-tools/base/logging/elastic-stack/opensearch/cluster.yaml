@@ -3,6 +3,10 @@ kind: OpenSearchCluster
 metadata:
   name: opensearch-cluster
 spec:
+  bootstrap:
+    additionalConfig:
+      annotations:
+        priorityClassName: system-node-critical
   security:
     tls:
       transport:
