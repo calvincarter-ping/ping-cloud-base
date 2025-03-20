@@ -90,7 +90,7 @@ spec:
               cpu: "150m"
               memory: 100Mi
         - name: logstash
-          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/logstash:test-k8s-parallel-build-arm64
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/logstash:test-k8s-parallel-build-amd64
           imagePullPolicy: Always
           command:
             - "/bin/sh"
