@@ -18,18 +18,6 @@ DELEGATED_ADMIN_PASSWORD = "password"
 # User that will be added to PingDirectory. The Delegated Admin can search and look this user up.
 JOHN_THE_TEST_USER = "john.0"
 
-# Check required environment variables are defined on system
-def check_required_env_vars():
-    # List of required environment variables
-    required_vars = ["PD_DELEGATOR_PUBLIC_HOSTNAME", "PD_HTTP_PUBLIC_HOSTNAME", "PF_ENGINE_PUBLIC_HOSTNAME"]
-
-    # Determine which variables are missing
-    missing_vars = [var for var in required_vars if not os.getenv(var)]
-
-    if missing_vars:
-        print("Error: Missing required environment variables: " + ", ".join(missing_vars))
-        sys.exit(1)
-
 class TestAccessTokenFlow(unittest.TestCase):
 
     def setUp(self):
@@ -49,10 +37,33 @@ class TestAccessTokenFlow(unittest.TestCase):
         self.namespace = "ping-cloud"
         self.pingdirectory_container_name = "pingdirectory"
 
-        # Make required environment variables accessible in test.
-        self.PD_DELEGATOR_PUBLIC_HOSTNAME = os.getenv("PD_DELEGATOR_PUBLIC_HOSTNAME")
-        self.PD_HTTP_PUBLIC_HOSTNAME = os.getenv("PD_HTTP_PUBLIC_HOSTNAME")
-        self.PF_ENGINE_PUBLIC_HOSTNAME = os.getenv("PF_ENGINE_PUBLIC_HOSTNAME")
+        # Get PingDelegator URL e.g. https://pingdelegator.customerName.dev.ping-demo.com
+        config_map_name="pingfederate-admin-environment-variables"
+        self.PD_DELEGATOR_PUBLIC_HOSTNAME = self.core_v1.\
+                                                read_namespaced_config_map(name=config_map_name, namespace=self.namespace)\
+                                                .data.get('PD_DELEGATOR_PUBLIC_HOSTNAME')
+
+        # Assert that PD_DELEGATOR_PUBLIC_HOSTNAME is truthy (i.e., not None and not an empty string)
+        self.assertTrue(self.PD_DELEGATOR_PUBLIC_HOSTNAME, "PD_DELEGATOR_PUBLIC_HOSTNAME is either None or an empty string")
+        self.PD_DELEGATOR_PUBLIC_HOSTNAME += f"https://{self.PD_DELEGATOR_PUBLIC_HOSTNAME}"
+
+        # Get PingDirectory HTTPS URL e.g. https://pingdirectory.customerName.dev.ping-demo.com
+        self.PD_HTTP_PUBLIC_HOSTNAME = self.core_v1.\
+                                        read_namespaced_config_map(name=config_map_name, namespace=self.namespace)\
+                                        .data.get('PD_HTTP_PUBLIC_HOSTNAME')
+
+        # Assert that PD_HTTP_PUBLIC_HOSTNAME is truthy (i.e., not None and not an empty string)
+        self.assertTrue(self.PD_HTTP_PUBLIC_HOSTNAME, "PD_HTTP_PUBLIC_HOSTNAME is either None or an empty string")
+        self.PD_HTTP_PUBLIC_HOSTNAME += f"https://{self.PD_HTTP_PUBLIC_HOSTNAME}"
+
+        # Get PingFederate Engine HTTPS URL e.g. https://pingfederate.customerName.dev.ping-demo.com
+        self.PF_ENGINE_PUBLIC_HOSTNAME = self.core_v1.\
+                                            read_namespaced_config_map(name=config_map_name, namespace=self.namespace)\
+                                            .data.get('PF_ENGINE_PUBLIC_HOSTNAME')
+
+        # Assert that PF_ENGINE_PUBLIC_HOSTNAME is truthy (i.e., not None and not an empty string)
+        self.assertTrue(self.PF_ENGINE_PUBLIC_HOSTNAME, "PF_ENGINE_PUBLIC_HOSTNAME is either None or an empty string")
+        self.PF_ENGINE_PUBLIC_HOSTNAME += f"https://{self.PF_ENGINE_PUBLIC_HOSTNAME}"
 
         # ----------------------------
         # Selenium Setup
@@ -62,6 +73,9 @@ class TestAccessTokenFlow(unittest.TestCase):
 
         # Comment line below if you are running locally. Python will open your Chrome browser and perform test in UI.
         chrome_options.add_argument("--headless")
+
+        # Force Chrome to ignore certificate errors
+        chrome_options.add_argument("--ignore-certificate-errors")
 
         # Initialize the Selenium Wire WebDriver
         self.driver = webdriver.Chrome(options=chrome_options)
@@ -74,7 +88,7 @@ class TestAccessTokenFlow(unittest.TestCase):
         # Execute ldapmodify on pingdirectory-0 pod which will add users
         self.add_users(pingdirectory_pod_add_users_remote_file_path)
 
-    def tearDownA(self):
+    def tearDown(self):
         # Clean up the Selenium driver
         self.driver.quit()
 
@@ -170,6 +184,7 @@ class TestAccessTokenFlow(unittest.TestCase):
         self.assertIn(f"{self.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2", self.driver.current_url,
                       f"The browser did not navigate to a URL containing '{self.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2'")
 
+
         # After redirect. Wait until the form is done loading in UI.
         form_element = wait.until(EC.presence_of_element_located((By.TAG_NAME, "form")))
 
@@ -252,6 +267,4 @@ class TestAccessTokenFlow(unittest.TestCase):
         # print(response.text)
 
 if __name__ == "__main__":
-    # Check for required environment variables before running tests.
-    check_required_env_vars()
     unittest.main()
