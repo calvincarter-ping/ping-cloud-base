@@ -37,33 +37,30 @@ class TestAccessTokenFlow(unittest.TestCase):
         self.namespace = "ping-cloud"
         self.pingdirectory_container_name = "pingdirectory"
 
-        # Get PingDelegator URL e.g. https://pingdelegator.customerName.dev.ping-demo.com
-        config_map_name="pingfederate-admin-environment-variables"
-        self.PD_DELEGATOR_PUBLIC_HOSTNAME = self.core_v1.\
-                                                read_namespaced_config_map(name=config_map_name, namespace=self.namespace)\
-                                                .data.get('PD_DELEGATOR_PUBLIC_HOSTNAME')
+        # Get PingFederate Admin ConfigMap
+        # Assert that the configmap is truthy (i.e., not None and not an empty string)
+        pingfederate_admin_configmap_key_value = self.get_pingfederate_admin_value_from_configmap()
+        self.assertTrue(pingfederate_admin_configmap_key_value, "Unable to retrieve configmap pingfederate-admin-environment-variables")
 
-        # Assert that PD_DELEGATOR_PUBLIC_HOSTNAME is truthy (i.e., not None and not an empty string)
-        self.assertTrue(self.PD_DELEGATOR_PUBLIC_HOSTNAME, "PD_DELEGATOR_PUBLIC_HOSTNAME is either None or an empty string")
-        self.PD_DELEGATOR_PUBLIC_HOSTNAME += f"https://{self.PD_DELEGATOR_PUBLIC_HOSTNAME}"
+        # Get PingDelegator URL e.g. https://pingdelegator.customerName.dev.ping-demo.com
+        self.PD_DELEGATOR_PUBLIC_HOSTNAME = pingfederate_admin_configmap_key_value.data.get('PD_DELEGATOR_PUBLIC_HOSTNAME')
+        self.assertIsNotNone(self.PD_DELEGATOR_PUBLIC_HOSTNAME, "PD_DELEGATOR_PUBLIC_HOSTNAME is None")
+        self.assertNotEqual(self.PD_DELEGATOR_PUBLIC_HOSTNAME, "", "PD_DELEGATOR_PUBLIC_HOSTNAME is empty")
+        self.PD_DELEGATOR_PUBLIC_HOSTNAME = f"https://{self.PD_DELEGATOR_PUBLIC_HOSTNAME}"
 
         # Get PingDirectory HTTPS URL e.g. https://pingdirectory.customerName.dev.ping-demo.com
-        self.PD_HTTP_PUBLIC_HOSTNAME = self.core_v1.\
-                                        read_namespaced_config_map(name=config_map_name, namespace=self.namespace)\
-                                        .data.get('PD_HTTP_PUBLIC_HOSTNAME')
-
         # Assert that PD_HTTP_PUBLIC_HOSTNAME is truthy (i.e., not None and not an empty string)
-        self.assertTrue(self.PD_HTTP_PUBLIC_HOSTNAME, "PD_HTTP_PUBLIC_HOSTNAME is either None or an empty string")
-        self.PD_HTTP_PUBLIC_HOSTNAME += f"https://{self.PD_HTTP_PUBLIC_HOSTNAME}"
+        self.PD_HTTP_PUBLIC_HOSTNAME = pingfederate_admin_configmap_key_value.data.get('PD_HTTP_PUBLIC_HOSTNAME')
+        self.assertIsNotNone(self.PD_HTTP_PUBLIC_HOSTNAME, "PD_HTTP_PUBLIC_HOSTNAME is None")
+        self.assertNotEqual(self.PD_HTTP_PUBLIC_HOSTNAME, "", "PD_HTTP_PUBLIC_HOSTNAME is empty")
+        self.PD_HTTP_PUBLIC_HOSTNAME = f"https://{self.PD_HTTP_PUBLIC_HOSTNAME}"
 
         # Get PingFederate Engine HTTPS URL e.g. https://pingfederate.customerName.dev.ping-demo.com
-        self.PF_ENGINE_PUBLIC_HOSTNAME = self.core_v1.\
-                                            read_namespaced_config_map(name=config_map_name, namespace=self.namespace)\
-                                            .data.get('PF_ENGINE_PUBLIC_HOSTNAME')
-
         # Assert that PF_ENGINE_PUBLIC_HOSTNAME is truthy (i.e., not None and not an empty string)
-        self.assertTrue(self.PF_ENGINE_PUBLIC_HOSTNAME, "PF_ENGINE_PUBLIC_HOSTNAME is either None or an empty string")
-        self.PF_ENGINE_PUBLIC_HOSTNAME += f"https://{self.PF_ENGINE_PUBLIC_HOSTNAME}"
+        self.PF_ENGINE_PUBLIC_HOSTNAME = pingfederate_admin_configmap_key_value.data.get('PF_ENGINE_PUBLIC_HOSTNAME')
+        self.assertIsNotNone(self.PF_ENGINE_PUBLIC_HOSTNAME, "PF_ENGINE_PUBLIC_HOSTNAME is None")
+        self.assertNotEqual(self.PF_ENGINE_PUBLIC_HOSTNAME, "", "PF_ENGINE_PUBLIC_HOSTNAME is empty")
+        self.PF_ENGINE_PUBLIC_HOSTNAME = f"https://{self.PF_ENGINE_PUBLIC_HOSTNAME}"
 
         # ----------------------------
         # Selenium Setup
@@ -75,6 +72,10 @@ class TestAccessTokenFlow(unittest.TestCase):
         chrome_options.add_argument("--headless")
 
         # Force Chrome to ignore certificate errors
+        # Delegated Admin UI verifies that the browser is trusting the certificate.
+        # Delegated Admin will fail if you use a unverified certificate. P1AS actually deploy a fake Lets Encrypt cert
+        # in dev CICD. The Fake Lets Encrypt Certificate is what PingDelegator, PingFederate, and PingDirectory UI.
+        # are using.
         chrome_options.add_argument("--ignore-certificate-errors")
 
         # Initialize the Selenium Wire WebDriver
@@ -99,6 +100,9 @@ class TestAccessTokenFlow(unittest.TestCase):
 
         # Execute ldapdelete on pingdirectory-0 pod which will add users
         self.delete_users(pingdirectory_pod_delete_users_remote_file_path)
+
+    def get_pingfederate_admin_value_from_configmap(self):
+        return self.core_v1.read_namespaced_config_map(name="pingfederate-admin-environment-variables", namespace=self.namespace)
 
     def copy_ldap_users_to_pingdirectory_pod(self, local_file_path, pingdirectory_pod_remote_file_path):
 
@@ -242,7 +246,7 @@ class TestAccessTokenFlow(unittest.TestCase):
         )
         self.assertIsNotNone(session_value, "Delegated Admin failed to set Session Storage in web page")
 
-        # Parse the JSON stored in session storage
+        # Parse the JSON stored in session storage. Retrieve its access token which in this case is a JWT Token.
         data = json.loads(session_value)
         access_token = data.get("access_token")
         self.assertIsNotNone(access_token, "Delegated Admin failed to get access_token from Session Storage in web page")
@@ -251,7 +255,7 @@ class TestAccessTokenFlow(unittest.TestCase):
         # We will query john.0 which this user was added beforehand in setUpClass method
         url = f"{self.PD_HTTP_PUBLIC_HOSTNAME}/dadmin/v2/users?filter={JOHN_THE_TEST_USER}"
 
-        # Create the headers with the Authorization header which will include the access_token.
+        # Create the headers with the Authorization header which will include the access_token/JWT token.
         headers = {
             "Authorization": f"Bearer {access_token}"
         }
