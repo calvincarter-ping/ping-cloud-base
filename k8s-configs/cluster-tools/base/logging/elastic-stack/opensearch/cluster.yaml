@@ -21,6 +21,7 @@ spec:
       prometheus.io/scheme: "https"
       prometheus.io/path: "/_prometheus/metrics"
       prometheus.io/port: "9200"
+    drainDataNodes: true # Drain data nodes(pods) on rolling restart operations
     serviceName: opensearch
     serviceAccount: opensearch
     version: 2.11.1
@@ -40,8 +41,8 @@ spec:
       cluster.max_shards_per_node: "10000"
       prometheus.indices: "false"
       reindex.remote.allowlist: "localhost:9200"
-      plugins.alerting.filter_by_backend_roles: "true"
-      opensearch.notifications.general.filter_by_backend_roles: "true"
+      plugins.alerting.filter_by_backend_roles: "false"
+      opensearch.notifications.general.filter_by_backend_roles: "false"
   dashboards:
     enable: true
     version: 2.11.1

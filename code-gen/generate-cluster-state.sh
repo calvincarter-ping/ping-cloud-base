@@ -113,7 +113,7 @@
 #                                  | names)                                             |
 #                                  | Examplelist:"pingaccess pingfederate pingdelegator |
 #                                  | pingaccess-was              "                      |
-#                                  |                                                    |              
+#                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                                  | routing.                                           | the TENANT_DOMAIN value with the
 #                                  |                                                    | string "global". For example, it will
@@ -187,6 +187,11 @@
 #                                  |                                                    |
 # CUSTOMER_SSM_PATH_PREFIX         | The prefix of an SSM path that contains PingOne    | /pcpt/customer
 #                                  | state data required for the P14C/P1AS integration. |
+#                                  |                                                    |
+# SELF_SERVICE_SSM_PATH_PREFIX     | The prefix of an SSM path that contains            | /pcpt/self-service
+#                                  | self-service state data required for               |
+#                                  | P1AS integration.                                  |
+#                                  |                                                    |
 #                                  |                                                    |
 # CUSTOMER_SSO_SSM_PATH_PREFIX     | The prefix of an SSM path that contains PingOne    | ${CUSTOMER_SSM_PATH_PREFIX}/sso
 #                                  | state data required for the P14C/P1AS integration. |
@@ -352,6 +357,7 @@ ${PLATFORM_EVENT_QUEUE_NAME}
 ${CUSTOMER_SSM_PATH_PREFIX}
 ${CUSTOMER_SSO_SSM_PATH_PREFIX}
 ${CUSTOMER_TLS_SSM_PATH_PREFIX}
+${SELF_SERVICE_SSM_PATH_PREFIX}
 ${SERVICE_SSM_PATH_PREFIX}
 ${REGION}
 ${REGION_NICK_NAME}
@@ -391,7 +397,6 @@ ${USER_BASE_DN_4}
 ${USER_BASE_DN_5}
 ${ADMIN_CONSOLE_BRANDING}
 ${ENVIRONMENT_PREFIX}
-${NEW_RELIC_ENVIRONMENT_NAME}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -535,8 +540,6 @@ add_derived_variables() {
   # single P14C tenant. All of these apps will be created within the "Administrators" environment in the tenant.
   export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${REGION_ENV}-\${REGION_NICK_NAME}"
 
-  # The name of the environment as it will appear on the NewRelic console.
-  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${REGION_ENV}_\${REGION_NICK_NAME}_k8s-cluster"
 }
 
 ########################################################################################################################
@@ -701,6 +704,7 @@ echo "Initial ENVIRONMENTS: ${ENVIRONMENTS}"
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Initial CUSTOMER_SSM_PATH_PREFIX: ${CUSTOMER_SSM_PATH_PREFIX}"
+echo "Initial SELF_SERVICE_SSM_PATH_PREFIX: ${SELF_SERVICE_SSM_PATH_PREFIX}"
 echo "Initial CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Initial CUSTOMER_TLS_SSM_PATH_PREFIX: ${CUSTOMER_TLS_SSM_PATH_PREFIX}"
 echo "Initial SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
@@ -817,6 +821,7 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
 export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME:-v2_platform_event_queue.fifo}
 export CUSTOMER_SSM_PATH_PREFIX=${CUSTOMER_SSM_PATH_PREFIX:-/pcpt/customer}
+export SELF_SERVICE_SSM_PATH_PREFIX=${SELF_SERVICE_SSM_PATH_PREFIX:-/pcpt/self-service}
 export CUSTOMER_SSO_SSM_PATH_PREFIX=${CUSTOMER_SSO_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/sso}
 export CUSTOMER_TLS_SSM_PATH_PREFIX=${CUSTOMER_TLS_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/tls}
 export SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX:-/pcpt/service}
@@ -1028,6 +1033,7 @@ echo "Using SUPPORTED_ENVIRONMENT_TYPES: ${SUPPORTED_ENVIRONMENT_TYPES}"
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Using PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Using CUSTOMER_SSM_PATH_PREFIX: ${CUSTOMER_SSM_PATH_PREFIX}"
+echo "Using SELF_SERVICE_SSM_PATH_PREFIX: ${SELF_SERVICE_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_TLS_SSM_PATH_PREFIX: ${CUSTOMER_TLS_SSM_PATH_PREFIX}"
 echo "Using SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
@@ -1136,7 +1142,7 @@ BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
 CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state"
 PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
 PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
-PROFILE_REPO_MIRRORS=("p1as-pingdirectory")
+PROFILE_REPO_MIRRORS=("p1as-pingdirectory p1as-pingfederate")
 
 
 CUSTOMER_HUB='customer-hub'
@@ -1539,7 +1545,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   echo "=====> Done creating environment '${ENV}'"
 )
 subshell_exit_code=$?
-if [[ $subshell_exit_code -ne 0 ]]; then
+if [[ $subshell_exit_code -ne 0 && "$EXIT_ON_FAILURE" == "true" ]]; then
     echo "Environment '${ENV}' creation failed with exit code ${subshell_exit_code}"
     exit $subshell_exit_code
 fi
