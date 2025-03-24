@@ -34,7 +34,8 @@ class TestAccessTokenFlow(unittest.TestCase):
         # Define the pod and namespace you want to exec into.
         # Adjust these values as needed.
         self.pingdirectory_pod_name = "pingdirectory-0"
-        self.namespace = "ping-cloud"
+        self.namespace = os.environ.get("PING_CLOUD_NAMESPACE")
+        self.assertIsNotNone(self.namespace, "PING_CLOUD_NAMESPACE is None")
         self.pingdirectory_container_name = "pingdirectory"
 
         # Get PingFederate Admin ConfigMap
