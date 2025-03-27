@@ -144,7 +144,7 @@ spec:
         - name: license-dir
           mountPath: /opt/license
       - name: pingaccess-upgrade
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-9464-pa-deny-basic-auth
         imagePullPolicy: Always
         command: ["/bin/sh"]
         args:
@@ -233,7 +233,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.1-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-9464-pa-deny-basic-auth
         imagePullPolicy: Always
         env:
           - name: NAMESPACE
@@ -251,7 +251,7 @@ spec:
           - name: customer-issuer
             mountPath: /opt/sso/customer_issuer
       - name: pingaccess-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-9464-pa-deny-basic-auth
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
