@@ -83,7 +83,7 @@ class TestAccessTokenFlow(unittest.TestCase):
         self.driver = webdriver.Chrome(options=chrome_options)
 
         # Copy local file templates/add-users.ldif to pingdirectory-0 pod
-        pingdirectory_add_users_local_file = "templates/add-users.ldif"
+        pingdirectory_add_users_local_file = "./templates/add-users.ldif"
         pingdirectory_pod_add_users_remote_file_path = "/tmp/add-users.ldif"
         self.copy_ldap_users_to_pingdirectory_pod(pingdirectory_add_users_local_file, pingdirectory_pod_add_users_remote_file_path)
 
@@ -95,7 +95,7 @@ class TestAccessTokenFlow(unittest.TestCase):
         self.driver.quit()
 
         # Copy local file templates/delete-users.ldif to pingdirectory-0 pod
-        pingdirectory_delete_users_local_file = "templates/delete-users.ldif"
+        pingdirectory_delete_users_local_file = "./templates/delete-users.ldif"
         pingdirectory_pod_delete_users_remote_file_path = "/tmp/delete-users.ldif"
         self.copy_ldap_users_to_pingdirectory_pod(pingdirectory_delete_users_local_file, pingdirectory_pod_delete_users_remote_file_path)
 
@@ -107,8 +107,11 @@ class TestAccessTokenFlow(unittest.TestCase):
 
     def copy_ldap_users_to_pingdirectory_pod(self, local_file_path, pingdirectory_pod_remote_file_path):
 
-        # Resolve the absolute path of the local file.
-        local_ldap_file = os.path.abspath(local_file_path)
+        # Get the directory where test.py resides
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Construct the absolute path of the local file.
+        local_ldap_file = os.path.join(base_dir, local_file_path)
 
         # Verify the file exists.
         if not os.path.exists(local_ldap_file):
