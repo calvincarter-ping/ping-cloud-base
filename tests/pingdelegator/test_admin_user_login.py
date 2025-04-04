@@ -21,7 +21,8 @@ JOHN_THE_TEST_USER = "john.0"
 
 class TestAccessTokenFlow(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # Disable only InsecureRequestWarning warnings
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -30,8 +31,33 @@ class TestAccessTokenFlow(unittest.TestCase):
         # ----------------------------
         # Load the Kubernetes configuration and set the active context to desired
         config.load_kube_config()
-        self.core_v1 = client.CoreV1Api()
+        cls.core_v1 = client.CoreV1Api()
 
+        # ----------------------------
+        # Selenium Setup
+        # ----------------------------
+        # Configure Chrome options for headless mode
+        chrome_options = Options()
+
+        # Comment line below if you are running locally. Python will open your Chrome browser and perform test in UI.
+        chrome_options.add_argument("--headless")
+
+        # To avoid other Chrome sessions interfering with this test.
+        # Create own temporary directory that's exclusive to this test session.
+        test_admin_user_login_dir = tempfile.mkdtemp()
+        chrome_options.add_argument(f"--user-data-dir={test_admin_user_login_dir}")
+
+        # Force Chrome to ignore certificate errors
+        # Delegated Admin UI verifies that the browser is trusting the certificate.
+        # Delegated Admin will fail if you use a unverified certificate. P1AS actually deploy a fake Lets Encrypt cert
+        # in dev CICD. The Fake Lets Encrypt Certificate is what PingDelegator, PingFederate, and PingDirectory UI.
+        # are using.
+        chrome_options.add_argument("--ignore-certificate-errors")
+
+        # Initialize the Selenium Wire WebDriver
+        cls.driver = webdriver.Chrome(options=chrome_options)
+
+    def setUp(self):
         # Define the pod and namespace you want to exec into.
         # Adjust these values as needed.
         self.pingdirectory_pod_name = "pingdirectory-0"
@@ -63,30 +89,6 @@ class TestAccessTokenFlow(unittest.TestCase):
         self.assertIsNotNone(self.PF_ENGINE_PUBLIC_HOSTNAME, "PF_ENGINE_PUBLIC_HOSTNAME is None")
         self.assertNotEqual(self.PF_ENGINE_PUBLIC_HOSTNAME, "", "PF_ENGINE_PUBLIC_HOSTNAME is empty")
         self.PF_ENGINE_PUBLIC_HOSTNAME = f"https://{self.PF_ENGINE_PUBLIC_HOSTNAME}"
-
-        # ----------------------------
-        # Selenium Setup
-        # ----------------------------
-        # Configure Chrome options for headless mode
-        chrome_options = Options()
-
-        # Comment line below if you are running locally. Python will open your Chrome browser and perform test in UI.
-        chrome_options.add_argument("--headless")
-
-        # To avoid other Chrome sessions interfering with this test.
-        # Create own temporary directory that's exclusive to this test session.
-        test_admin_user_login_dir = tempfile.mkdtemp()
-        chrome_options.add_argument(f"--user-data-dir={test_admin_user_login_dir}")
-
-        # Force Chrome to ignore certificate errors
-        # Delegated Admin UI verifies that the browser is trusting the certificate.
-        # Delegated Admin will fail if you use a unverified certificate. P1AS actually deploy a fake Lets Encrypt cert
-        # in dev CICD. The Fake Lets Encrypt Certificate is what PingDelegator, PingFederate, and PingDirectory UI.
-        # are using.
-        chrome_options.add_argument("--ignore-certificate-errors")
-
-        # Initialize the Selenium Wire WebDriver
-        self.driver = webdriver.Chrome(options=chrome_options)
 
         # Copy local file templates/add-users.ldif to pingdirectory-0 pod
         pingdirectory_add_users_local_file = "./templates/add-users.ldif"
