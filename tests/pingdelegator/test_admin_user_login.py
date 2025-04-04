@@ -1,3 +1,4 @@
+import tempfile
 import os
 import sys
 import unittest
@@ -72,6 +73,11 @@ class TestAccessTokenFlow(unittest.TestCase):
         # Comment line below if you are running locally. Python will open your Chrome browser and perform test in UI.
         chrome_options.add_argument("--headless")
 
+        # To avoid other Chrome sessions interfering with this test.
+        # Create own temporary directory that's exclusive to this test session.
+        test_admin_user_login_dir = tempfile.mkdtemp()
+        chrome_options.add_argument(f"--user-data-dir={test_admin_user_login_dir}")
+
         # Force Chrome to ignore certificate errors
         # Delegated Admin UI verifies that the browser is trusting the certificate.
         # Delegated Admin will fail if you use a unverified certificate. P1AS actually deploy a fake Lets Encrypt cert
@@ -91,7 +97,7 @@ class TestAccessTokenFlow(unittest.TestCase):
         self.add_users(pingdirectory_pod_add_users_remote_file_path)
 
     def tearDown(self):
-        # Clean up the Selenium driver
+        # Clean up the Selenium driver and ensure the session is terminated properly
         self.driver.quit()
 
         # Copy local file templates/delete-users.ldif to pingdirectory-0 pod
