@@ -39,13 +39,9 @@ class TestAccessTokenFlow(unittest.TestCase):
         # Configure Chrome options for headless mode
         chrome_options = Options()
 
+        # Note, I decided to make headless but if another dev is interested.
         # Comment line below if you are running locally. Python will open your Chrome browser and perform test in UI.
-        chrome_options.add_argument("--headless")
-
-        # To avoid other Chrome sessions interfering with this test.
-        # Create own temporary directory that's exclusive to this test session.
-        test_admin_user_login_dir = tempfile.mkdtemp()
-        chrome_options.add_argument(f"--user-data-dir={test_admin_user_login_dir}")
+        chrome_options.add_argument("--headless=new")  # Run in headless mode in CICD
 
         # Force Chrome to ignore certificate errors
         # Delegated Admin UI verifies that the browser is trusting the certificate.
@@ -53,9 +49,16 @@ class TestAccessTokenFlow(unittest.TestCase):
         # in dev CICD. The Fake Lets Encrypt Certificate is what PingDelegator, PingFederate, and PingDirectory UI.
         # are using.
         chrome_options.add_argument("--ignore-certificate-errors")
+        chrome_options.add_argument("--no-sandbox")  # Run in Docker
+        chrome_options.add_argument("--disable-dev-shm-usage")  # Run in Docker
 
         # Initialize the Selenium Wire WebDriver
         cls.driver = webdriver.Chrome(options=chrome_options)
+
+    @classmethod
+    def tearDownClass(cls):
+        # Clean up the Selenium driver and ensure the session is terminated properly
+        cls.driver.quit()
 
     def setUp(self):
         # Define the pod and namespace you want to exec into.
@@ -99,9 +102,6 @@ class TestAccessTokenFlow(unittest.TestCase):
         self.add_users(pingdirectory_pod_add_users_remote_file_path)
 
     def tearDown(self):
-        # Clean up the Selenium driver and ensure the session is terminated properly
-        self.driver.quit()
-
         # Copy local file templates/delete-users.ldif to pingdirectory-0 pod
         pingdirectory_delete_users_local_file = "./templates/delete-users.ldif"
         pingdirectory_pod_delete_users_remote_file_path = "/tmp/delete-users.ldif"
