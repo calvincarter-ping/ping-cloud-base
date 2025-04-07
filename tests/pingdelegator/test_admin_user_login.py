@@ -186,7 +186,7 @@ class TestAccessTokenFlow(unittest.TestCase):
             # print(f"Output of deleting users:\n{pod_output}")
 
         except Exception as e:
-            raise Exception(f"Failed to exec into pod {self.pingdirectory_pod_name} and add users: {e}")
+            raise Exception(f"Failed to exec into pod {self.pingdirectory_pod_name} and delete users: {e}")
 
     def test_log_into_delegated_admin(self):
 
