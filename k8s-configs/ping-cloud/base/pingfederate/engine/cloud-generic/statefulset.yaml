@@ -175,6 +175,21 @@ spec:
             secretKeyRef:
               key: PF_CLUSTER_AUTH_PASSWORD
               name: pingfederate-cluster-auth-password
+        - name: PF_P14C_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              key: PF_P14C_CLIENT_ID
+              name: pingfederate-admin-p14c
+        - name: PF_P14C_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: PF_P14C_CLIENT_SECRET
+              name: pingfederate-admin-p14c
+        - name: PF_P14C_TOKEN_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              key: PF_P14C_TOKEN_ENDPOINT
+              name: pingfederate-admin-p14c
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
