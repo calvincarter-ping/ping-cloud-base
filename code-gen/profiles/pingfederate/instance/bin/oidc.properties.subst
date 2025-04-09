@@ -121,7 +121,7 @@ acr.values=${PF_P14C_ACR_VALUES}
 #   -----------------------------
 #   Requesting Scopes from OP. Include all the scopes required to obtain username and role mapping attributes.
 #scopes=openid
-scopes=${PF_P14C_SCOPES}
+scopes=${PF_P14C_OIDC_SCOPES}
 
 
 #   ----------------------------------

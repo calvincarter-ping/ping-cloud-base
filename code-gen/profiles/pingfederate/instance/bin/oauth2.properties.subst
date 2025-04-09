@@ -66,7 +66,7 @@ introspection.endpoint=${PF_P14C_INTROSPECTION_ENDPOINT}
 #   -----------------
 #   The required scopes of validated ATs authorized to call the PingFederate administrative API. Space delimit multiple values.
 #
-required.scopes=${PF_P14C_SCOPES}
+required.scopes=${PF_P14C_OAUTH2_SCOPES}
 
 #   ----------------------------------
 #   Username Attribute Name (REQUIRED)
