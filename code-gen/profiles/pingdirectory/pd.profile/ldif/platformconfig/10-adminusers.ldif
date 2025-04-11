@@ -69,17 +69,3 @@ title: VPN Admin
 givenName: openvpn
 mail: openvpn@test.com
 userPassword: ${ROOT_USER_PASSWORD}
-
-dn: uid=administrator,ou=admins,o=platformconfig
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
-objectClass: inetOrgPerson
-objectClass: pf-connected-identities
-sn: PingFederate
-cn: Administrator
-uid: administrator
-title: PF Admin
-title: PF Crypto Admin
-title: PF User Admin
-userPassword: ${PF_ADMIN_USER_PASSWORD}

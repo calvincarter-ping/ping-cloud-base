@@ -18,17 +18,3 @@ uid: user.0
 mail: user.0@example.com
 userPassword: 2FederateM0re
 pf-connected-identity: auth-source=pf-local-identity:user-id=user.0
-
-dn: uid=administrator,ou=People,dc=example,dc=com
-changetype: add
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
-objectClass: inetOrgPerson
-objectClass: pf-connected-identities
-sn: PingFederate
-cn: Administrator
-givenName: PingFederate
-uid: administrator
-userPassword: 2FederateM0re
-pf-connected-identity: auth-source=pf-local-identity:user-id=administrator
