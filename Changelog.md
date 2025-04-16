@@ -27,6 +27,8 @@
 - Add customer-issuer to p14c-bootstrap configs
 - Add customer-issuer to PA Admin pingaccess-p1as-sso container
 - Enable OpenSearch data node(pod) draining during a rolling restart
+- Added script of fetch OS-bootstrap and logstash image
+- Fix PC private ingress endpoint in values.yml
 
 _Changes:_
 
@@ -49,6 +51,7 @@ _Changes:_
 - [X] PDO-8383 EKS Managed Add-Ons: EBS CSI
 - [X] PDO-8727 Add a monitor and alert for kube-proxy or larger network issues within a cluster
 - [X] PDO-8782 Figure out different setup for newrelic-tags-exporter for microservices
+- [X] PDO-8803 Update Metadata service to pick up OS-bootstrap, and logstash images
 - [X] PDO-8958 Global DNS: Implement Changes in PCB
 - [X] PDO-8981 Add self-service URL to env_vars
 - [X] PDO-9073 OpenSearch: Deploys in Yellow state due to bootstrap job having run prematurely
@@ -56,6 +59,7 @@ _Changes:_
 - [X] PDO-9159 Create customer P1 tenant issuer configmap
 - [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
 - [X] PDO-9310 Migrate PingOne ORT URLs
+- [X] PDO-9462 Fix PC private ingress endpoint in values.yml
 
 ### 2.0.0
 
