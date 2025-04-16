@@ -16,3 +16,8 @@ pingfederate:
     pfMaxHeap: "3072m"
     pfMinYgen: "1536m"
     pfMaxYgen: "1536m"
+
+    statefulSet:
+      hpa:
+        minReplicas: 3
+        maxReplicas: 8
