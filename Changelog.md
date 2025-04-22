@@ -65,6 +65,7 @@ _Changes:_
 - [X] PDO-9310 Migrate PingOne ORT URLs
 - [X] PDO-9462 Fix PC private ingress endpoint in values.yml
 - [X] PDO-9553 Support heap and ygen sizes for PingFederate microservice
+- [X] PDO-9559 Grafana: P1AS Ingress Usage Graphs Not Displaying Info Correctly
 
 ### 2.0.0
 
