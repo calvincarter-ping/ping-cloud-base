@@ -833,14 +833,6 @@ STAGE="${STAGE:-lab-us1}"
 # Versent passes STAGE as "stage-region" (e.g. "ga-us1") so we need to strip the region suffix
 export STAGE="${STAGE%%-*}"
 
-if "${IS_BELUGA_ENV}"; then
-  DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
-else
-  DERIVED_GLOBAL_TENANT_DOMAIN="$(echo "${TENANT_DOMAIN_NO_DOT_SUFFIX}" | sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
-fi
-GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX="${GLOBAL_TENANT_DOMAIN%.}"
-export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX:-${DERIVED_GLOBAL_TENANT_DOMAIN}}"
-
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
 export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-ssm://pcpt/service/storage/pd-monitor/uri}"
@@ -1290,6 +1282,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   # Remove s3:// prefix if present
   export PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME#s3://}
 
+  set_var "GLOBAL_TENANT_DOMAIN" "ERROR no value found" "/pcpt/global-dns/hosted-zone/zone-name" "" ""
 
   ######################################################################################################################
   # Enable Cloudwatch according to the account type
@@ -1316,6 +1309,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   echo "Using CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "Using DNS_ZONE: ${DNS_ZONE}"
   echo "Using PRIMARY_DNS_ZONE: ${PRIMARY_DNS_ZONE}"
+  echo "Using GLOBAL_TENANT_DOMAIN: ${GLOBAL_TENANT_DOMAIN}"
   echo "Using PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
   echo "Using IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
   echo "Using KARPENTER_ROLE_ANNOTATION_KEY_VALUE: ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}"
