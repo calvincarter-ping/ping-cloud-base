@@ -55,7 +55,6 @@ LDAP_CLIENT_MANAGER_SEARCH_BASE=ou=clients,o=appintegrations
 
 # DA common configuration for PF and PD.
 # Note: No spaces are allowed within the ID names below.
-ENABLE_DEL_ADMIN=true
 DA_PCV_ID=dapcv
 DA_PCV_SEARCH_FILTER=uid=${username}
 DA_IDP_ADAPTER_HTML_FORM_ID=daidphtml
