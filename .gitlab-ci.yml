@@ -26,6 +26,7 @@ variables:
   CLUSTER_POSTFIXES: '_9 _10 _11 _12'
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v2.2-release-branch
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
+  UPGRADE_TEST_PIPELINE: "true"
   # 01-test-ocsp-stapling.sh causes other failures due to NGINX restart - ticket to fix is PDO-8100
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
@@ -52,6 +53,8 @@ compile:
    expire_in: 1 day
    reports:
      dotenv: compile.env
+ rules:
+   - if: '$UPGRADE_TEST_PIPELINE != "true"'
 
 ## start security stage ##
 copy-images:
@@ -73,8 +76,8 @@ copy-images:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/copy-images.sh
   tags:
     - platform-publish-docker
-  only:
-    - /^.*-release-branch$/
+  rules:
+    - if: '$CI_COMMIT_REF_NAME =~ /^.*-release-branch$/ && $UPGRADE_TEST_PIPELINE != "true"'
 
 check-ext-images:
   stage: security
@@ -89,6 +92,8 @@ check-ext-images:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/check_ext_images.sh $UBER_YAML
   tags:
     - default-gitlab-runner-ping-cloud
+  rules:
+    - if: '$UPGRADE_TEST_PIPELINE != "true"'
 
 scan:
   stage: security
@@ -109,8 +114,8 @@ scan:
     paths:
     - report.json
     expire_in: 1 year
-  only:
-    - /^.*-release-branch$/
+  rules:
+    - if: '$CI_COMMIT_REF_NAME =~ /^.*-release-branch$/ && $UPGRADE_TEST_PIPELINE != "true"'
 ## end security stage ##
 
 ## Find cluster stage ##
@@ -139,6 +144,8 @@ deploy:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
   dependencies:
     - find-cluster
+  rules:
+    - if: '$UPGRADE_TEST_PIPELINE != "true"'
 
 ## Integration Test stage ##
 
@@ -153,6 +160,8 @@ pre-check:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
   dependencies:
     - find-cluster
+  rules:
+    - if: '$UPGRADE_TEST_PIPELINE != "true"'
 
 ## PA-WAS stage ##
 pa-was-integration-tests:
@@ -165,6 +174,8 @@ pa-was-integration-tests:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
   dependencies:
     - find-cluster
+  rules:
+    - if: '$UPGRADE_TEST_PIPELINE != "true"'
 
 ################################################
 # All integration tests defined to run on the  #
@@ -244,7 +255,7 @@ integration-tests:
     matrix:
       - TEST: *all-tests
   rules:
-    - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
+    - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule" && $UPGRADE_TEST_PIPELINE != "true"'
 
 integration-tests-scheduled-pipeline:
   extends: .integration-tests-base
@@ -254,7 +265,7 @@ integration-tests-scheduled-pipeline:
     matrix:
       - TEST: *schedule-tests
   rules:
-    - if: '$ENV_TYPE != "customer-hub" && $CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$ENV_TYPE != "customer-hub" && $CI_PIPELINE_SOURCE == "schedule" && $UPGRADE_TEST_PIPELINE != "true"'
 
 integration-tests-chub:
   extends: .integration-tests-base
@@ -264,7 +275,7 @@ integration-tests-chub:
     matrix:
       - TEST: *chub-tests
   rules:
-  - if: '$ENV_TYPE == "customer-hub"'
+  - if: '$ENV_TYPE == "customer-hub" && $UPGRADE_TEST_PIPELINE != "true"'
 
 ## Chaos testing stage ##
 chaos-tests:
@@ -277,6 +288,8 @@ chaos-tests:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
   dependencies:
     - find-cluster
+  rules:
+    - if: '$UPGRADE_TEST_PIPELINE != "true"'
 
 .cleanup-base:
   stage: cleanup
@@ -309,6 +322,8 @@ cleanup-on-compile-failure:
       else
         echo "Compile passed, deployment not torn down to allow for troubleshooting";
       fi
+  rules:
+   - if: '$UPGRADE_TEST_PIPELINE != "true"'
 
 merge-branch:   # Merge current release branch to next upstream release branch
   stage: merge-branch
@@ -323,4 +338,4 @@ merge-branch:   # Merge current release branch to next upstream release branch
   variables:
     CREATE_MR: "yes"
   rules:
-    - if: '$AUTO_MERGE == "true" && $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/'
+    - if: '$AUTO_MERGE == "true" && $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/ && $UPGRADE_TEST_PIPELINE != "true"'
