@@ -156,6 +156,8 @@ upgrade-deploy:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
+    - git clone --branch v2.1-release-branch $CI_REPOSITORY_URL /builds/ping-cloud-base
+    - export PCB_PATH="/builds/ping-cloud-base"
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh v2.1-release-branch
   dependencies:
     - find-cluster
@@ -170,6 +172,7 @@ upgrade-upgrade:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
+    - exit 0
     - export UPGRADE_SCRIPT_VERSION=PDO-9050
     - export LOCAL=false
     - update_cde_env_pcb_auto dev v2.2-release-branch v2.2-release-branch
