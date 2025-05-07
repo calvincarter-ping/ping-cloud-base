@@ -11,6 +11,7 @@ stages:
 - compile
 - find-cluster
 - deploy
+- upgrade
 - pre-check-test
 - pa-was-test
 - integration-test
@@ -146,6 +147,36 @@ deploy:
     - find-cluster
   rules:
     - if: '$UPGRADE_TEST_PIPELINE != "true"'
+
+upgrade-deploy:
+  stage: deploy
+  needs:
+    - find-cluster
+  tags:
+    - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh v2.1-release-branch
+  dependencies:
+    - find-cluster
+  rules:
+    - if: '$UPGRADE_TEST_PIPELINE == "true"'
+
+upgrade-upgrade:
+  stage: upgrade
+  needs:
+    - upgrade-deploy
+  tags:
+    - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - export UPGRADE_SCRIPT_VERSION=PDO-9050
+    - export LOCAL=false
+    - update_cde_env_pcb_auto dev v2.2-release-branch v2.2-release-branch
+  dependencies:
+    - upgrade-deploy
+  rules:
+    - if: '$UPGRADE_TEST_PIPELINE == "true"'
 
 ## Integration Test stage ##
 
