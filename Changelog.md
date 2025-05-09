@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.1.1
+
+- Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
+
+_Changes:_
+
+- [X] PDO-9178 Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
+
 ### 2.1.0
 
 - Update PingDirectory resource limits
@@ -31,6 +39,8 @@
 - Enable OpenSearch data node(pod) draining during a rolling restart
 - Added script of fetch OS-bootstrap and logstash image
 - Fix PC private ingress endpoint in values.yml
+- Enable fluentbit storage layer metrics by updating prometheus metrics API to v2
+- Fix push-cluster-state.sh failing when no remote branches are available
 
 _Changes:_
 
@@ -63,8 +73,10 @@ _Changes:_
 - [X] PDO-9159 Create customer P1 tenant issuer configmap
 - [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
 - [X] PDO-9310 Migrate PingOne ORT URLs
+- [X] PDO-9375 FluentBit: Add Grafana Dashboard
 - [X] PDO-9462 Fix PC private ingress endpoint in values.yml
 - [X] PDO-9553 Support heap and ygen sizes for PingFederate microservice
+- [X] PDO-9616 Fix push-cluster-state.sh failing when no remote branches are available
 
 ### 2.0.0
 
@@ -79,7 +91,7 @@ _Changes:_
 - Support customer bringing their own certificate for their external server and adding it to PingDataSync truststore
 - Refactor update-profile-wrapper code to support new variables for microservice profile mirrors.
 - De-duplicate prod-values.yaml
-- Fluentbit - remove unnecessary configuration
+- To reorganize fluentbit configuration
 - Grafana fix PGO dashboard
 - Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - Adding Cross zone load balancing and graceful shutdown to nginx
@@ -91,6 +103,7 @@ _Changes:_
 - Add p1as-self-service microservice
 - Remove Thanos resources and use Prometheus standalone
 - Update global values.yaml for newRelicLicenseKey variable substitution
+- Upgrade Cluster Autoscaler to v1.30.2
 
 _Changes:_
 
@@ -106,8 +119,9 @@ _Changes:_
 - [X] PDO-7248 NewRelic: Upgrade APM agent to latest version
 - [X] PDO-7428 Update seal-secret-values.py to seal with namespace only. Update secret structure
 - [X] PDO-7445 Remove toplogy-descriptor volume mount from products where not needed
+- [X] PDO-7455 Upgrade Cluster Autoscaler to v1.30.2
 - [X] PDO-7469 De-duplicate prod-values.yaml
-- [X] PDO-7482 Fluentbit - remove unnecessary configuration
+- [X] PDO-7482 Reorganize fluentbit configuration
 - [X] PDO-7527 Grafana: Update PGO dashboards to be compatible with the current PGO version
 - [X] PDO-7564 Update number of shards for ingress index
 - [X] PDO-7608 Making Graviton as default for NON-GA environment, fix GA consistency across envs
