@@ -159,6 +159,7 @@ upgrade-deploy:
     - git fetch origin v2.1-release-branch
     - env
   script:
+    - export K8S_GIT_BRANCH=v2.1-release-branch
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh v2.1-release-branch
   dependencies:
     - find-cluster
