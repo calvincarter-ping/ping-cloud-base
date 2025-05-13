@@ -157,8 +157,6 @@ upgrade-deploy:
   image: ${K8S_DEPLOY_TOOLS}
   before_script:
     - git fetch origin v2.1-release-branch
-    - git remote -v
-    - env
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh v2.1-release-branch
   dependencies:
