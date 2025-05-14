@@ -7,7 +7,7 @@ from kubernetes import client, config, stream
 
 # The following conditions don't really matter for this test:
 # 1) Username / Password
-# 2) Including header: 'x-xsrf-header: PingFederate' or 'x-xsrf-header: PingAccess' which is mandator by PF and PA API.
+# 2) Including header: 'x-xsrf-header: PingFederate' or 'x-xsrf-header: PingAccess' which is mandatory by PF and PA API.
 # The reason being is PingAccess-WAS will be blocking the request before it ever gets to PingFederate or PingAccess
 USERNAME = "fakeadmin"
 PASSWORD = "test123"
