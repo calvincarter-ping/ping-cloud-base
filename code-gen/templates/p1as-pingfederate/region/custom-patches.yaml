@@ -1,8 +1,64 @@
 ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
 
 ### Always leave in at least this customization. Otherwise, kustomize will complain about an empty patch file. ###
-apiVersion: v1
-kind: ConfigMap
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: pingfederate-custom-placeholder
+#   namespace: ${PING_CLOUD_NAMESPACE}
+
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
-  name: pingfederate-custom-placeholder
-  namespace: ${PING_CLOUD_NAMESPACE}
+  name: pingfederate-admin
+  namespace: ping-cloud
+spec:
+  template:
+    spec:
+      containers:
+        - name: pingfederate-admin
+          volumeMounts:
+            - name: pf-email-templates
+              mountPath: /opt/out/instance/server/default/conf/template/mail-notifications
+            - name: pf-monitoring-conf
+              mountPath: /opt/out/instance/server/default/data/config-store/com.pingidentity.monitoring.MonitoringService.xml
+              subPath: com.pingidentity.monitoring.MonitoringService.xml
+      volumes:
+        - name: pf-email-templates
+          configMap:
+            name: pf-email-templates
+            optional: true
+            defaultMode: 0644
+        - name: pf-monitoring-conf
+          configMap:
+            name: pf-monitoring-conf
+            optional: true
+            defaultMode: 0644
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingfederate
+  namespace: ping-cloud
+spec:
+  template:
+    spec:
+      containers:
+        - name: pingfederate
+          volumeMounts:
+            - name: pf-email-templates
+              mountPath: /opt/out/instance/server/default/conf/template/mail-notifications
+            - name: pf-monitoring-conf
+              mountPath: /opt/out/instance/server/default/data/config-store/com.pingidentity.monitoring.MonitoringService.xml
+              subPath: com.pingidentity.monitoring.MonitoringService.xml
+      volumes:
+        - name: pf-email-templates
+          configMap:
+            name: pf-email-templates
+            optional: true
+            defaultMode: 0644
+        - name: pf-monitoring-conf
+          configMap:
+            name: pf-monitoring-conf
+            optional: true
+            defaultMode: 0644
