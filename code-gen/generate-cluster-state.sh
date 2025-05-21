@@ -1489,6 +1489,10 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       app_repo_branch=$(yq e '.helmCharts[].version' ./templates/${app_repo}/region/kustomization.yaml)
       # Remove '-latest' from app_repo_branch if present
       app_repo_branch="${app_repo_branch%-latest}"
+      if [[ "${app_repo_branch}" == *"-PDO-"* ]]; then
+        # The branch to pull does not have 'v2.1-' in it
+        app_repo_branch="${app_repo_branch#*-}"
+      fi
     fi
 
     # Remove 'p1as-' prefix from repository names
