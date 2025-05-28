@@ -7,6 +7,7 @@
 _Changes:_
 
 - [X] PDO-9178 Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
+- [X] PDO-5824 Configure PF Admin API to use OAuth P1 Tokens
 
 ### 2.1.0
 
