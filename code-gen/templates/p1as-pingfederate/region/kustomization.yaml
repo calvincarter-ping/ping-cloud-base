@@ -1,6 +1,8 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+namespace: ${PING_CLOUD_NAMESPACE}
+
 commonLabels:
   app: ping-cloud
 
@@ -33,4 +35,4 @@ configMapGenerator:
 patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - custom-patches.yaml
-  - ../base/custom-patches.yaml  
+  - ../base/custom-patches.yaml
