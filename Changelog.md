@@ -6,6 +6,7 @@
 - Create Readiness Script for PingFederate Engine
 - Prevent PingFederate from starting up until it get its latest configuration
 - Upgrade PingAccess to v8.0.6
+- Added fix for Alerts which were not visible for the role of os-configteam
 
 _Changes:_
 
@@ -13,6 +14,7 @@ _Changes:_
 - [X] PDO-9413 Create Readiness Script for PingFederate Engine
 - [X] PDO-9426 Prevent PingFederate from starting up until it get its latest configuration
 - [X] PDO-9563 Upgrade PingAccess to v8.0.6
+- [X] PDO-9655 Alerts are not visible for the role of os-configteam
 
 ### 2.0.0
 
