@@ -1,9 +1,11 @@
 import os
 import unittest
+import warnings
 
 import requests
 import requests.auth
 import requests_oauthlib
+import urllib3
 
 import b64
 import k8s_utils
@@ -98,6 +100,12 @@ class AdminAPITestBase(unittest.TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.config = None
+        # Ignore warnings for insecure http requests
+        warnings.filterwarnings(
+            "ignore", category=urllib3.exceptions.InsecureRequestWarning
+        )
+        # Ignore ResourceWarning for unclosed SSL sockets
+        warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed <ssl.SSLSocket")
 
     @classmethod
     def tearDownClass(cls):

@@ -3,8 +3,6 @@ import unittest
 
 import requests
 import requests.auth
-import urllib3
-import warnings
 
 import b64
 import k8s_utils
@@ -20,12 +18,6 @@ class TestPAAdminAPILogin(pingone_api.AdminAPITestBase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # Ignore warnings for insecure http requests
-        warnings.filterwarnings(
-            "ignore", category=urllib3.exceptions.InsecureRequestWarning
-        )
-        # Ignore ResourceWarning for unclosed SSL sockets
-        warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed <ssl.SSLSocket")
         cls.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         cls.environment = os.getenv("ENV", "dev")
         cls.k8s = k8s_utils.K8sUtils()
