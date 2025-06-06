@@ -662,6 +662,27 @@ organize_code_for_csr() {
           find "${app_target_dir}" -type f -name "prod-values.yaml" -exec rm -f {} +
           ;;
         stage | prod | customer-hub)
+          # Handle environment size modifications
+          case "${SIZE}" in
+            x-small | small)
+              # Small environment size
+              pass
+              ;;
+            *)
+              # Non-small environment size
+              echo "Modifying prod-values.yaml for ${SIZE} environment size"
+
+              # p1as-cluster-tools
+              # Remove ingress-nginx-public configmap settings for non-small envs PDO-9756
+              if [[ "${app_target_dir}" =~ "p1as-cluster-tools" ]]; then
+                echo "--> Removing ingress-nginx-public configmap settings for non-small environments"
+                prod_values_yaml=$(find "${app_target_dir}" -type f -name "prod-values.yaml")
+                yq -i 'del(.ingress-nginx-public.ingress-nginx.controller.config)' ${prod_values_yaml}
+              fi
+
+              ;;
+          esac
+
           # merge prod-values.yaml to values.yaml (overwriting values.yaml if it exists)
           prod_values_files=$(find "${app_target_dir}" -type f -name "prod-values.yaml")
           for prod_values_file in ${prod_values_files}; do
