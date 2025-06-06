@@ -666,7 +666,7 @@ organize_code_for_csr() {
           case "${SIZE}" in
             x-small | small)
               # Small environment size
-              pass
+              echo "No prod-values.yaml modifications needed for ${SIZE} environment size"
               ;;
             *)
               # Non-small environment size
