@@ -146,6 +146,7 @@ testLogstashImageTag() {
 
 }
 
+# Uncomment the below code once this is completed. https://pingidentity.atlassian.net/browse/PDO-9859
 # testOpensearchBootstrapImageTag() {
 #   if [ "${ENV_TYPE}" == "customer-hub" ]; then
 #     echo "Skipping testOpensearchBootstrapImageTag as ENV_TYPE is customer-hub"

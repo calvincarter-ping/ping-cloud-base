@@ -18,6 +18,23 @@ class TestApplicationStatus(unittest.TestCase):
         logstash_running = all(pod.status.phase == 'Running' for pod in pods if pod.metadata.name.startswith == 'logstash-elastic' )
         self.assertTrue(logstash_running, "logstash pod is not running")
 
+    def test_os_bootstrap_pod_running_or_completed(self):
+        pods = self.all_pods
+        for pod in pods:
+            if pod.metadata.name.startswith('logstash-elastic'):
+                init_statuses = pod.status.init_container_statuses or []
+                is_running_or_completed = any(
+                    init.name == 'opensearch-bootstrap' and (
+                        (init.state.running is not None) or
+                        (init.state.terminated is not None and init.state.terminated.exit_code == 0)
+                    )
+                    for init in init_statuses
+                )
+                self.assertTrue(
+                    is_running_or_completed,
+                    f"'opensearch-bootstrap' initContainer is neither running nor completed in pod {pod.metadata.name}"
+                )
+
     def test_opensearch_cluster_dashboards_pods_running(self):
         pods = self.all_pods
         opensearch_cluster_dashboards_running = all(pod.status.phase == 'Running' for pod in pods if pod.metadata.name.startswith('opensearch-cluster-dashboards'))
