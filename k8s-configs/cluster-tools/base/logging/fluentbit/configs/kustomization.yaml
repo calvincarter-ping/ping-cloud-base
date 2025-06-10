@@ -14,8 +14,8 @@ configMapGenerator:
   - name: fluent-bit-parsers
     files:
       - parsers.conf
-      - elk.conf
-      - s3.conf
+      - pipelines/elk.conf
+      - pipelines/s3.conf
 
 resources:
   - pipelines
