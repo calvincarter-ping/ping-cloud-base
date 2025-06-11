@@ -14,7 +14,7 @@
 
 pingcloud-scripts::source_script() {
     local script_name="${1}"
-    local version="${2:-pdo-9231}"
+    local version="${2}"
     local aws_profile="${3:-${AWS_PROFILE}}"
     local usage="pingcloud-scripts::source_script SCRIPT_NAME VERSION [aws_profile]"
 
@@ -38,7 +38,7 @@ pingcloud-scripts::source_script() {
     fi
 
     local tmp_dir="/tmp/pingcloud-scripts/${version}"
-    local src_bucket="pingcloud-scripts-dev"
+    local src_bucket="pingcloud-scripts"
 
     echo "[DEBUG] Temp directory: ${tmp_dir}"
     echo "[DEBUG] S3 bucket: ${src_bucket}"
