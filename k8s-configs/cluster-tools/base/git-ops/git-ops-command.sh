@@ -382,6 +382,7 @@ microservice_main() {
 # directory - see $TARGET_DIR's default value
 ########################################################################################################################
 main () {
+  echo "HERE"
   TARGET_DIR="${1:-.}"
   cd "${TARGET_DIR}" >/dev/null 2>&1
 
