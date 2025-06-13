@@ -868,6 +868,7 @@ if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
   CURRENT_GIT_BRANCH=$(git describe --tags --always)
   echo "current git branch equals HEAD: ${CURRENT_GIT_BRANCH}"
   CURRENT_GIT_BRANCH=$(git branch -r --contains "${CURRENT_GIT_BRANCH}")
+  CURRENT_GIT_BRANCH=$(echo "$CURRENT_GIT_BRANCH" | cut -d'/' -f2)
   echo "current git branch to return branch(es): ${CURRENT_GIT_BRANCH}"
 fi
 
