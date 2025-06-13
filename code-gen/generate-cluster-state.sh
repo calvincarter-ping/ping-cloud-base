@@ -863,8 +863,10 @@ export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-l
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "current git branch: ${CURRENT_GIT_BRANCH}"
 if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
   CURRENT_GIT_BRANCH=$(git describe --tags --always)
+  echo "current git branch equals HEAD: ${CURRENT_GIT_BRANCH}"
 fi
 
 export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}
@@ -875,6 +877,7 @@ export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${SERVER_PROFILE_URL_DERIVED}}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base.git}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
+echo "k8s git branch: ${K8S_GIT_BRANCH}, current git branch: ${CURRENT_GIT_BRANCH}"
 
 export MICROSERVICE_APP_REPO_URL="${MICROSERVICE_APP_REPO_URL:-git@gitlab.corp.pingidentity.com:ping-cloud-private-tenant}"
 
@@ -1064,6 +1067,7 @@ echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
+echo "Testing current git branch: ${CURRENT_GIT_BRANCH}"
 
 echo "Using MICROSERVICE_APP_REPO_URL: ${MICROSERVICE_APP_REPO_URL}"
 
