@@ -867,6 +867,8 @@ echo "current git branch: ${CURRENT_GIT_BRANCH}"
 if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
   CURRENT_GIT_BRANCH=$(git describe --tags --always)
   echo "current git branch equals HEAD: ${CURRENT_GIT_BRANCH}"
+  CURRENT_GIT_BRANCH=$(git branch -a --contains "${CURRENT_GIT_BRANCH}")
+  echo "current git branch to return branch(es): ${CURRENT_GIT_BRANCH}"
 fi
 
 export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}
