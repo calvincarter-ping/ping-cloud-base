@@ -869,6 +869,8 @@ if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
   echo "current git branch equals HEAD: ${CURRENT_GIT_BRANCH}"
   CURRENT_GIT_BRANCH=$(git branch -r --contains "${CURRENT_GIT_BRANCH}")
   CURRENT_GIT_BRANCH=$(echo "$CURRENT_GIT_BRANCH" | cut -d'/' -f2)
+  BRANCH_VERIF=$(git ls-remote --heads origin | grep -i "$CURRENT_GIT_BRANCH")
+  echo "branch verif: ${BRANCH_VERIF}"
   echo "current git branch to return branch(es): ${CURRENT_GIT_BRANCH}"
 fi
 
