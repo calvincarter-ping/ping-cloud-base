@@ -43,6 +43,7 @@ patches:
     metadata:
       name: argocd-cmd-params-cm
     data:
+      server.repo.server.timeout.seconds: "300"
       # Set the logging level. One of: debug|info|warn|error (default "info")
       # See https://argo-cd.readthedocs.io/en/stable/operator-manual/argocd-cmd-params-cm-yaml/ for example
       controller.log.level: "error"
@@ -282,6 +283,8 @@ patches:
               runAsNonRoot: true
               runAsUser: 999
             env:
+              - name: ARGOCD_EXEC_TIMEOUT
+                value: "3m"
               - name: HELM_CACHE_HOME
                 value: /helm-working-dir
               - name: HELM_CONFIG_HOME
