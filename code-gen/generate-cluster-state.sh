@@ -885,7 +885,6 @@ export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-ba
 # export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 export K8S_GIT_BRANCH="v2.2-release-branch"
 echo "k8s git branch: ${K8S_GIT_BRANCH}, current git branch: ${CURRENT_GIT_BRANCH}"
-echo "in pcb: LOCAL is ${LOCAL}"
 
 export MICROSERVICE_APP_REPO_URL="${MICROSERVICE_APP_REPO_URL:-git@gitlab.corp.pingidentity.com:ping-cloud-private-tenant}"
 
