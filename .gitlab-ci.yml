@@ -144,13 +144,12 @@ cleanup-s3:
         aws s3api head-bucket --bucket "$1" 2>/dev/null
       }
 
-      # List all S3 buckets
-      echo "Available S3 buckets:"
-      aws s3 ls
+      # Fail (exit 1) when the variable is either empty **or** lacks the substring "ci-cd"
+      if [ -z "$SELECTED_KUBE_NAME" ] || [[ "$SELECTED_KUBE_NAME" != *ci-cd* ]]; then
+        echo "ERROR: SELECTED_KUBE_NAME is empty or does not contain 'ci-cd'"
+        exit 1
+      fi 
       
-      echo test uploading to bucket
-      sleep 180
-
       cluster_name="$SELECTED_KUBE_NAME"
 
       p1as_buckets="$SELECTED_KUBE_NAME-artifacts-bucket $SELECTED_KUBE_NAME-backup-bucket $SELECTED_KUBE_NAME-cluster-bucket $SELECTED_KUBE_NAME-export-bucket $SELECTED_KUBE_NAME-logs-bucket $SELECTED_KUBE_NAME-monitor-log-bucket $SELECTED_KUBE_NAME-pgo-bucket $SELECTED_KUBE_NAME-pingbinary-bucket $SELECTED_KUBE_NAME-raw-log-bucket $SELECTED_KUBE_NAME-thanos-bucket"
