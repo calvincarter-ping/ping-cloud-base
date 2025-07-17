@@ -10,6 +10,7 @@ workflow:
 stages:
 - compile
 - find-cluster
+- cleanup-s3
 - deploy
 - pre-check-test
 - pa-was-test
@@ -126,6 +127,55 @@ find-cluster:
   artifacts:
     reports:
       dotenv: cluster.env
+
+## cleanup-s3 Cleanup stage ##
+cleanup-s3:
+  stage: cleanup-s3
+  tags:
+    - default-gitlab-runner
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - |
+      #!/bin/sh
+      # Function to check if a bucket exists
+      bucket_exists() {
+        aws s3api head-bucket --bucket "$1" 2>/dev/null
+      }
+
+      # List all S3 buckets
+      echo "Available S3 buckets:"
+      aws s3 ls
+      
+      echo test uploading to bucket
+      sleep 180
+
+      cluster_name="$SELECTED_KUBE_NAME"
+
+      p1as_buckets="$SELECTED_KUBE_NAME-artifacts-bucket $SELECTED_KUBE_NAME-backup-bucket $SELECTED_KUBE_NAME-cluster-bucket $SELECTED_KUBE_NAME-export-bucket $SELECTED_KUBE_NAME-logs-bucket $SELECTED_KUBE_NAME-monitor-log-bucket $SELECTED_KUBE_NAME-pgo-bucket $SELECTED_KUBE_NAME-pingbinary-bucket $SELECTED_KUBE_NAME-raw-log-bucket $SELECTED_KUBE_NAME-thanos-bucket"
+
+      echo "Buckets to be checked and (if confirmed) emptied:"
+      for bucket in ${p1as_buckets}; do
+        echo "  $bucket"
+      done
+
+      # Skipping interactive confirmation for pipeline execution
+
+      for bucket in ${p1as_buckets}; do
+        echo ">>> Checking s3://$bucket …"
+        if bucket_exists "$bucket"; then
+          echo "Bucket exists: $bucket"
+          echo ">>> Emptying s3://$bucket …"
+          if aws s3 rm "s3://$bucket" --recursive --only-show-errors; then
+            echo "✓ Finished s3://$bucket"
+          else
+            echo "✗ ERROR while emptying s3://$bucket" >&2
+          fi
+        else
+          echo "Bucket does not exist: $bucket"
+        fi
+      done
+  dependencies:
+    - find-cluster
 
 ## Deploy stage ##
 deploy:
