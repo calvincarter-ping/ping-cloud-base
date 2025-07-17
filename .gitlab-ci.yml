@@ -131,6 +131,8 @@ find-cluster:
 ## cleanup-s3 Cleanup stage ##
 cleanup-s3:
   stage: cleanup-s3
+  needs:
+    - find-cluster
   tags:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
@@ -174,8 +176,7 @@ cleanup-s3:
           echo "Bucket does not exist: $bucket"
         fi
       done
-  dependencies:
-    - find-cluster
+
 
 ## Deploy stage ##
 deploy:
