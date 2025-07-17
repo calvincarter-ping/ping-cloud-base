@@ -15,6 +15,7 @@ stages:
 - pa-was-test
 - integration-test
 - chaos
+- s3-cleanup
 - cleanup
 - merge-branch
 - security # move this to the end and we'll use the "needs" keyword to allow it to run earlier and out of order
@@ -285,6 +286,17 @@ chaos-tests:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
+
+## S3 Cleanup stage ## 
+s3cleanup:
+  stage: s3-cleanup
+  tags:
+    - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/s3cleanup.sh
+  dependencies:
+    - find-cluster
 
 ## Cleanup stage that runs when everything has succeeded ##
 cleanup-on-success:
