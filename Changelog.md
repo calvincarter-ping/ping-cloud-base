@@ -15,6 +15,7 @@
 - Add p1as-Observability to PCB Grafana
 - push-cluster-state: remove INCLUDE_PROFILES_IN_CSR
 - Opensearch Upgrade to 2.19.0
+- PGO: PingFederate Engine in Secondary Region is crashing for access error
 
 _Changes:_
 
@@ -34,6 +35,7 @@ _Changes:_
 - [X] PDO-9950 [Opensearch] Upgrade to version 2.19.0
 - [X] PDO-6878 Move PingFederate IK upload scripts from ping-cloud-base to ping-cloud-tools repository
 - [X] PDO-9798 ingress-nginx-private autoscaling min/max replicas
+- [X] PDO-10082 PGO: PingFederate Engine in Secondary Region is crashing for access error
 
 ### 2.1.1
 
