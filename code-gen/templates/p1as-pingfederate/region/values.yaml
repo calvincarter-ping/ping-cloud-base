@@ -7,6 +7,10 @@ pingfederate:
     # Only use if you want to provide your own SSM path to perpetual license
     # The default is that automation will determine SSM path to retrieve product license
     overrideProductLicense: ""
+  
+  # !!! Provisioning for PingFederate is not yet available for multi-region customers !!!
+  # Runbook: https://confluence.pingidentity.com/display/PingCloud/How+to+Enable+and+Configure+PingFederate+Provisioning
+  pfProvisioningEnabled: ${PF_PROVISIONING_ENABLED}
 
   # Application settings that is only for PingFederate Admin
   admin:
