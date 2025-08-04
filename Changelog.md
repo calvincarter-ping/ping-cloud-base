@@ -2,11 +2,11 @@
 
 ### 2.1.2
 
-- Integrate PingDirectory service with external DNS
+- Integrate PingDirectory service with external DNS by setting its policy to sync.
 
 _Changes:_
 
-- [X] PDO-8907 Integrate PingDirectory service with external DNS
+- [X] PDO-8907 Integrate PingDirectory service with external DNS by setting its policy to sync
 
 ### 2.1.1
 
