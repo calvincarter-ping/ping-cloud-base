@@ -22,10 +22,12 @@
 - Adding JSON parsing support for PingFederate logs
 - Update generate code to have granular control for removing helm charts in chub envs
 - Update to use aws-for-fluent-bit:2.31.7 and refactor pipeline config
+- JSON logging implementation in PingAccess and PingAccess-WAS
 
 _Changes:_
 
 - [X] PDO-7325 JSON Logging: Implement JSON logging for PF logs
+- [X] PDO-7360 JSON Logging: Implement JSON logging for PA/PA-WAS
 - [X] PDO-7817 Explicitly set Lets Encrypt configuration via cert-manager
 - [X] PDO-8754 OSD: Enable Save Query and CSV Export of Logs
 - [X] PDO-8834 Update bootstrap pods to use new bootstrap IRSA role
