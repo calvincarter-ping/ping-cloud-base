@@ -4,6 +4,14 @@
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{ISO8601} %5p %m%n"/>
         </Console>
+        <Console name="JSON-STDOUT" target="SYSTEM_OUT">
+            <JSONLayout compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
+                <KeyValuePair key="timestamp" value="%d{ISO8601}"/>
+                <KeyValuePair key="logLevel" value="%p"/>
+                <KeyValuePair key="message" value="%m{nolookups}"/>
+                <KeyValuePair key="log_name" value="json_stdout"/>
+            </JSONLayout>
+        </Console>
         <RollingFile name="FILE" fileName="${sys:pa.upgrade.home}/log/upgrade.log"
                      filePattern="${sys:pa.upgrade.home}/log/upgrade-%d{MM-dd-yyyy}-%i.log.gz">
             <PatternLayout pattern="%d{ISO8601} %5p %c:%L - %m%n"/>
@@ -54,17 +62,14 @@
         <logger name="audit" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE-AUDIT"/>
         </logger>
-        <logger name="upgrade" level="INFO" additivity="false">
-            <AppenderRef ref="CONSOLE-UPGRADE"/>
-        </logger>
         <logger name="org.apache.http" level="WARN"/>
         <logger name="org.springframework" level="WARN"/>
         <logger name="org.apache.commons.beanutils" level="WARN"/>
         <logger name="org.jose4j" level="WARN"/>
         <logger name="class org.jose4j" level="WARN"/>
-        Root level="debug">
-            <AppenderRef level="info" ref="STDOUT"/>
-            <AppenderRef level="debug" ref="FILE"/>
+        <Root level="debug">
+            <AppenderRef level="info" ref="JSON-STDOUT"/>
+            <AppenderRef level="debug" ref="CONSOLE-UPGRADE"/>
         </Root>
     </Loggers>
 </Configuration>
