@@ -176,6 +176,7 @@ pa-was-integration-tests:
   - pingfederate
   - pingaccess
   - pingcloud-services
+  - pingcentral
   - pingdatasync
   - common
   - monitoring
