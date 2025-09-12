@@ -154,17 +154,17 @@ pre-check:
   dependencies:
     - find-cluster
 
-## PA-WAS stage ##
-# pa-was-integration-tests:
-#   stage: pa-was-test
-#   retry: 1
-#   tags:
-#     - default-gitlab-runner-ping-cloud
-#   image: ${K8S_DEPLOY_TOOLS}
-#   script:
-#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
-#   dependencies:
-#     - find-cluster
+# PA-WAS stage ##
+pa-was-integration-tests:
+  stage: pa-was-test
+  retry: 1
+  tags:
+    - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests-sequential.sh pingaccess-was
+  dependencies:
+    - find-cluster
 
 ################################################
 # All integration tests defined to run on the  #
@@ -176,7 +176,6 @@ pre-check:
   - pingfederate
   - pingaccess
   - pingcloud-services
-  - pingcentral
   - pingdatasync
   - common
   - monitoring
