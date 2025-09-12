@@ -8,7 +8,7 @@
 
 <!--
    | For more configuration information and examples see the Apache Log4j2
-   | website: http: //logging.apache.org/log4j/2.x/
+   | website: http://logging.apache.org/log4j/2.x/
  -->
 
 <!--
@@ -37,8 +37,7 @@
         <!--
         Log entries can be generated from Groovy rules. All Groovy rules use a logger with a name like:
 
-            GroovyRule.[RULE_NAME
-]
+            GroovyRule.[RULE_NAME]
 
         where RULE_NAME is replaced with the name of the rule.
 
@@ -243,8 +242,7 @@
         <Socket name="SYSLOG" host="localhost" port="514" protocol="UDP">
             <PingSyslogLayout facility="LOCAL0">
                 <PatternLayout>
-                    <pattern>%d{ABSOLUTE
-} %5p %c:%L - %m%n</pattern>
+                    <pattern>%d{ABSOLUTE} %5p %c:%L - %m%n</pattern>
                 </PatternLayout>
             </PingSyslogLayout>
         </Socket>
@@ -264,11 +262,7 @@
                 <!--
                 <charset>UTF-8</charset>
                 -->
-                <pattern>%d{ISO8601
-} %5p [%X{exchangeId
-    }
-] %c - %m{nolookups
-}%n</pattern>
+                <pattern>%d{ISO8601} %5p [%X{exchangeId}] %c - %m{nolookups}%n</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -296,17 +290,7 @@
                 <!--
                 <charset>UTF-8</charset>
                 -->
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.subject
-}| %X{AUDIT.authMech
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode} %n</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -331,7 +315,8 @@
 
         <!-- API Audit log : JDBC appender template for Oracle
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'ApiAuditLog-Database-Failover' for the 'apiaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the Oracle JDBC driver JAR file is in the /lib directory
@@ -358,16 +343,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_api_audit_oracle_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.subject
-}| %X{AUDIT.authMech
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -382,7 +358,8 @@
 
         <!-- API Audit log : JDBC appender template for Microsoft SQL Server
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'ApiAuditLog-SQLServer-Database-Failover' for the 'apiaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the SQL Server JDBC driver JAR file is in the /lib directory
@@ -409,16 +386,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_api_audit_sqlserver_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.subject
-}| %X{AUDIT.authMech
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -433,7 +401,8 @@
 
         <!-- API Audit log : JDBC appender template for PostgreSQL
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'ApiAuditLog-PostgreSQL' for the 'apiaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the PostgreSQL JDBC driver JAR file is in the /lib directory
@@ -460,16 +429,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_api_audit_postgresql_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.subject
-}| %X{AUDIT.authMech
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -499,8 +459,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_api_audit_splunk.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-} exchangeId="%X{exchangeId}" trackingId="%X{AUDIT.trackingId}" subject="%X{AUDIT.subject}" authMech="%X{AUDIT.authMech}" client="%X{AUDIT.client}" method="%X{AUDIT.method}" requestUri="%X{AUDIT.requestUri}" responseCode="%X{AUDIT.responseCode}" responder="%X{AUDIT.responder}" engineHostname="%X{AUDIT.host}" %n</pattern>
+                <pattern>%d{ISO8601} exchangeId="%X{exchangeId}" trackingId="%X{AUDIT.trackingId}" subject="%X{AUDIT.subject}" authMech="%X{AUDIT.authMech}" client="%X{AUDIT.client}" method="%X{AUDIT.method}" requestUri="%X{AUDIT.requestUri}" responseCode="%X{AUDIT.responseCode}" responder="%X{AUDIT.responder}" engineHostname="%X{AUDIT.host}" %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -510,10 +469,12 @@
 
         <!-- API Audit log : HAR format file
 
-        To enable: 1) Uncomment the ApiAuditLog-HarFile element below
+        To enable:
+          1) Uncomment the ApiAuditLog-HarFile element below
           2) Uncomment the reference to 'ApiAuditLog-HarFile' for the 'apiaudit' Logger (in the 'Loggers' section)
 
-        Notes: 1) With the below settings, this will log all requests/responses that the Administrator API receives (client)
+        Notes:
+          1) With the below settings, this will log all requests/responses that the Administrator API receives (client)
           2) Additional settings and details can be found in the PingAccess online documentation
         -->
 
@@ -570,46 +531,28 @@
             </JSONLayout>
         </Console>
 
+
         <!-- Engine auditing file logging configuration-->
         <!-- Additional Engine Audit values available:-->
-        <!-- | %X{AUDIT.failedRuleClass
-}-->
-        <!-- | %X{AUDIT.failedRuleSetName
-}-->
-        <!-- | %X{AUDIT.host
-}-->
-        <!-- | %X{AUDIT.targetHost
-}-->
-        <!-- | %X{AUDIT.reqReceivedMillisec
-}-->
-        <!-- | %X{AUDIT.reqSentMillisec
-}-->
-        <!-- | %X{AUDIT.respReceivedMillisec
-}-->
-        <!-- | %X{AUDIT.respSentMillisec
-}-->
-        <!-- | %X{AUDIT.applicationId
-}-->
-        <!-- | %X{AUDIT.resourceId
-}-->
-        <!-- | %X{AUDIT.scopes
-}-->
-        <!-- | %X{AUDIT.siteUnavailableInfo
-}-->
-        <!-- | %X{AUDIT.clientCertIssuerDn
-}-->
-        <!-- | %X{AUDIT.clientCertSubjectDn
-}-->
-        <!-- | %X{AUDIT.clientCertSerialNum
-}-->
-        <!-- | %appResponseHeader{a-header-name
-}-->
-        <!-- | %clientResponseHeader{a-header-name
-}-->
-        <!-- | %appRequestHeader{a-header-name
-}-->
-        <!-- | %clientRequestHeader{a-header-name
-}-->
+        <!-- | %X{AUDIT.failedRuleClass}-->
+        <!-- | %X{AUDIT.failedRuleSetName}-->
+        <!-- | %X{AUDIT.host}-->
+        <!-- | %X{AUDIT.targetHost}-->
+        <!-- | %X{AUDIT.reqReceivedMillisec}-->
+        <!-- | %X{AUDIT.reqSentMillisec}-->
+        <!-- | %X{AUDIT.respReceivedMillisec}-->
+        <!-- | %X{AUDIT.respSentMillisec}-->
+        <!-- | %X{AUDIT.applicationId}-->
+        <!-- | %X{AUDIT.resourceId}-->
+        <!-- | %X{AUDIT.scopes}-->
+        <!-- | %X{AUDIT.siteUnavailableInfo}-->
+        <!-- | %X{AUDIT.clientCertIssuerDn}-->
+        <!-- | %X{AUDIT.clientCertSubjectDn}-->
+        <!-- | %X{AUDIT.clientCertSerialNum}-->
+        <!-- | %appResponseHeader{a-header-name}-->
+        <!-- | %clientResponseHeader{a-header-name}-->
+        <!-- | %appRequestHeader{a-header-name}-->
+        <!-- | %clientRequestHeader{a-header-name}-->
         <RollingFile name="EngineAuditLog-File"
                      fileName="${sys:pa.home}/log/pingaccess_engine_audit.log"
                      filePattern="${sys:pa.home}/log/pingaccess_engine_audit.log.%i"
@@ -619,24 +562,7 @@
                 <!--
                 <charset>UTF-8</charset>
                 -->
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.proxyRoundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.subject
-}| %X{AUDIT.authMech
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.failedRuleType
-}| %X{AUDIT.failedRuleName
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -668,7 +594,8 @@
 
         <!-- Engine Audit log : JDBC appender template for Oracle
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'EngineAuditLog-Database-Failover' for the 'engineaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the Oracle JDBC driver JAR file is in the /lib directory
@@ -704,24 +631,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_engine_audit_oracle_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.proxyRoundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.subject
-}| %X{AUDIT.authMech
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.failedRuleType
-}| %X{AUDIT.failedRuleName
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -736,7 +646,8 @@
 
         <!-- Engine Audit log : JDBC appender template for Microsoft SQL Server
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'EngineAuditLog-SQLServer-Database-Failover' for the 'engineaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the SQL Server JDBC driver JAR file is in the /lib directory
@@ -772,24 +683,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_engine_audit_sqlserver_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.proxyRoundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.subject
-}| %X{AUDIT.authMech
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.failedRuleType
-}| %X{AUDIT.failedRuleName
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -804,7 +698,8 @@
 
         <!-- Engine Audit log : JDBC appender template for PostgreSQL
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'EngineAuditLog-PostgreSQL' for the 'engineaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the PostgreSQL JDBC driver JAR file is in the /lib directory
@@ -840,24 +735,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_engine_audit_postgresql_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.proxyRoundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.subject
-}| %X{AUDIT.authMech
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.failedRuleType
-}| %X{AUDIT.failedRuleName
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -897,10 +775,12 @@
 
         <!-- Engine Audit log : HAR format file
 
-        To enable: 1) Uncomment the EngineAuditLog-HarFile element below
+        To enable:
+          1) Uncomment the EngineAuditLog-HarFile element below
           2) Uncomment the reference to 'EngineAuditLog-HarFile' for the 'engineaudit' Logger (in the 'Loggers' section)
 
-        Notes: 1) With the below settings, this will log all requests/responses with a 5XX response code that the engine receives (client) and sends (app)
+        Notes:
+          1) With the below settings, this will log all requests/responses with a 5XX response code that the engine receives (client) and sends (app)
           2) Additional settings and details can be found in the PingAccess online documentation
         -->
         <!--
@@ -922,46 +802,29 @@
 
         <!-- Agent auditing file logging configuration-->
         <!-- Additional Agent Audit values available:-->
-        <!-- | %X{AUDIT.failedRuleClass
-}-->
-        <!-- | %X{AUDIT.failedRuleSetName
-}-->
-        <!-- | %X{AUDIT.host
-}-->
-        <!-- | %X{AUDIT.roundTripMS
-}-->
-        <!-- | %X{AUDIT.reqReceivedMillisec
-}-->
-        <!-- | %X{AUDIT.respSentMillisec
-}-->
-        <!-- | %X{AUDIT.applicationId
-}-->
-        <!-- | %X{AUDIT.resourceId
-}-->
-        <!-- | %X{AUDIT.scopes
-}-->
-        <!-- | %X{AUDIT.agentName
-}-->
-        <!-- | %appResponseHeader{a-header-name
-}-->
-        <!-- | %clientResponseHeader{a-header-name
-}-->
-        <!-- | %appRequestHeader{a-header-name
-}-->
-        <!-- | %clientRequestHeader{a-header-name
-}-->
+        <!-- | %X{AUDIT.failedRuleClass}-->
+        <!-- | %X{AUDIT.failedRuleSetName}-->
+        <!-- | %X{AUDIT.host}-->
+        <!-- | %X{AUDIT.roundTripMS}-->
+        <!-- | %X{AUDIT.reqReceivedMillisec}-->
+        <!-- | %X{AUDIT.respSentMillisec}-->
+        <!-- | %X{AUDIT.applicationId}-->
+        <!-- | %X{AUDIT.resourceId}-->
+        <!-- | %X{AUDIT.scopes}-->
+        <!-- | %X{AUDIT.agentName}-->
+        <!-- | %appResponseHeader{a-header-name}-->
+        <!-- | %clientResponseHeader{a-header-name}-->
+        <!-- | %appRequestHeader{a-header-name}-->
+        <!-- | %clientRequestHeader{a-header-name}-->
         <!-- The agent{} pattern matches data sent from an Agent via the 'vnd-pi-agent' header. The following well-known
              keys are available:
                 h - The hostname where the Agent resides
                 t - The type of Agent and/or the type of platform where the Agent resides
                 v - The version of the Agent making the request
         -->
-        <!-- | %agent{h
-}-->
-        <!-- | %agent{t
-}-->
-        <!-- | %agent{v
-}-->
+        <!-- | %agent{h}-->
+        <!-- | %agent{t}-->
+        <!-- | %agent{v}-->
         <RollingFile name="AgentAuditLog-File"
                      fileName="${sys:pa.home}/log/pingaccess_agent_audit.log"
                      filePattern="${sys:pa.home}/log/pingaccess_agent_audit.log.%i"
@@ -971,19 +834,7 @@
                 <!--
                 <charset>UTF-8</charset>
                 -->
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -1010,7 +861,8 @@
 
         <!-- Agent Audit log : JDBC appender template for Oracle
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'AgentAuditLog-Database-Failover' for the 'agentaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the Oracle JDBC driver JAR file is in the /lib directory
@@ -1040,19 +892,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_agent_audit_oracle_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -1067,7 +907,8 @@
 
         <!-- Agent Audit log : JDBC appender template for Microsoft SQL Server
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'AgentAuditLog-SQLServer-Database-Failover' for the 'agentaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the SQL Server JDBC driver JAR file is in the /lib directory
@@ -1097,19 +938,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_agent_audit_sqlserver_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -1124,7 +953,8 @@
 
         <!-- Agent Audit log : JDBC appender template for PostgreSQL
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'AgentAuditLog-PostgreSQL' for the 'agentaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the PostgreSQL JDBC driver JAR file is in the /lib directory
@@ -1154,19 +984,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_agent_audit_postgresql_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -1206,10 +1024,12 @@
 
         <!-- Agent Audit log : HAR format file
 
-        To enable: 1) Uncomment the AgentAuditLog-HarFile element below
+        To enable:
+          1) Uncomment the AgentAuditLog-HarFile element below
           2) Uncomment the reference to 'AgentAuditLog-HarFile' for the 'agentaudit' Logger (in the 'Loggers' section)
 
-        Notes: 1) With the below settings, this will log all agent requests/responses with a 5XX response code that are received (client) and sent (app)
+        Notes:
+          1) With the below settings, this will log all agent requests/responses with a 5XX response code that are received (client) and sent (app)
           2) Additional settings and details can be found in the PingAccess online documentation
           3) The app request is the request that has been modified by identity mappings and rules
           4) The app response is the initial response generated by PA when access is allowed; this may not be useful for debugging
@@ -1233,30 +1053,18 @@
 
         <!-- Sideband Client auditing file logging configuration-->
         <!-- Additional Sideband Client Audit values available:-->
-        <!-- | %X{AUDIT.failedRuleClass
-}-->
-        <!-- | %X{AUDIT.failedRuleSetName
-}-->
-        <!-- | %X{AUDIT.host
-}-->
-        <!-- | %X{AUDIT.roundTripMS
-}-->
-        <!-- | %X{AUDIT.reqReceivedMillisec
-}-->
-        <!-- | %X{AUDIT.respSentMillisec
-}-->
-        <!-- | %X{AUDIT.sidebandName
-}-->
-        <!-- | %X{AUDIT.sidebandDecision
-}-->
-        <!-- | %appResponseHeader{a-header-name
-}-->
-        <!-- | %clientResponseHeader{a-header-name
-}-->
-        <!-- | %appRequestHeader{a-header-name
-}-->
-        <!-- | %clientRequestHeader{a-header-name
-}-->
+        <!-- | %X{AUDIT.failedRuleClass}-->
+        <!-- | %X{AUDIT.failedRuleSetName}-->
+        <!-- | %X{AUDIT.host}-->
+        <!-- | %X{AUDIT.roundTripMS}-->
+        <!-- | %X{AUDIT.reqReceivedMillisec}-->
+        <!-- | %X{AUDIT.respSentMillisec}-->
+        <!-- | %X{AUDIT.sidebandName}-->
+        <!-- | %X{AUDIT.sidebandDecision}-->
+        <!-- | %appResponseHeader{a-header-name}-->
+        <!-- | %clientResponseHeader{a-header-name}-->
+        <!-- | %appRequestHeader{a-header-name}-->
+        <!-- | %clientRequestHeader{a-header-name}-->
         <RollingFile name="SidebandClientAuditLog-File"
                      fileName="${sys:pa.home}/log/pingaccess_sideband_client_audit.log"
                      filePattern="${sys:pa.home}/log/pingaccess_sideband_client_audit.log.%i"
@@ -1266,17 +1074,7 @@
                 <!--
                 <charset>UTF-8</charset>
                 -->
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.sidebandName
-}| %X{AUDIT.sidebandDecision
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.sidebandName}| %X{AUDIT.sidebandDecision} %n</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -1301,7 +1099,8 @@
 
         <!-- Sideband Client Audit log : JDBC appender template for Oracle
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'SidebandClientAuditLog-Database-Failover' for the 'sidebandclientaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the Oracle JDBC driver JAR file is in the /lib directory
@@ -1329,17 +1128,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_sideband_client_audit_oracle_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.sidebandName
-}| %X{AUDIT.sidebandDecision
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.sidebandName}| %X{AUDIT.sidebandDecision} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -1354,7 +1143,8 @@
 
         <!-- SidebandClient Audit log : JDBC appender template for Microsoft SQL Server
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'SidebandClientAuditLog-SQLServer-Database-Failover' for the 'sidebandclientaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the SQL Server JDBC driver JAR file is in the /lib directory
@@ -1382,17 +1172,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_sideband_client_audit_sqlserver_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.sidebandName
-}| %X{AUDIT.sidebandDecision
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.sidebandName}| %X{AUDIT.sidebandDecision} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -1407,7 +1187,8 @@
 
         <!-- SidebandClient Audit log : JDBC appender template for PostgreSQL
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'SidebandClientAuditLog-PostgreSQL' for the 'sidebandclientaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the PostgreSQL JDBC driver JAR file is in the /lib directory
@@ -1435,17 +1216,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_sideband_client_audit_postgresql_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.sidebandName
-}| %X{AUDIT.sidebandDecision
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.sidebandName}| %X{AUDIT.sidebandDecision} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -1485,10 +1256,12 @@
 
         <!-- SidebandClient Audit log : HAR format file
 
-        To enable: 1) Uncomment the SidebandClientAuditLog-HarFile element below
+        To enable:
+          1) Uncomment the SidebandClientAuditLog-HarFile element below
           2) Uncomment the reference to 'SidebandClientAuditLog-HarFile' for the 'sidebandclientaudit' Logger (in the 'Loggers' section)
 
-        Notes: 1) With the below settings, this will log all requests/responses directly from the sideband client with a 5XX response code that are received (client) and sent (app)
+        Notes:
+          1) With the below settings, this will log all requests/responses directly from the sideband client with a 5XX response code that are received (client) and sent (app)
           2) Additional settings and details can be found in the PingAccess online documentation
           3) The app request is the request that has been modified by identity mappings and rules
           4) The app response is the initial response generated by PA when access is allowed; this may not be useful for debugging
@@ -1512,34 +1285,20 @@
 
         <!-- Sideband auditing file logging configuration-->
         <!-- Additional Sideband Audit values available:-->
-        <!-- | %X{AUDIT.failedRuleClass
-}-->
-        <!-- | %X{AUDIT.failedRuleSetName
-}-->
-        <!-- | %X{AUDIT.host
-}-->
-        <!-- | %X{AUDIT.roundTripMS
-}-->
-        <!-- | %X{AUDIT.reqReceivedMillisec
-}-->
-        <!-- | %X{AUDIT.respSentMillisec
-}-->
-        <!-- | %X{AUDIT.applicationId
-}-->
-        <!-- | %X{AUDIT.resourceId
-}-->
-        <!-- | %X{AUDIT.scopes
-}-->
-        <!-- | %X{AUDIT.sidebandName
-}-->
-        <!-- | %appResponseHeader{a-header-name
-}-->
-        <!-- | %clientResponseHeader{a-header-name
-}-->
-        <!-- | %appRequestHeader{a-header-name
-}-->
-        <!-- | %clientRequestHeader{a-header-name
-}-->
+        <!-- | %X{AUDIT.failedRuleClass}-->
+        <!-- | %X{AUDIT.failedRuleSetName}-->
+        <!-- | %X{AUDIT.host}-->
+        <!-- | %X{AUDIT.roundTripMS}-->
+        <!-- | %X{AUDIT.reqReceivedMillisec}-->
+        <!-- | %X{AUDIT.respSentMillisec}-->
+        <!-- | %X{AUDIT.applicationId}-->
+        <!-- | %X{AUDIT.resourceId}-->
+        <!-- | %X{AUDIT.scopes}-->
+        <!-- | %X{AUDIT.sidebandName}-->
+        <!-- | %appResponseHeader{a-header-name}-->
+        <!-- | %clientResponseHeader{a-header-name}-->
+        <!-- | %appRequestHeader{a-header-name}-->
+        <!-- | %clientRequestHeader{a-header-name}-->
         <RollingFile name="SidebandAuditLog-File"
                      fileName="${sys:pa.home}/log/pingaccess_sideband_audit.log"
                      filePattern="${sys:pa.home}/log/pingaccess_sideband_audit.log.%i"
@@ -1549,20 +1308,7 @@
                 <!--
                 <charset>UTF-8</charset>
                 -->
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-}| %X{AUDIT.sidebandName
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix}| %X{AUDIT.sidebandName} %n</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -1590,7 +1336,8 @@
 
         <!-- Sideband Audit log : JDBC appender template for Oracle
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'SidebandAuditLog-Database-Failover' for the 'sidebandaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the Oracle JDBC driver JAR file is in the /lib directory
@@ -1621,20 +1368,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_sideband_audit_oracle_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-}| %X{AUDIT.sidebandName
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix}| %X{AUDIT.sidebandName} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -1649,7 +1383,8 @@
 
         <!-- Sideband Audit log : JDBC appender template for Microsoft SQL Server
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'SidebandAuditLog-SQLServer-Database-Failover' for the 'sidebandaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the SQL Server JDBC driver JAR file is in the /lib directory
@@ -1680,20 +1415,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_sideband_audit_sqlserver_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-}| %X{AUDIT.sidebandName
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix}| %X{AUDIT.sidebandName} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -1708,7 +1430,8 @@
 
         <!-- Sideband Audit log : JDBC appender template for PostgreSQL
 
-        To enable: 1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
+        To enable:
+          1) Uncomment the PingAccessJDBC, RollingFile and PingAccessFailover elements below
           2) Uncomment the reference to 'SidebandAuditLog-PostgreSQL' for the 'sidebandaudit' Logger (in the 'Loggers' section)
           3) Ensure that the 'log4j2.db.properties' file is populated with valid values
           4) Ensure that the PostgreSQL JDBC driver JAR file is in the /lib directory
@@ -1739,20 +1462,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess_sideband_audit_postgresql_failover.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ISO8601
-}| %X{exchangeId
-}| %X{AUDIT.trackingId
-}| %X{AUDIT.roundTripMS
-} ms| %X{AUDIT.resource
-}| %X{AUDIT.client
-}| %X{AUDIT.method
-}| %X{AUDIT.requestUri
-}| %X{AUDIT.responseCode
-}| %X{AUDIT.applicationName
-}| %X{AUDIT.resourceName
-}| %X{AUDIT.pathPrefix
-}| %X{AUDIT.sidebandName
-} %n</pattern>
+                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix}| %X{AUDIT.sidebandName} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -1792,10 +1502,12 @@
 
         <!-- Sideband Audit log : HAR format file
 
-        To enable: 1) Uncomment the SidebandAuditLog-HarFile element below
+        To enable:
+          1) Uncomment the SidebandAuditLog-HarFile element below
           2) Uncomment the reference to 'SidebandAuditLog-HarFile' for the 'sidebandaudit' Logger (in the 'Loggers' section)
 
-        Notes: 1) With the below settings, this will log all requests/responses captured by the Sideband API data with a 5XX response code that are received (client) and sent (app)
+        Notes:
+          1) With the below settings, this will log all requests/responses captured by the Sideband API data with a 5XX response code that are received (client) and sent (app)
           2) Additional settings and details can be found in the PingAccess online documentation
           3) The app request is the request that has been modified by identity mappings and rules
           4) The app response is the initial response generated by PA when access is allowed; this may not be useful for debugging
