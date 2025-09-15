@@ -22,10 +22,10 @@ ingress-nginx-public:
         imagePullPolicy: Always
         resources:
           limits:
-            cpu: 1500m
+            cpu: 2
             memory: 1Gi
           requests:
-            cpu: 1200m
+            cpu: 2
             memory: 500Mi
         securityContext:
           allowPrivilegeEscalation: false
@@ -43,6 +43,8 @@ ingress-nginx-public:
             value: ${REGION}
           - name: ENVIRONMENT_PREFIX
             value: ${ENVIRONMENT_PREFIX}
+          - name: SIGSCI_MAX_PROCS
+            value: "100%"
         volumeMounts:
           - mountPath: /var/run/
             name: sigsci-socket
