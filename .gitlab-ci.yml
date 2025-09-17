@@ -162,7 +162,7 @@ pa-was-integration-tests:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests-sequential pingaccess-was
+    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests-sequential.sh pingaccess-was
   dependencies:
     - find-cluster
 
