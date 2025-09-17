@@ -39,6 +39,14 @@ setUp() {
     git clone -b "${branch_name}" codecommit://${CSR_NAME}
     cd "${CSR_TEMP_PATH}/k8s-configs"
     ./seal.sh
+
+    # Copy the generated files from /tmp/ to our test temp directory
+    if [[ -f "/tmp/ping-secrets.yaml" ]]; then
+        cp "/tmp/ping-secrets.yaml" "${TEMP_DIR}/ping-secrets.yaml"
+    fi
+    if [[ -f "/tmp/sealed-secrets.yaml" ]]; then
+        cp "/tmp/sealed-secrets.yaml" "${TEMP_DIR}/sealed-secrets.yaml"
+    fi
 }
 
 # Test that the counts match of the secrets sealed vs the secrets which weren't sealed previously
