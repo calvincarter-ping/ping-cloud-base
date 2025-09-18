@@ -15,9 +15,8 @@ fi
 CSR_NAME=${CLUSTER_STATE_REPO_URL##*\/}
 
 setUp() {
-    # Create unique temporary directory for this test instance
-    TEMP_DIR=$(mktemp -d -t test-csr-XXXXXX)
-    CSR_TEMP_PATH="${TEMP_DIR}/${CSR_NAME}"
+    # Remove CSR if it exists, moved from tearDown as pwd errors were occurring
+    rm -rf /tmp/${CSR_NAME}
 
     # NOTE: copy of logic from k8s-deploy-tools/ci-scripts/k8s-deploy/deploy.sh
     local branch_name=""
@@ -35,35 +34,27 @@ setUp() {
     export PCB_PATH=${PROJECT_DIR:-$CI_PROJECT_DIR}
     ###################################################################
 
-    cd "${TEMP_DIR}" || exit 1
+    cd /tmp || exit 1
     git clone -b "${branch_name}" codecommit://${CSR_NAME}
-    cd "${CSR_TEMP_PATH}/k8s-configs"
+    cd /tmp/${CSR_NAME}/k8s-configs
     ./seal.sh
-
-    # Copy the generated files from /tmp/ to our test temp directory
-    if [[ -f "/tmp/ping-secrets.yaml" ]]; then
-        cp "/tmp/ping-secrets.yaml" "${TEMP_DIR}/ping-secrets.yaml"
-    fi
-    if [[ -f "/tmp/sealed-secrets.yaml" ]]; then
-        cp "/tmp/sealed-secrets.yaml" "${TEMP_DIR}/sealed-secrets.yaml"
-    fi
 }
 
 # Test that the counts match of the secrets sealed vs the secrets which weren't sealed previously
 test_seal_secret_count_match() {
-    num_secrets=$(grep -c "kind: Secret" "${TEMP_DIR}/ping-secrets.yaml")
-    num_sealed_secrets=$(grep -c "kind: SealedSecret" "${TEMP_DIR}/sealed-secrets.yaml")
+    num_secrets=$(grep -c "kind: Secret" /tmp/ping-secrets.yaml)
+    num_sealed_secrets=$(grep -c "kind: SealedSecret" /tmp/sealed-secrets.yaml)
     assertEquals "Checking secret and sealed secret counts match" "${num_secrets}" "${num_sealed_secrets}"
 }
 
 # Test that there are no unexpected secrets in the uber yaml output
 test_no_secret_in_uber_yaml() {
     # Copy the sealed secrets into the cluster-state-repo directory
-    cp "${TEMP_DIR}/ping-secrets.yaml" base/secrets.yaml
-    cp "${TEMP_DIR}/sealed-secrets.yaml" base/sealed-secrets.yaml
+    cp /tmp/ping-secrets.yaml base/secrets.yaml
+    cp /tmp/sealed-secrets.yaml base/sealed-secrets.yaml
 
     # Re-run uber yaml output as seal.sh does not save its output
-    local uber_yaml_output="${TEMP_DIR}/test-uber-output.yaml"
+    local uber_yaml_output="/tmp/test-uber-output.yaml"
 
     echo "Generating uber yaml..."
     ./git-ops-command.sh ${REGION} > ${uber_yaml_output}
