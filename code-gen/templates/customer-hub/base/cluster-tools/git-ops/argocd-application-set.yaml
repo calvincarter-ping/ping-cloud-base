@@ -115,3 +115,5 @@ spec:
       syncPolicy:
         automated:
           prune: true
+        syncOptions:
+          - RespectIgnoreDifferences=true  # Argo CD will not apply Git changes to the fields marked under ignoreDifferences..
