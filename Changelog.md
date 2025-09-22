@@ -26,7 +26,6 @@
 - Update to use aws-for-fluent-bit:2.31.7 and refactor pipeline config
 - Updated TestBootstrapImage func to get os-bootstrap initContainer Image 
 
-
 _Changes:_
 
 - [X] PDO-7325 JSON Logging: Implement JSON logging for PF logs
@@ -57,6 +56,13 @@ _Changes:_
 - [X] PDO-10087 Prevent customer changes to environment during upgrades via maintenance page
 - [X] PDO-10166 FluentBit - Use aws-for-fluent-bit image and consolidate all the pipelines
 
+### 2.1.2
+
+- Integrate PingDirectory service with external DNS by setting its policy to sync.
+
+_Changes:_
+
+- [X] PDO-8907 Integrate PingDirectory service with external DNS by setting its policy to sync
 
 ### 2.1.1
 
