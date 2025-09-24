@@ -160,8 +160,8 @@
 #                                          | AWS S3 buckets, it must be an S3 URL, e.g.         |
 #                                          | s3://logs.                                         |
 #                                          |                                                    |
-# PD_MONITOR_BUCKET_URL                    | The URL of the monitor,ldif exports and csd-log    | The string "unused"
-#                                          | archives.If provided, logs are periodically        |
+# PD_MONITOR_BUCKET_URL                    | The URL of the monitor,ldif exports and csd-log    | 
+#                                          | archives.If provided, logs are periodically        | The string "unused"
 #                                          | captured and sent to this URL. Used only for       |
 #                                          | PingDirectory at the moment                        |
 #                                          |                                                    |
@@ -317,7 +317,6 @@
 # UPGRADE                                  | Indicates generate-cluster-state.sh is running as  | The string "false"
 #                                          | an upgrade not an initial generation               |
 #                                          |                                                    |
-# ---------------------------------------------------------------------------------------------------------------------------------------------------
 ######################################################################################################################################################
 
 #### SCRIPT START ####
@@ -1086,7 +1085,7 @@ echo "Using CUSTOMER_SSM_PATH_PREFIX: ${CUSTOMER_SSM_PATH_PREFIX}"
 echo "Using SELF_SERVICE_SSM_PATH_PREFIX: ${SELF_SERVICE_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_TLS_SSM_PATH_PREFIX: ${CUSTOMER_TLS_SSM_PATH_PREFIX}"
-echo "Using CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX: ${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX}
+echo "Using CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX: ${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX}"
 echo "Using SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"
 echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
