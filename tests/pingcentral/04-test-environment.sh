@@ -1,0 +1,73 @@
+#!/bin/bash
+
+CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
+. "${CI_SCRIPTS_DIR}"/common.sh "${1}"
+
+
+if skipTest "${0}"; then
+  log "Skipping test ${0}"
+  exit 0
+fi
+
+oneTimeSetUp() {
+  ENVIRONMENT_URL="https://pingcentral.${TENANT_DOMAIN}/api/v1/environments"
+  ENVIRONMENT_NAME="P1AS_default_environment_${ENV}"
+  PINGCENTRAL_ENVIRONMENT_VARIABLES_CONFIGMAP=$(kubectl get configmap pingcentral-environment-variables -n ping-cloud -o json)
+  PINGCENTRAL_PASSWORDS_SECRET=$(kubectl get secret pingcentral-passwords -n ping-cloud -o json)
+  PC_ADMIN_USER_USERNAME=$(echo "${PINGCENTRAL_ENVIRONMENT_VARIABLES_CONFIGMAP}" | jq -r '.data.PC_ADMIN_USER_USERNAME')
+  PC_ADMIN_USER_PASSWORD=$(echo "${PINGCENTRAL_PASSWORDS_SECRET}" | jq -r '.data.PC_ADMIN_USER_PASSWORD | @base64d')
+  ENVIRONMENT=$(get_environment "${ENVIRONMENT_NAME}")
+}
+
+# get environment json from pingcentral
+get_environment() {
+  local name="$1"
+
+  response=$(curl -k -u "${PC_ADMIN_USER_USERNAME}:${PC_ADMIN_USER_PASSWORD}" -H 'X-XSRF-Header: PASS' "${ENVIRONMENT_URL}")
+  curl_status=$?
+  if [ ${curl_status} -ne 0 ]; then
+    fail "Failed to connect to PingCentral API at ${ENVIRONMENT_URL}"
+  fi
+  if ! echo "${response}" | jq empty; then
+    fail "Failed to parse response from PingCentral API as JSON. Response: ${response}"
+  fi
+
+  environment_json=$(echo "${response}" | jq --arg name "$name" '.items[] | select(.name==$name)')
+
+  if [ -z "${environment_json}" ]; then
+    fail "PingCentral environment ${name} not found"
+  else
+    echo "${environment_json}"
+    return 0
+  fi
+}
+
+
+testEnvironmentExists() {
+  if [ -z "${ENVIRONMENT}" ] || ! echo "${ENVIRONMENT}" | jq empty; then
+    fail "PingCentral environment '${ENVIRONMENT_NAME}' does not exist or is not valid JSON"
+  fi
+
+  environment_name=$(echo "${ENVIRONMENT}" | jq -r '.name // empty')
+  if [ -z "${environment_name}" ]; then
+    fail "PingCentral environment '${ENVIRONMENT_NAME}' does not exist"
+  fi
+
+  assertEquals "PingCentral environment '${ENVIRONMENT_NAME}' does not exist" "${ENVIRONMENT_NAME}" "${environment_name}"
+}
+
+testEnvironmentAvailable() {
+  environment_availability=$(echo "${ENVIRONMENT}" | jq -r '.environmentAvailability')
+
+  assertEquals "PingCentral environment availability is '${environment_availability}', and not 'ONLINE'" "ONLINE" "${environment_availability}"
+}
+
+testPFAuthenticationTypeIsOAuth2() {
+  pf_authentication_type=$(echo "${ENVIRONMENT}" | jq -r '.pfAuthenticationType')
+
+  assertEquals "PingFederate authentication type is '${pf_authentication_type}', and not OAuth2" "OAuth2" "${pf_authentication_type}"
+}
+
+shift $#
+
+. ${SHUNIT_PATH}
