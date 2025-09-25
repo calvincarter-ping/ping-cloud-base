@@ -195,10 +195,11 @@
 # CUSTOMER_SSO_SSM_PATH_PREFIX             | The prefix of an SSM path that contains PingOne    | ${CUSTOMER_SSM_PATH_PREFIX}/sso
 #                                          | state data required for the P14C/P1AS integration. |
 #                                          |                                                    |
-# CUSTOMER_TLS_SSM_PATH_PREFIX             | The prefix of a Secrets Manager path that contains | ${CUSTOMER_SSM_PATH_PREFIX}/tls
-#                                          | TLS state data.                                    |
+# CUSTOMER_TLS_SSM_PATH_PREFIX             | The prefix of a SSM path that contains TLS state   | ${CUSTOMER_SSM_PATH_PREFIX}/tls
+#                                          | data.                                              |
 #                                          |                                                    |
-# CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX   | The prefix of a Secrets Manager path that contains | ${CUSTOMER_SSM_PATH_PREFIX}/tls
+# CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX   | The prefix of a SSM path that contains ip-allowlist| ${CUSTOMER_SSM_PATH_PREFIX}/ip-allowlist
+#                                          | for ingresses and vhost                            |
 #                                          |                                                    |
 # PF_PROVISIONING_ENABLED                  | Feature Flag - Indicates if the outbound           | False
 #                                          | provisioning feature for PingFederate is enabled   |
