@@ -345,6 +345,9 @@ spec:
         - secretRef:
             name: newrelic-license-key
             optional: false
+        - secretRef:
+            name: pingaccess-passwords
+            optional: false
       securityContext:
         fsGroup: 9999
       volumes:
