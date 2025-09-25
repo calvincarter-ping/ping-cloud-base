@@ -25,10 +25,12 @@
 - Add self-service annotations and labels to ingresses
 - Update to use aws-for-fluent-bit:2.31.7 and refactor pipeline config
 - Updated TestBootstrapImage func to get os-bootstrap initContainer Image 
+- Grafana monorepo cleanup
 
 
 _Changes:_
 
+- [X] PDO-5948 Grafana: p1as-observability PCB monorepo cleanup
 - [X] PDO-7325 JSON Logging: Implement JSON logging for PF logs
 - [X] PDO-7817 Explicitly set Lets Encrypt configuration via cert-manager
 - [X] PDO-8754 OSD: Enable Save Query and CSV Export of Logs
