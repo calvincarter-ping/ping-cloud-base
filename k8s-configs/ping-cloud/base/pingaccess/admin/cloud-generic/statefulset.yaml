@@ -321,16 +321,12 @@ spec:
           value: CLUSTERED_CONSOLE
         - name: HTTPS_PORT
           value: "9090"
-        - name: OLD_PA_ADMIN_USER_PASSWORD
+        - name: PF_OIDC_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: pingaccess-passwords
-              key: OLD_PA_ADMIN_USER_PASSWORD
-        - name: PA_ADMIN_USER_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: pingaccess-passwords
-              key: PA_ADMIN_USER_PASSWORD
+              name: pingfederate-admin-p14c
+              key: PF_OIDC_CLIENT_SECRET
+              optional: true
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
