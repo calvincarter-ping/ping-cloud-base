@@ -17,76 +17,6 @@ metadata:
   namespace: prometheus
 $patch: delete
 ---
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: karpentercapacity
-  namespace: prometheus
-$patch: delete
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: karpenterperformance
-  namespace: prometheus
-$patch: delete
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: kubernetesapiserver
-  namespace: prometheus
-$patch: delete
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: kubernetesapiserverperfomance
-  namespace: prometheus
-$patch: delete
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: kubernetesclusterautoscaler
-  namespace: prometheus
-$patch: delete
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: kubernetesclusterstorage
-  namespace: prometheus
-$patch: delete
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: kubernetesstoragenamespace
-  namespace: prometheus
-$patch: delete
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: logging
-  namespace: prometheus
-$patch: delete
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: opensearch
-  namespace: prometheus
-$patch: delete
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: p1asingress
-  namespace: prometheus
-$patch: delete
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -94,9 +24,3 @@ metadata:
   namespace: prometheus
 $patch: delete
 ---
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: volume-autoscaler
-  namespace: prometheus
-$patch: delete
