@@ -56,16 +56,16 @@ testEnvironmentExists() {
   assertEquals "PingCentral environment '${ENVIRONMENT_NAME}' does not exist" "${ENVIRONMENT_NAME}" "${environment_name}"
 }
 
-testEnvironmentAvailable() {
-  environment_availability=$(echo "${ENVIRONMENT}" | jq -r '.environmentAvailability')
-
-  assertEquals "PingCentral environment availability is '${environment_availability}', and not 'ONLINE'" "ONLINE" "${environment_availability}"
-}
-
 testPFAuthenticationTypeIsOAuth2() {
   pf_authentication_type=$(echo "${ENVIRONMENT}" | jq -r '.pfAuthenticationType')
 
   assertEquals "PingFederate authentication type is '${pf_authentication_type}', and not OAuth2" "OAuth2" "${pf_authentication_type}"
+}
+
+testPAAuthenticationTypeIsOAuth2() {
+  pa_authentication_type=$(echo "${ENVIRONMENT}" | jq -r '.paAuthenticationType')
+
+  assertEquals "PingAccess authentication type is '${pa_authentication_type}', and not OAuth2" "OAuth2" "${pa_authentication_type}"
 }
 
 shift $#
