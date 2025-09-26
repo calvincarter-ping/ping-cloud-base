@@ -26,6 +26,7 @@
 - Add self-service annotations and labels to ingresses
 - Update to use aws-for-fluent-bit:2.31.7 and refactor pipeline config
 - Updated TestBootstrapImage func to get os-bootstrap initContainer Image 
+- Add PF and PC creds to PingAccess Admin for PingCentral OAuth2 connection
 
 
 _Changes:_
@@ -43,6 +44,7 @@ _Changes:_
 - [X] PDO-9414 Set initialDelaySeconds and failureThreshold on readiness probe for PingAccess and
 - [X] PDO-9455 Logstash: Revise Bootstrap Process to Directly Check Status of OpenSearch
 - [X] PDO-9533 Remove PA_LOG_LEVEL from log4j file
+- [X] PDO-9538 Configure PingCentral's PA Admin API connection to use OAuth2
 - [X] PDO-9576 Add pod-reaper enabled label to PingCentral
 - [X] PDO-9692 [FluentBit] Upgrade to version 3.2.10
 - [X] PDO-9950 [Opensearch] Upgrade to version 2.19.0
