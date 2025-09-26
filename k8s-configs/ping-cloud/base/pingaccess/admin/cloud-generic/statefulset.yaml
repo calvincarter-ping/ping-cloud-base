@@ -121,7 +121,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: perpetual-license
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:PDO-9538-pc-pa
         imagePullPolicy: Always
         command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
         env:
@@ -144,7 +144,7 @@ spec:
         - name: license-dir
           mountPath: /opt/license
       - name: pingaccess-upgrade
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:PDO-9538-pc-pa
         imagePullPolicy: Always
         command: ["/bin/sh"]
         args:
@@ -251,7 +251,7 @@ spec:
           - name: customer-issuer
             mountPath: /opt/sso/customer_issuer
       - name: pingaccess-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:PDO-9538-pc-pa
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
