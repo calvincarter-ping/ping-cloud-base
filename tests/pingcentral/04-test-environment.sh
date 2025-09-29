@@ -12,11 +12,18 @@ fi
 oneTimeSetUp() {
   ENVIRONMENT_URL="https://pingcentral.${TENANT_DOMAIN}/api/v1/environments"
   ENVIRONMENT_NAME="P1AS_default_environment_${ENV_TYPE}"
+  echo "ENVIRONMENT_URL: ${ENVIRONMENT_URL}"
+  echo "ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}"
   PINGCENTRAL_ENVIRONMENT_VARIABLES_CONFIGMAP=$(kubectl get configmap pingcentral-environment-variables -n ping-cloud -o json)
+  echo "PINGCENTRAL_ENVIRONMENT_VARIABLES_CONFIGMAP: ${PINGCENTRAL_ENVIRONMENT_VARIABLES_CONFIGMAP}"
   PINGCENTRAL_PASSWORDS_SECRET=$(kubectl get secret pingcentral-passwords -n ping-cloud -o json)
+  echo "PINGCENTRAL_PASSWORDS_SECRET: ${PINGCENTRAL_PASSWORDS_SECRET}"
   PC_ADMIN_USER_USERNAME=$(printf '%s\n' "${PINGCENTRAL_ENVIRONMENT_VARIABLES_CONFIGMAP}" | jq -r '.data.PC_ADMIN_USER_USERNAME')
+  echo "PC_ADMIN_USER_USERNAME: ${PC_ADMIN_USER_USERNAME}"
   PC_ADMIN_USER_PASSWORD=$(printf '%s\n' "${PINGCENTRAL_PASSWORDS_SECRET}" | jq -r '.data.PC_ADMIN_USER_PASSWORD | @base64d')
+  echo "PC_ADMIN_USER_PASSWORD: ${PC_ADMIN_USER_PASSWORD}"
   ENVIRONMENT=$(get_environment "${ENVIRONMENT_NAME}")
+  echo "ENVIRONMENT: ${ENVIRONMENT}"
 }
 
 # get environment json from pingcentral
