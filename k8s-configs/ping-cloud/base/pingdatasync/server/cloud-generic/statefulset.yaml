@@ -94,7 +94,7 @@ spec:
           - configMapRef:
               name: pingdatasync-environment-variables
       - name: perpetual-license
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync/dev:v2.1-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdatasync:pdo-10404-pingdatasync-10.3
         imagePullPolicy: Always
         command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
         env:
@@ -123,7 +123,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync/dev:v2.1-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdatasync:pdo-10404-pingdatasync-10.3
         imagePullPolicy: Always
         resources:
           limits:
