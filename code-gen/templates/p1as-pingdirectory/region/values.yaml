@@ -1,18 +1,10 @@
 pingdirectory:
   ####### Backup and Restore Variables #######
   backup:
-    # This is the environment variable to select the backend(s) to restore in PD
-    # Allowed values:appintegrations platformconfig userRoot userRoot_2 userRoot_3 userRoot_4 userRoot_5
-    # Separated with a semi-colon(;) Example: userRoot;userRoot_2
-    # No values set would just restore all backends in PD
-    backendsToBackup: "userRoot;appintegrations;platformconfig;userRoot_2;userRoot_3;userRoot_4;userRoot_5"
     backupRestorePod: "pingdirectory-0"
-    backupPVCSize: ""
   restore:
-    backendsToRestore: ""
     backupRestorePod: ""
     backupRestoreRegion: ""
-    backupFileName: ""
   ####### Manage Profile Configuration Flags #######
   manageProfile:
     skipValidationEnabled: "true"
