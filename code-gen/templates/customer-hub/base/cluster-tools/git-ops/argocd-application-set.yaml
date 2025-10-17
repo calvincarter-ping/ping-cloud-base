@@ -1,3 +1,6 @@
+# Replicating the current in-cluster 'Application', per CDE
+# NOTE: CSR branch must exactly match the cluster name for everything to connect properly, since the app set will
+# generate an Application per cluster
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
