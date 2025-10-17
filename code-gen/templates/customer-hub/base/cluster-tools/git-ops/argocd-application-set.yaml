@@ -1,6 +1,3 @@
-# Replicating the current in-cluster 'Application', per CDE
-# NOTE: CSR branch must exactly match the cluster name for everything to connect properly, since the app set will
-# generate an Application per cluster
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -28,6 +25,13 @@ spec:
         notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: "{{metadata.annotations.argocd-slack-channel}}"
     spec:
       ignoreDifferences:
+        # Ignore ingress allowlist annotations managed by the Self-Service API
+        - group: networking.k8s.io
+          kind: Ingress
+          jsonPointers:
+            - /metadata/annotations/nginx.ingress.kubernetes.io~1whitelist-source-range
+            - /metadata/annotations/allowlist.self-service~1names
+        # Ignore ephemeral TTL settings for Jobs
         - group: batch
           kind: Job
           jsonPointers:
@@ -102,6 +106,12 @@ spec:
       destination:
         server: "{{server}}"
       ignoreDifferences:
+        # Ignore ingress allowlist annotations managed dynamically
+        - group: networking.k8s.io
+          kind: Ingress
+          jsonPointers:
+            - /metadata/annotations/nginx.ingress.kubernetes.io~1whitelist-source-range
+            - /metadata/annotations/allowlist.self-service~1names
         - group: batch
           kind: Job
           jsonPointers:
