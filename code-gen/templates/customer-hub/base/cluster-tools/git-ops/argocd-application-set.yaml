@@ -33,7 +33,6 @@ spec:
           kind: Ingress
           jsonPointers:
             - /metadata/annotations/nginx.ingress.kubernetes.io~1whitelist-source-range
-            - /metadata/annotations/allowlist.self-service~1names
         # Ignore ephemeral TTL settings for Jobs
         - group: batch
           kind: Job
@@ -114,7 +113,6 @@ spec:
           kind: Ingress
           jsonPointers:
             - /metadata/annotations/nginx.ingress.kubernetes.io~1whitelist-source-range
-            - /metadata/annotations/allowlist.self-service~1names
         - group: batch
           kind: Job
           jsonPointers:
