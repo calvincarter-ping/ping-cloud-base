@@ -31,6 +31,7 @@ variables:
     pingaccess/08-artifact-test.sh
     pingdelegator/01-admin-user-login.sh
     ingress-nginx/01-test-ocsp-stapling.sh
+    ingress-nginx/04-test-pd-admin-ingress.sh
 
 ## Compile stage ##
 compile:
@@ -38,29 +39,18 @@ compile:
  tags:
    - default-gitlab-runner-ping-cloud
  image: ${K8S_DEPLOY_TOOLS}
- variables:
-   YAML_OUT_DIR: $CI_PROJECT_DIR/out
- before_script:
-   - mkdir -p $YAML_OUT_DIR
  script:
    - |
      ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
-     echo COMPILE_RESULT=$? >> compile.env
- artifacts:
-   paths:
-     - out/
-   expire_in: 1 day
-   reports:
-     dotenv: compile.env
 
 ## start security stage ##
 copy-images:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
   needs:
-    - compile
+    - deploy
   dependencies:
-    - compile
+    - deploy
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900"
@@ -80,9 +70,9 @@ check-ext-images:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
   needs:
-    - compile
+    - deploy
   dependencies:
-    - compile
+    - deploy
   variables:
     UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   script:
@@ -94,9 +84,9 @@ scan:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
   needs:
-    - compile
+    - deploy
   dependencies:
-    - compile
+    - deploy
   variables:
     GIT_STRATEGY: none
     UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
@@ -135,8 +125,15 @@ deploy:
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
+  variables:
+    YAML_OUT_DIR: $CI_PROJECT_DIR/out
+  before_script:
+    - mkdir -p $YAML_OUT_DIR
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
+  artifacts:
+    paths:
+      - out/
   dependencies:
     - find-cluster
 

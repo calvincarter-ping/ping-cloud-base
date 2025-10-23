@@ -199,6 +199,9 @@
 # CUSTOMER_TLS_SSM_PATH_PREFIX     | The prefix of a Secrets Manager path that contains | ${CUSTOMER_SSM_PATH_PREFIX}/tls
 #                                  | TLS state data.                                    |
 #                                  |                                                    |
+# CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX | The prefix of an SSM path that contains      | ${CUSTOMER_SSM_PATH_PREFIX}/ip-allowlist
+#                                  | IP Allowlist data.                                 |
+#                                  |                                                    |
 # PF_PROVISIONING_ENABLED          | Feature Flag - Indicates if the outbound           | False
 #                                  | provisioning feature for PingFederate is enabled   |
 #                                  | !! Not yet available for multi-region customers !! |
@@ -358,6 +361,7 @@ ${PLATFORM_EVENT_QUEUE_NAME}
 ${CUSTOMER_SSM_PATH_PREFIX}
 ${CUSTOMER_SSO_SSM_PATH_PREFIX}
 ${CUSTOMER_TLS_SSM_PATH_PREFIX}
+${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX}
 ${SELF_SERVICE_SSM_PATH_PREFIX}
 ${SERVICE_SSM_PATH_PREFIX}
 ${REGION}
@@ -600,6 +604,29 @@ set_ssh_key_pair() {
   fi
 }
 
+########################################################################################################################
+# Checks if the provided value is either "true" or an array.
+#
+# Arguments
+#   ${1} -> The value to check
+########################################################################################################################
+is_true_or_array() {
+  local var_name="${1}"
+  local var_value="${!1}"
+
+  if test "${var_value}" = "true"; then
+    return 0
+  else
+    local var_info=$(declare -p "${var_name}" 2>/dev/null)
+
+    if [[ "$var_info" =~ "declare -a" || "$var_info" =~ "declare -A" ]]; then
+      return 0
+    else
+      return 1
+    fi
+  fi
+}
+
 # Organizes the files from code-gen directory to a tmp directory for push-cluster-state script
 organize_code_for_csr() {
   # find all the apps under code-gen/templates directory
@@ -620,9 +647,9 @@ organize_code_for_csr() {
     echo ---
     echo "For app '${app_name}':"
     echo "Using CDE_DEPLOY: ${CDE_DEPLOY}"
-    echo "Using CHUB_DEPLOY:  ${CHUB_DEPLOY}"
+    echo "Using CHUB_DEPLOY:  ${CHUB_DEPLOY[@]}"
     echo "Using DEVELOPER_DEPLOY: ${DEVELOPER_DEPLOY}"
-    echo "Using PRIMARY_REGION_ONLY_DEPLOY: ${PRIMARY_REGION_ONLY_DEPLOY}"
+    echo "Using PRIMARY_REGION_ONLY_DEPLOY: ${PRIMARY_REGION_ONLY_DEPLOY[@]}"
     echo
 
     # exclude anything that shouldn't deploy to dev envs
@@ -631,7 +658,7 @@ organize_code_for_csr() {
     fi
 
     # Add the app directory to the tmp directory if the deploy env var aligns with the env env var
-    if { test "${ENV}" = "${CUSTOMER_HUB}" && test "${CHUB_DEPLOY}" = "true"; } || { test "${ENV}" != "${CUSTOMER_HUB}" && test "${CDE_DEPLOY}" = "true"; }; then
+    if { test "${ENV}" = "${CUSTOMER_HUB}" && is_true_or_array "CHUB_DEPLOY"; } || { test "${ENV}" != "${CUSTOMER_HUB}" && test "${CDE_DEPLOY}" = "true"; }; then
       local app_target_dir=${ENV_DIR}/${app_name}
       mkdir -p "${app_target_dir}"
 
@@ -639,21 +666,41 @@ organize_code_for_csr() {
       rsync -rR * --exclude config.sh "${app_target_dir}"
       cd - >/dev/null 2>&1
 
+      # Handle granular removal of non-chub apps from repo
+      if { test "${ENV}" == "${CUSTOMER_HUB}" && declare -p CHUB_DEPLOY 2>/dev/null | grep -q 'declare -a\|typeset -a'; }; then
+        # Get all helm chart entries in regional kustomization file
+        local chart_references=$(yq '.helmCharts[].name' "${app_target_dir}/region/kustomization.yaml")
+        for chart_name in ${chart_references}; do
+          # Check if chart_name exists in CHUB_DEPLOY variable (space-separated array)
+          if ! [[ " ${CHUB_DEPLOY[@]} " =~ " ${chart_name} " ]]; then
+            echo "Chart ${chart_name} is NOT set for CHUB_DEPLOY, removing reference in ${app_target_dir}/region/kustomization.yaml"
+            yq -i 'del(.helmCharts[] | select(.name == "'"${chart_name}"'"))' "${app_target_dir}/region/kustomization.yaml"
+            if [[ $? -ne 0 ]]; then
+              log "yq command failed while removing chart references for ${chart_name} in ${app_target_dir}/region/kustomization.yaml"
+              exit 1
+            fi
+          fi
+        done
+      fi
+
+      # Handle region deploy
       if { test "${REGION}" != "${PRIMARY_REGION}" && test "${PRIMARY_REGION_ONLY_DEPLOY}" = "true"; }; then
         # Remove the region directory if not primary region and PRIMARY_REGION_ONLY_DEPLOY is true.
         echo "Found PRIMARY_REGION_ONLY_DEPLOY set to True, removing ${app_target_dir}/region entirely"
         rm -rf "${app_target_dir}/region"
-      elif [[ -n "${PRIMARY_REGION_ONLY_DEPLOY}" && "${REGION}" != "${PRIMARY_REGION}" ]]; then
-        # If PRIMARY_REGION_ONLY_DEPLOY is an array, iterate through it and remove entries
-        for chart_name in "${PRIMARY_REGION_ONLY_DEPLOY[@]}"; do
-          echo "Found ${chart_name} in PRIMARY_REGION_ONLY_DEPLOY, removing reference in ${app_target_dir}/region/kustomization.yaml"
-          yq -i 'del(.helmCharts[] | select(.name == "'"${chart_name}"'"))' "${app_target_dir}/region/kustomization.yaml"
-          if [[ $? -ne 0 ]]; then
-            echo "yq command failed while removing chart references for ${chart_name} in ${app_target_dir}/region/kustomization.yaml"
-            exit 1
-          fi
-        done
       else
+        if { test "${REGION}" != "${PRIMARY_REGION}" && declare -p PRIMARY_REGION_ONLY_DEPLOY 2>/dev/null | grep -q 'declare -a\|typeset -a'; }; then
+          # If PRIMARY_REGION_ONLY_DEPLOY is an array, iterate through it and remove entries
+          for chart_name in "${PRIMARY_REGION_ONLY_DEPLOY[@]}"; do
+            echo "Chart ${chart_name} is set for PRIMARY_REGION_ONLY_DEPLOY, removing reference in ${app_target_dir}/region/kustomization.yaml"
+            yq -i 'del(.helmCharts[] | select(.name == "'"${chart_name}"'"))' "${app_target_dir}/region/kustomization.yaml"
+            if [[ $? -ne 0 ]]; then
+              log "yq command failed while removing chart references for ${chart_name} in ${app_target_dir}/region/kustomization.yaml"
+              exit 1
+            fi
+          done
+        fi
+
         # Rename to the actual region nick name.
         mv "${app_target_dir}/region" "${app_target_dir}/${REGION_NICK_NAME}"
       fi
@@ -681,7 +728,6 @@ organize_code_for_csr() {
           done
           ;;
       esac
-
     fi
   done
 }
@@ -716,6 +762,7 @@ echo "Initial CUSTOMER_SSM_PATH_PREFIX: ${CUSTOMER_SSM_PATH_PREFIX}"
 echo "Initial SELF_SERVICE_SSM_PATH_PREFIX: ${SELF_SERVICE_SSM_PATH_PREFIX}"
 echo "Initial CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Initial CUSTOMER_TLS_SSM_PATH_PREFIX: ${CUSTOMER_TLS_SSM_PATH_PREFIX}"
+echo "Initial CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX: ${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX}"
 echo "Initial SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Initial REGION: ${REGION}"
 echo "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
@@ -833,6 +880,7 @@ export CUSTOMER_SSM_PATH_PREFIX=${CUSTOMER_SSM_PATH_PREFIX:-/pcpt/customer}
 export SELF_SERVICE_SSM_PATH_PREFIX=${SELF_SERVICE_SSM_PATH_PREFIX:-/pcpt/self-service}
 export CUSTOMER_SSO_SSM_PATH_PREFIX=${CUSTOMER_SSO_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/sso}
 export CUSTOMER_TLS_SSM_PATH_PREFIX=${CUSTOMER_TLS_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/tls}
+export CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX=${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/ip-allowlist}
 export SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX:-/pcpt/service}
 
 export LAST_UPDATE_REASON="${LAST_UPDATE_REASON:-NA}"
@@ -1039,6 +1087,7 @@ echo "Using CUSTOMER_SSM_PATH_PREFIX: ${CUSTOMER_SSM_PATH_PREFIX}"
 echo "Using SELF_SERVICE_SSM_PATH_PREFIX: ${SELF_SERVICE_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_TLS_SSM_PATH_PREFIX: ${CUSTOMER_TLS_SSM_PATH_PREFIX}"
+echo "Using CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX: ${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX}"
 echo "Using SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"
 echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
@@ -1511,8 +1560,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       app_repo_branch="${app_repo_branch%-latest}"
     fi
 
-    # Remove 'p1as-' prefix from repository names
-    product_name=${app_repo#p1as-}
     # Clone microservice repo at the new version
     log "Cloning ${app_repo}@${app_repo_branch} to '${PROFILE_REPO_MIRROR_DIR}'"
     git clone -c advice.detachedHead=false --depth 1 --branch "${app_repo_branch}" "${MICROSERVICE_APP_REPO_URL}/p1as-apps/${app_repo}" "${PROFILE_REPO_MIRROR_DIR}/${app_repo}"
@@ -1521,11 +1568,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       log "Unable to clone ${app_repo}@${app_repo_branch} from ${MICROSERVICE_APP_REPO_URL}/p1as-apps"
       exit 1
     fi
-    log "Creating directory for ${app_repo} profiles in ${ENV_PROFILES_DIR}"
-    mkdir -p "${ENV_PROFILES_DIR}/${product_name}"
 
-    log "Copying profile code from ${PROFILE_REPO_MIRROR_DIR}/${app_repo}/deploy/${app_repo}/profile/ to ${ENV_PROFILES_DIR}/${product_name}"
-    cp -r "${PROFILE_REPO_MIRROR_DIR}/${app_repo}/profile/." "${ENV_PROFILES_DIR}/${product_name}"
+    log "Copying profile code from ${PROFILE_REPO_MIRROR_DIR}/${app_repo}/profiles/ to ${ENV_PROFILES_DIR}"
+    cp -pr "${PROFILE_REPO_MIRROR_DIR}/${app_repo}/profiles/." "${ENV_PROFILES_DIR}"
   done
 
   if test "${ENV}" = "${CUSTOMER_HUB}"; then
