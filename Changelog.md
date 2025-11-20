@@ -7,6 +7,7 @@
 _Changes:_
 
 - [X] PDO-8907 Integrate PingDirectory service with external DNS by setting its policy to sync
+- [X] PDO-10801 Karpenter EKS 1.33 fix
 
 ### 2.1.1
 
@@ -91,7 +92,6 @@ _Changes:_
 - [X] PDO-9462 Fix PC private ingress endpoint in values.yml
 - [X] PDO-9553 Support heap and ygen sizes for PingFederate microservice
 - [X] PDO-9616 Fix push-cluster-state.sh failing when no remote branches are available
-- [X] PDO-10801 Karpenter EKS 1.33 fix
 
 ### 2.0.0
 
