@@ -68,7 +68,6 @@
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
 # Variable                         | Purpose                                            | Default (if not present)
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
-# Variable                         | Purpose                                            | Default (if not present)
 # ACCOUNT_BASE_PATH                | The account's SSM base path                        | The SSM path: /pcpt/config/k8s-config/accounts/
 #                                  |                                                    |
 # ACCOUNT_TYPE                     | The variable denotes the type of account based on  | No defaults
@@ -93,6 +92,10 @@
 #                                  | provisioned without plugins. This URL must always  |
 #                                  | have an s3 scheme, e.g.                            |
 #                                  | s3://customer-repo-bucket-name.                    |
+#                                  |                                                    |
+# AWS_PROFILE                      | Specifies which local AWS CLI profile to use when  | Defaults to the AWS CLI’s configured default profile
+#                                  | authenticating against the customer-hub AWS        | (usually set via `aws configure` or `AWS_DEFAULT_PROFILE`).
+#                                  | account.                                           |
 #                                  |                                                    |
 # BACKUP_URL                       | The URL of the backup location. If provided, data  | The string "unused".
 #                                  | backups are periodically captured and sent to this |
