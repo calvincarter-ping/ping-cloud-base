@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.16.2
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: ec2nodeclasses.karpenter.k8s.aws
 spec:
   group: karpenter.k8s.aws
@@ -92,9 +92,11 @@ spec:
                         type: string
                         x-kubernetes-validations:
                           - message: '''alias'' is improperly formatted, must match the format ''family@version'''
-                            rule: self.matches('^[a-zA-Z0-9]*@.*$')
+                            rule: self.matches('^[a-zA-Z0-9]+@.+$')
                           - message: 'family is not supported, must be one of the following: ''al2'', ''al2023'', ''bottlerocket'', ''windows2019'', ''windows2022'''
-                            rule: self.find('^[^@]+') in ['al2','al2023','bottlerocket','windows2019','windows2022']
+                            rule: self.split('@')[0] in ['al2','al2023','bottlerocket','windows2019','windows2022']
+                          - message: windows families may only specify version 'latest'
+                            rule: 'self.split(''@'')[0] in [''windows2019'',''windows2022''] ? self.split(''@'')[1] == ''latest'' : true'
                       id:
                         description: ID is the ami id in EC2
                         pattern: ami-[0-9a-z]+
@@ -732,7 +734,7 @@ spec:
               type: object
           type: object
       served: true
-      storage: false
+      storage: true
       subresources:
         status: {}
     - name: v1beta1
@@ -941,7 +943,7 @@ spec:
                   default:
                     httpEndpoint: enabled
                     httpProtocolIPv6: disabled
-                    httpPutResponseHopLimit: 2
+                    httpPutResponseHopLimit: 1
                     httpTokens: required
                   description: |-
                     MetadataOptions for the generated launch template of provisioned nodes.
@@ -956,7 +958,7 @@ spec:
                     (https://aws.github.io/aws-eks-best-practices/security/docs/iam/#restrict-access-to-the-instance-profile-assigned-to-the-worker-node)
                     for limiting exposure of Instance Metadata and User Data to pods.
                     If omitted, defaults to httpEndpoint enabled, with httpProtocolIPv6
-                    disabled, with httpPutResponseLimit of 2, and with httpTokens
+                    disabled, with httpPutResponseLimit of 1, and with httpTokens
                     required.
                   properties:
                     httpEndpoint:
@@ -1288,7 +1290,7 @@ spec:
               type: object
           type: object
       served: true
-      storage: true
+      storage: false
       subresources:
         status: {}
   conversion:
