@@ -49,6 +49,10 @@ data:
       - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
         action: keep
         regex: default;kubernetes;https
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        action: drop
+        regex: "(apiserver_.*|etcd_.*)"
    
     - job_name: 'kubernetes-nodes'
       scheme: https
@@ -66,6 +70,10 @@ data:
         regex: (.+)
         target_label: __metrics_path__
         replacement: /api/v1/nodes/${1}/proxy/metrics
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        action: drop
+        regex: "(rest_client_.*|storage_operation_duration_seconds_bucket|kubelet_runtime_operations_duration_seconds_bucket|kubernetes_feature_enabled)" 
 
     - job_name: 'opensearch-service'
       kubernetes_sd_configs:
@@ -129,6 +137,10 @@ data:
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
         target_label: instance
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        action: drop
+        regex: "(karpenter_cloudprovider_.*)"
     
     - job_name: 'kubernetes-cadvisor'
       scheme: https
@@ -146,6 +158,13 @@ data:
         regex: (.+)
         target_label: __metrics_path__
         replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+      metric_relabel_configs:
+      - action: drop
+        source_labels: [__name__]
+        regex: "(container_tasks_state|kubernetes_feature_enabled|container_memory_failures_total|container_blkio_device_usage_total)"
+      - action: labeldrop
+        regex: "^(eks_amazonaws_com_.*|name|karpenter_.*|topology_.*|beta_.*|k8s_io_cloud_provider_aws)$"
+
     
     - job_name: 'kubernetes-service-endpoints'
       kubernetes_sd_configs:
@@ -180,4 +199,8 @@ data:
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
         target_label: instance
+      metric_relabel_configs:
+      - action: drop
+        source_labels: [__name__]
+        regex: "(grpc_server_handled_total)"
   
