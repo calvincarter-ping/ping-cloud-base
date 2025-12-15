@@ -10,6 +10,9 @@ spec:
     spec:
       nodeClassRef:
         name: default
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+      expireAfter: Never
       requirements:
         - key: "karpenter.k8s.aws/instance-category"
           operator: In
@@ -29,7 +32,6 @@ spec:
   disruption:
     consolidationPolicy: WhenEmpty
     consolidateAfter: 30s
-    expireAfter: Never
 
 ---
 apiVersion: karpenter.sh/v1
@@ -45,6 +47,9 @@ spec:
     spec:
       nodeClassRef:
         name: pd-only
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+      expireAfter: Never
       taints:
         - effect: NoSchedule
           key: pingidentity.com/pd-only
@@ -68,7 +73,7 @@ spec:
   disruption:
     consolidationPolicy: WhenEmpty
     consolidateAfter: 30s
-    expireAfter: Never
+
 
 ---
 apiVersion: karpenter.k8s.aws/v1
@@ -77,6 +82,8 @@ metadata:
   name: default
 spec:
   amiFamily: AL2023 # Amazon Linux 2023
+  amiSelectorTerms:
+    - alias: al2023@latest
   detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
@@ -100,6 +107,8 @@ metadata:
   name: pd-only
 spec:
   amiFamily: AL2023 # Amazon Linux 2023
+  amiSelectorTerms:
+    - alias: al2023@latest
   detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
