@@ -34,6 +34,8 @@ spec:
               runAsNonRoot: true
               runAsUser: 9031
               allowPrivilegeEscalation: false
+              privileged: false
+              readOnlyRootFilesystem: true
             command:
             - /opt/in/backup-archive-data.sh
             envFrom:
@@ -48,6 +50,8 @@ spec:
             - name: pingcommon-backup
               mountPath: /opt/in/backup-archive-data.sh
               subPath: backup-archive-data.sh
+          securityContext:
+            supplementalGroupsPolicy: Strict
           volumes:
           - name: pingcommon-backup
             configMap:
