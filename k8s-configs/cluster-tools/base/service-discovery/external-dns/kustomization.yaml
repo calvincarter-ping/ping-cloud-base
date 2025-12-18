@@ -30,6 +30,7 @@ patches:
           fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
           supplementalGroupsPolicy: Strict
           runAsNonRoot: true
+          fsGroup: 65534
     - op: add
       path: /spec/template/spec/containers/0/resources
       value:
@@ -57,4 +58,4 @@ patches:
           privileged: false
           readOnlyRootFilesystem: true
           runAsUser: 65534
-          fsGroup: 65534
+          runAsGroup: 65534
