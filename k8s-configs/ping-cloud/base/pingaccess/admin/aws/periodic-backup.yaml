@@ -35,7 +35,6 @@ spec:
               runAsUser: 9031
               allowPrivilegeEscalation: false
               privileged: false
-              readOnlyRootFilesystem: true
             command:
             - /opt/in/backup-archive-data.sh
             envFrom:
