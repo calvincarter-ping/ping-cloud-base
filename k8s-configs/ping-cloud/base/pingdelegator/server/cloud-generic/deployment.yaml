@@ -77,6 +77,7 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
           privileged: false
+          readOnlyRootFilesystem: true
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
         resources:
@@ -98,6 +99,12 @@ spec:
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
+          - name: opt-out
+            mountPath: /opt/out
+          - name: opt-staging
+            mountPath: /opt/staging
+          - name: tmp
+            mountPath: /tmp
         readinessProbe:
           exec:
             command: [/opt/liveness.sh]
@@ -132,6 +139,12 @@ spec:
         supplementalGroupsPolicy: Strict
         fsGroup: 9999
       volumes:
+        - name: opt-out
+          emptyDir: {}
+        - name: opt-staging
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
         - name: ssh-dir
           emptyDir: {}
         - name: data-dir
