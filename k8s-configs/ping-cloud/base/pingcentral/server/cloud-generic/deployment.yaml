@@ -42,6 +42,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.22.0
         imagePullPolicy: IfNotPresent
         command:
