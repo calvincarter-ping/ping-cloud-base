@@ -217,6 +217,8 @@ spec:
             mountPath: /opt/license
           - name: tmp-dir
             mountPath: /tmp
+          - name: container-state
+            mountPath: /opt/out/container-state
       securityContext:
         fsGroup: 9999
       volumes:
@@ -231,6 +233,8 @@ spec:
         - name: aws-config-dir
           emptyDir: {}
         - name: tmp-dir
+          emptyDir: {}
+        - name: container-state
           emptyDir: {}
         - name: pingcentral-init
           configMap:
