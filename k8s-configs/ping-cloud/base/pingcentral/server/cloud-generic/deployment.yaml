@@ -237,6 +237,8 @@ spec:
             mountPath: /opt/license
           - name: tmp-dir
             mountPath: /tmp
+          - name: aws-config-dir
+            mountPath: /home/ping/.aws
       securityContext:
         fsGroup: 9999
       volumes:
