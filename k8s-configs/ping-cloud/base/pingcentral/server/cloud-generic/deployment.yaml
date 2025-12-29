@@ -132,6 +132,8 @@ spec:
           subPath: perpetual_license.py
         - name: license-dir
           mountPath: /opt/license
+        - name: aws-config-dir
+          mountPath: /home/ping/.aws
       containers:
       - name: pingcentral
         securityContext:
@@ -221,6 +223,8 @@ spec:
         - name: data-dir
           emptyDir: {}
         - name: license-dir
+          emptyDir: {}
+        - name: aws-config-dir
           emptyDir: {}
         - name: pingcentral-init
           configMap:
