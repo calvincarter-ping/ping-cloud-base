@@ -215,6 +215,8 @@ spec:
             subPath: newrelic.jar
           - name: license-dir
             mountPath: /opt/license
+          - name: tmp-dir
+            mountPath: /tmp
       securityContext:
         fsGroup: 9999
       volumes:
@@ -227,6 +229,8 @@ spec:
         - name: license-dir
           emptyDir: {}
         - name: aws-config-dir
+          emptyDir: {}
+        - name: tmp-dir
           emptyDir: {}
         - name: pingcentral-init
           configMap:
