@@ -121,6 +121,10 @@ spec:
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
+          - name: nginx-var-logs
+            mountPath: /var/lib/nginx/logs
+          - name: nginx-var-tmp
+            mountPath: /var/lib/nginx/tmp
         readinessProbe:
           exec:
             command: [/opt/liveness.sh]
@@ -164,6 +168,10 @@ spec:
         - name: ssh-dir
           emptyDir: {}
         - name: data-dir
+          emptyDir: {}
+        - name: nginx-var-logs
+          emptyDir: {}
+        - name: nginx-var-tmp
           emptyDir: {}
         - name: pingdelegator-init
           configMap:
