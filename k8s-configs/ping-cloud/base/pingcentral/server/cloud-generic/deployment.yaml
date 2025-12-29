@@ -124,6 +124,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
         volumeMounts:
         - name: pingcentral-init
           mountPath: /opt/in/perpetual_license.py
