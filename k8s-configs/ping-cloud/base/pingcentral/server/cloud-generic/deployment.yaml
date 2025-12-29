@@ -77,6 +77,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v2.1.0
         imagePullPolicy: Always
         envFrom:
