@@ -134,6 +134,7 @@ spec:
           mountPath: /opt/license
         - name: aws-config-dir
           mountPath: /home/ping/.aws
+          subPath: perpetual-license-creds
       - name: seed-workspaces
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
@@ -239,6 +240,7 @@ spec:
             mountPath: /tmp
           - name: aws-config-dir
             mountPath: /home/ping/.aws
+            subPath: pingcentral-creds
       securityContext:
         fsGroup: 9999
         runAsNonRoot: true
