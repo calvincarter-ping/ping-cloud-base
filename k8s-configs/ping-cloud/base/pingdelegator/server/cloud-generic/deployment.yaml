@@ -160,6 +160,8 @@ spec:
         fsGroup: 9999
         runAsNonRoot: true
       volumes:
+        - name: aws-config-dir
+          emptyDir: {}
         - name: tmp-dir
           emptyDir: {}
         - name: staging-vol

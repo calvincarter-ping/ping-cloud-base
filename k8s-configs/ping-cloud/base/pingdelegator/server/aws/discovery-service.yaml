@@ -22,6 +22,8 @@ spec:
         - name: discovery-service
           mountPath: /get_ssm_env_vars.sh
           subPath: get_ssm_env_vars.sh
+        - name: aws-config-dir
+          mountPath: /aws
         securityContext:
           runAsNonRoot: true
           runAsUser: 65534
