@@ -241,6 +241,8 @@ spec:
             mountPath: /home/ping/.aws
       securityContext:
         fsGroup: 9999
+        runAsNonRoot: true
+        supplementalGroupsPolicy: "Strict"
       volumes:
         - name: ssh-dir
           emptyDir: {}

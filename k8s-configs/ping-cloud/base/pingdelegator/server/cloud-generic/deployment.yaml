@@ -158,6 +158,7 @@ spec:
       securityContext:
         supplementalGroupsPolicy: Strict
         fsGroup: 9999
+        runAsNonRoot: true
       volumes:
         - name: tmp-dir
           emptyDir: {}

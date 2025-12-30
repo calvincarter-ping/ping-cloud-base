@@ -54,6 +54,7 @@ spec:
               mountPath: /tmp
           securityContext:
             supplementalGroupsPolicy: Strict
+            runAsNonRoot: true
           volumes:
           - name: pingcommon-backup
             configMap:
