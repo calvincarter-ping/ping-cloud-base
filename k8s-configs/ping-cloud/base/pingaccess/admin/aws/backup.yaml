@@ -15,7 +15,6 @@ spec:
       serviceAccount: ping-serviceaccount
       restartPolicy: Never
       securityContext:
-        supplementalGroupsPolicy: Strict
         runAsNonRoot: true
       containers:
       - name: pingaccess-backup

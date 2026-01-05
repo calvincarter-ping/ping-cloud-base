@@ -156,7 +156,6 @@ spec:
         - configMapRef:
             name: pingdelegator-environment-variables
       securityContext:
-        supplementalGroupsPolicy: Strict
         fsGroup: 9999
         runAsNonRoot: true
       volumes:
