@@ -298,6 +298,10 @@ spec:
           - mountPath: /opt/config.yml
             subPath: config.yml
             name: pa-exporter-config
+          - mountPath: /opt/bitnami/nginx/tmp
+            name: nginx-tmp-vol
+          - mountPath: /opt/bitnami/nginx/var/run
+            name: nginx-var-run-vol
         resources:
           limits:
             cpu: 100m
@@ -308,6 +312,10 @@ spec:
       securityContext:
         fsGroup: 9999
       volumes:
+      - name: nginx-tmp-vol
+        emptyDir: {}
+      - name: nginx-var-run-vol
+        emptyDir: {}
       - name: ssh-dir
         emptyDir: {}
       - name: shared-dir
