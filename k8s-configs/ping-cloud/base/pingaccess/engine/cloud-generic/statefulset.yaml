@@ -310,9 +310,9 @@ spec:
           - mountPath: /opt/bitnami/nginx/var/run
             name: nginx-scratch-dir
             subPath: var-run
-          - mountPath: /opt/bitnami/nginx/conf
+          - mountPath: /opt/bitnami/nginx/conf/nginx.conf
             name: nginx-scratch-dir
-            subPath: conf
+            subPath: nginx.conf
         resources:
           limits:
             cpu: 100m
