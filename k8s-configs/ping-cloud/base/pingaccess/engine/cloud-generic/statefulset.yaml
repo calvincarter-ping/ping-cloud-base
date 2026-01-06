@@ -156,6 +156,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
         volumeMounts:
         - name: pingaccess-init
           mountPath: /opt/in/perpetual_license.py
@@ -168,6 +170,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
         env:
