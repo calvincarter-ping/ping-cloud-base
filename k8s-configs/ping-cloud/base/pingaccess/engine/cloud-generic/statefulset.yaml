@@ -311,7 +311,7 @@ spec:
             name: nginx-scratch-dir
             subPath: var-run
           - mountPath: /opt/bitnami/nginx/conf/nginx.conf
-            name: nginx-scratch-dir
+            name: nginx-conf-file
             subPath: nginx.conf
         resources:
           limits:
@@ -324,6 +324,8 @@ spec:
         fsGroup: 9999
       volumes:
       - name: nginx-scratch-dir
+        emptyDir: {}
+      - name: nginx-conf-file
         emptyDir: {}
       - name: aws-config-dir
         emptyDir: {}
