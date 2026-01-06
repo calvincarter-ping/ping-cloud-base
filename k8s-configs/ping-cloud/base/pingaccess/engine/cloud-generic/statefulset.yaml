@@ -304,8 +304,15 @@ spec:
           - mountPath: /opt/config.yml
             subPath: config.yml
             name: pa-exporter-config
-          - mountPath: /opt/bitnami/nginx
-            name: nginx-dir
+          - mountPath: /opt/bitnami/nginx/tmp
+            name: nginx-scratch-dir
+            subPath: tmp
+          - mountPath: /opt/bitnami/nginx/var/run
+            name: nginx-scratch-dir
+            subPath: var-run
+          - mountPath: /opt/bitnami/nginx/conf
+            name: nginx-scratch-dir
+            subPath: conf
         resources:
           limits:
             cpu: 100m
@@ -316,7 +323,7 @@ spec:
       securityContext:
         fsGroup: 9999
       volumes:
-      - name: nginx-dir
+      - name: nginx-scratch-dir
         emptyDir: {}
       - name: aws-config-dir
         emptyDir: {}
