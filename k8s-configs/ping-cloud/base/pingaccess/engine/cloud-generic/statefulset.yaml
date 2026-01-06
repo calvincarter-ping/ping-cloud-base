@@ -164,6 +164,8 @@ spec:
           subPath: perpetual_license.py
         - name: license-dir
           mountPath: /opt/license
+        - name: aws-config-dir
+          mountPath: /home/ping/.aws
       - name: pingaccess-p1as-sso
         securityContext:
           runAsGroup: 9999
@@ -316,9 +318,11 @@ spec:
       securityContext:
         fsGroup: 9999
       volumes:
-      - name: nginx-tmp-vol
+      - name: nginx-tmp-dir
         emptyDir: {}
-      - name: nginx-var-run-vol
+      - name: nginx-var-run-dir
+        emptyDir: {}
+      - name: aws-config-dir
         emptyDir: {}
       - name: ssh-dir
         emptyDir: {}
