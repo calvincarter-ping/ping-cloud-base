@@ -304,10 +304,8 @@ spec:
           - mountPath: /opt/config.yml
             subPath: config.yml
             name: pa-exporter-config
-          - mountPath: /opt/bitnami/nginx/tmp
-            name: nginx-tmp-dir
-          - mountPath: /opt/bitnami/nginx/var/run
-            name: nginx-var-run-dir
+          - mountPath: /opt/bitnami/nginx
+            name: nginx-dir
         resources:
           limits:
             cpu: 100m
@@ -318,9 +316,7 @@ spec:
       securityContext:
         fsGroup: 9999
       volumes:
-      - name: nginx-tmp-dir
-        emptyDir: {}
-      - name: nginx-var-run-dir
+      - name: nginx-dir
         emptyDir: {}
       - name: aws-config-dir
         emptyDir: {}
