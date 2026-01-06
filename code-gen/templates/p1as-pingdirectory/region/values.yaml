@@ -1,4 +1,4 @@
-pingdirectory:  
+pingdirectory:
   backupFileName: ""
   # This is the environment variable to select the backend(s) to restore in PD
   # Allowed values:appintegrations platformconfig userRoot userRoot_2 userRoot_3 userRoot_4 userRoot_5
@@ -8,6 +8,13 @@ pingdirectory:
   backupRestorePod: "pingdirectory-0"
   # Uncomment below to set the backup PVC size. If not set, the default PVC size will be used.
   # backupPVCSize: ""
+  ####### Backup Variables #######
+  backup:
+    backupRestorePod: "pingdirectory-0"
+  ####### Manage Profile Configuration Flags #######
+  manageProfile:
+    skipValidationEnabled: "true"
+    replaceFullProfileEnabled: "true"
   monitorBucketUrl: "${PD_MONITOR_BUCKET_URL}"
   # Changes PURGE_BATCH_SIZE for -Dcom.unboundid.directory.server.plugins.PurgeExpiredDataPlugin.BATCH_SIZE= - default is 10000
   purgeBatchSize: "10000"
