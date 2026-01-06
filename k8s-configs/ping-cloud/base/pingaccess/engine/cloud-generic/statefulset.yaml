@@ -305,9 +305,9 @@ spec:
             subPath: config.yml
             name: pa-exporter-config
           - mountPath: /opt/bitnami/nginx/tmp
-            name: nginx-tmp-vol
+            name: nginx-tmp-dir
           - mountPath: /opt/bitnami/nginx/var/run
-            name: nginx-var-run-vol
+            name: nginx-var-run-dir
         resources:
           limits:
             cpu: 100m
