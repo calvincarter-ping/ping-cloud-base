@@ -287,7 +287,7 @@ spec:
           allowPrivilegeEscalation: false
           privileged: false
           readOnlyRootFilesystem: true
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.3-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/prometheus-json-exporter:pdo-10877
         imagePullPolicy: Always
         env:
           - name: SERVICE_SHORTNAME
@@ -296,6 +296,8 @@ spec:
             value: "3000"
           - name: REPEAT_SEC
             value: "10"
+          - name: NGINX_CONF_FILE
+            value: /opt/bitnami/nginx/conf_generated/nginx.conf
         ports:
           - containerPort: 8079
             name: pa-heartbeat
@@ -310,9 +312,8 @@ spec:
           - mountPath: /opt/bitnami/nginx/var/run
             name: nginx-scratch-dir
             subPath: var-run
-          - mountPath: /opt/bitnami/nginx/conf/nginx.conf
-            name: nginx-conf-file
-            subPath: nginx.conf
+          - mountPath: /opt/bitnami/nginx/conf_generated/
+            name: nginx-conf-dir
         resources:
           limits:
             cpu: 100m
@@ -325,7 +326,7 @@ spec:
       volumes:
       - name: nginx-scratch-dir
         emptyDir: {}
-      - name: nginx-conf-file
+      - name: nginx-conf-dir
         emptyDir: {}
       - name: aws-config-dir
         emptyDir: {}
