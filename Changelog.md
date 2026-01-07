@@ -35,6 +35,7 @@
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
 - Add backward compatible JSON filters for customer pipelines (PD)
 - Add horizontalpodautoscalers resource to kube-state-metrics deployment to expose HPA metrics
+- Update PA 9.0 run.properties 
 
 _Changes:_
 
@@ -78,12 +79,11 @@ _Changes:_
 - [X] PDO-10254 dsconfig - adjust customer pipelines to ensure consistent JSON Log events
 - [X] PDO-10397 Add Self-service IP allowlist vars and bootstrap config
 - [X] PDO-10545 FluentBit: The main pipeline-output is not being removed from the customer-hub cde
-- [X] PDO-10575 chub-values.yaml support
 - [X] PDO-10579 VolumeAutoscaler: Update Scale Up threshold and percent
 - [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
-
+- [X] PDO-10895 Update PA 9.0 run.properties 
 ### 2.1.2
 
 - Integrate PingDirectory service with external DNS by setting its policy to sync.
