@@ -188,6 +188,20 @@ spec:
           - /bin/sh
           - -c
           - python3 -u /app/p1_app_to_k8s.py -a pingaccess -t /app/templates/pingaccess-admin-p14c-secret.yaml && python3 -u /app/p1_app_to_k8s.py -a pingaccess -t /app/templates/pingaccess-admin-p14c-configmap.yaml
+      - name: seed-nginx-workload
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+        imagePullPolicy: Always
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.3-release-branch-latest
+        command: [ "sh", "-c", "cp -a /opt/bitnami/nginx/conf/. /mnt/nginx/conf/" ]
+        volumeMounts:
+        - name: nginx-conf-dir
+          mountPath: /mnt/nginx/conf
       containers:
       - name: pingaccess
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.3-release-branch-latest
@@ -287,7 +301,7 @@ spec:
           allowPrivilegeEscalation: false
           privileged: false
           readOnlyRootFilesystem: true
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/prometheus-json-exporter:pdo-10877
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
         env:
           - name: SERVICE_SHORTNAME
@@ -296,8 +310,6 @@ spec:
             value: "3000"
           - name: REPEAT_SEC
             value: "10"
-          - name: NGINX_CONF_FILE
-            value: /opt/bitnami/nginx/conf_generated/nginx.conf
         ports:
           - containerPort: 8079
             name: pa-heartbeat
@@ -312,7 +324,7 @@ spec:
           - mountPath: /opt/bitnami/nginx/var/run
             name: nginx-scratch-dir
             subPath: var-run
-          - mountPath: /opt/bitnami/nginx/conf_generated/
+          - mountPath: /opt/bitnami/nginx/conf
             name: nginx-conf-dir
         resources:
           limits:
