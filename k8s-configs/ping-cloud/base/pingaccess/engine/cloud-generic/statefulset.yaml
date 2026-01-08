@@ -320,6 +320,9 @@ spec:
             name: pa-exporter-config
           - mountPath: /opt/bitnami/nginx
             name: nginx-conf-dir
+          - mountPath: /tmp
+            name: tmp-dir
+            subPath: nginx-tmp-dir
         resources:
           limits:
             cpu: 100m
@@ -335,6 +338,8 @@ spec:
       - name: nginx-conf-dir
         emptyDir: {}
       - name: aws-config-dir
+        emptyDir: {}
+      - name: tmp-dir
         emptyDir: {}
       - name: ssh-dir
         emptyDir: {}
