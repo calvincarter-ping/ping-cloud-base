@@ -330,6 +330,9 @@ spec:
           subPath: instance
         - name: license-dir
           mountPath: /opt/license
+        - name: aws-config-dir
+          mountPath: /home/ping/.aws
+          subPath: pingaccess-was-admin-aws-config
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
