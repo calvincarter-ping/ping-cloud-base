@@ -198,7 +198,7 @@ spec:
           readOnlyRootFilesystem: true
         imagePullPolicy: Always
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.3-release-branch-latest
-        command: [ "sh", "-c", "cp -r /opt/bitnami/nginx/. /mnt/nginx/" ]
+        command: [ "sh", "-c", "cp -r /opt/bitnami/. /mnt/bitnami/" ]
         volumeMounts:
         - name: nginx-conf-dir
           mountPath: /mnt/nginx
@@ -318,7 +318,7 @@ spec:
           - mountPath: /opt/config.yml
             subPath: config.yml
             name: pa-exporter-config
-          - mountPath: /opt/bitnami/nginx
+          - mountPath: /opt/bitnami
             name: nginx-conf-dir
           - mountPath: /tmp
             name: tmp-dir
