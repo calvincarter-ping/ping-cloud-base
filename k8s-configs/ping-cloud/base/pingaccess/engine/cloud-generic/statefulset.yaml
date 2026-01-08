@@ -198,7 +198,7 @@ spec:
           readOnlyRootFilesystem: true
         imagePullPolicy: Always
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.3-release-branch-latest
-        command: [ "sh", "-c", "cp -a /opt/bitnami/nginx/conf/. /mnt/nginx/conf/" ]
+        command: [ "sh", "-c", "cp -r /opt/bitnami/nginx/conf/. /mnt/nginx/conf/" ]
         volumeMounts:
         - name: nginx-conf-dir
           mountPath: /mnt/nginx/conf
