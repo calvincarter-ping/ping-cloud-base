@@ -166,6 +166,7 @@ spec:
           mountPath: /opt/license
         - name: aws-config-dir
           mountPath: /home/ping/.aws
+          subPath: perpetual-license-aws-config
       - name: pingaccess-p1as-sso
         securityContext:
           runAsGroup: 9999
