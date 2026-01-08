@@ -374,6 +374,8 @@ spec:
         fsGroup: 9999
         runAsNonRoot: true
       volumes:
+      - name: aws-config-dir
+        emptyDir: {}
       - name: ssh-dir
         emptyDir: {}
       - name: shared-dir
