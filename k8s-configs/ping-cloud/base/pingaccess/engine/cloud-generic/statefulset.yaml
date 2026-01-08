@@ -198,10 +198,10 @@ spec:
           readOnlyRootFilesystem: true
         imagePullPolicy: Always
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.3-release-branch-latest
-        command: [ "sh", "-c", "cp -r /opt/bitnami/nginx/conf/. /mnt/nginx/conf/" ]
+        command: [ "sh", "-c", "cp -r /opt/bitnami/nginx/. /mnt/nginx/" ]
         volumeMounts:
         - name: nginx-conf-dir
-          mountPath: /mnt/nginx/conf
+          mountPath: /mnt/nginx
       containers:
       - name: pingaccess
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.3-release-branch-latest
@@ -324,7 +324,7 @@ spec:
           - mountPath: /opt/bitnami/nginx/var/run
             name: nginx-scratch-dir
             subPath: var-run
-          - mountPath: /opt/bitnami/nginx/conf
+          - mountPath: /opt/bitnami/nginx
             name: nginx-conf-dir
         resources:
           limits:
