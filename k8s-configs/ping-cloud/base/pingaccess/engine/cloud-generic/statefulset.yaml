@@ -318,12 +318,6 @@ spec:
           - mountPath: /opt/config.yml
             subPath: config.yml
             name: pa-exporter-config
-          - mountPath: /opt/bitnami/nginx/tmp
-            name: nginx-scratch-dir
-            subPath: tmp
-          - mountPath: /opt/bitnami/nginx/var/run
-            name: nginx-scratch-dir
-            subPath: var-run
           - mountPath: /opt/bitnami/nginx
             name: nginx-conf-dir
         resources:
