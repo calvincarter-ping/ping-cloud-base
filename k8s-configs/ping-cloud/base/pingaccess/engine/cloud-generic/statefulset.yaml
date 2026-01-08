@@ -202,6 +202,23 @@ spec:
         volumeMounts:
         - name: nginx-conf-dir
           mountPath: /mnt/bitnami
+      - name: seed-pingaccess
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.3-release-branch-latest
+        imagePullPolicy: Always
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+        command: [ "sh", "-c", "cp -a /opt/staging/. /mnt/stg/ && cp -a /opt/out/. /mnt/out/" ]
+        volumeMounts:
+        - name: staging-dir
+          mountPath: /mnt/stg
+        - name: out-dir
+          mountPath: /mnt/out
+
       containers:
       - name: pingaccess
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.3-release-branch-latest
@@ -210,6 +227,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
         imagePullPolicy: Always
         resources:
           requests:
@@ -219,6 +238,10 @@ spec:
             memory: "2Gi"
             cpu: 1
         volumeMounts:
+        - name: staging-dir
+          mountPath: /opt/staging
+        - name: out-dir
+          mountPath: /opt/out
         - name: pingaccess-init
           mountPath: /opt/staging/hooks/logger.lib.sh
           subPath: logger.lib.sh
@@ -333,6 +356,10 @@ spec:
       securityContext:
         fsGroup: 9999
       volumes:
+      - name: staging-dir
+        emptyDir: {}
+      - name: out-dir
+        emptyDir: {}
       - name: nginx-scratch-dir
         emptyDir: {}
       - name: nginx-conf-dir
