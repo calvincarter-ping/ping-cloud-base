@@ -182,6 +182,8 @@ spec:
             memory: "8Gi"
             cpu: 2            
         volumeMounts:
+        - name: staging-dir
+          mountPath: /opt/staging
         - name: ssh-dir
           mountPath: /home/ping/.ssh
         - name: shared-dir
@@ -377,6 +379,8 @@ spec:
         fsGroup: 9999
         runAsNonRoot: true
       volumes:
+      - name: staging-dir
+        emptyDir: {}
       - name: aws-config-dir
         emptyDir: {}
       - name: ssh-dir
