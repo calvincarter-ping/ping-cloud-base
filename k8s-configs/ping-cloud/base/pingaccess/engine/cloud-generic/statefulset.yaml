@@ -201,7 +201,7 @@ spec:
         command: [ "sh", "-c", "cp -r /opt/bitnami/. /mnt/bitnami/" ]
         volumeMounts:
         - name: nginx-conf-dir
-          mountPath: /mnt/nginx
+          mountPath: /mnt/bitnami
       containers:
       - name: pingaccess
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.3-release-branch-latest
