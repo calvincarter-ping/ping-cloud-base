@@ -163,6 +163,22 @@ spec:
         - name: aws-config-dir
           mountPath: /home/ping/.aws
           subPath: perpetual-license-aws-config
+      - name: seed-pingaccess-was
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v2.3-release-branch-latest
+        imagePullPolicy: Always
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+        command: [ "sh", "-c", "cp -a /opt/staging/. /mnt/stg/ && cp -a /opt/out/. /mnt/out/" ]
+        volumeMounts:
+        - name: staging-dir
+          mountPath: /mnt/stg
+        - name: out-dir
+          mountPath: /mnt/out
       containers:
       - name: pingaccess-was
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v2.3-release-branch-latest
@@ -182,6 +198,13 @@ spec:
             memory: "2560Mi"
             cpu: 1
         volumeMounts:
+        - name: staging-dir
+          mountPath: /opt/staging
+        - name: out-dir
+          mountPath: /opt/out
+        - name: tmp-dir
+          mountPath: /tmp
+          subPath: pingaccess-was-tmp
         - name: pingaccess-was-init
           mountPath: /opt/staging/hooks/logger.lib.sh
           subPath: logger.lib.sh
