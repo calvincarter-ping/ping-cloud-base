@@ -304,6 +304,9 @@ spec:
         volumeMounts:
         - name: staging-dir
           mountPath: /opt/staging
+        - name: tmp-dir
+          mountPath: /tmp
+          subPath: pingaccess-admin-tmp-dir
         - name: pingaccess-init
           mountPath: /opt/staging/hooks/logger.lib.sh
           subPath: logger.lib.sh
