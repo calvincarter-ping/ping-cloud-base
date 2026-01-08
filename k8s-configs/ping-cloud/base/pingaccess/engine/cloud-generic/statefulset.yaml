@@ -358,6 +358,7 @@ spec:
             memory: 300Mi
       securityContext:
         fsGroup: 9999
+        runAsNonRoot: true
       volumes:
       - name: staging-dir
         emptyDir: {}
