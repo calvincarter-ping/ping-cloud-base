@@ -302,6 +302,8 @@ spec:
             memory: "4Gi"
             cpu: 2
         volumeMounts:
+        - name: staging-dir
+          mountPath: /opt/staging
         - name: pingaccess-init
           mountPath: /opt/staging/hooks/logger.lib.sh
           subPath: logger.lib.sh
