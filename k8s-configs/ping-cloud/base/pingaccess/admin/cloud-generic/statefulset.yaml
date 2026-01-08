@@ -151,6 +151,9 @@ spec:
           subPath: perpetual_license.py
         - name: license-dir
           mountPath: /opt/license
+        - name: aws-config-dir
+          mountPath: /home/ping/.aws
+          subPath: perpetual-license-aws-config
       - name: pingaccess-upgrade
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
