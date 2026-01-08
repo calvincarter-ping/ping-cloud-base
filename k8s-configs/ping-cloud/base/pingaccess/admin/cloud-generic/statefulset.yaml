@@ -198,6 +198,9 @@ spec:
         volumeMounts:
         - name: staging-dir
           mountPath: /opt/staging
+        - name: tmp-dir
+          mountPath: /tmp
+          subPath: pingaccess-upgrade-tmp-dir
         - name: ssh-dir
           mountPath: /home/ping/.ssh
         - name: shared-dir
@@ -393,6 +396,8 @@ spec:
         fsGroup: 9999
         runAsNonRoot: true
       volumes:
+      - name: tmp-dir
+        emptyDir: {}
       - name: staging-dir
         emptyDir: {}
       - name: aws-config-dir
