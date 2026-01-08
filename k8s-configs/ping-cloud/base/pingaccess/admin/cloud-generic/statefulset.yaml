@@ -154,6 +154,20 @@ spec:
         - name: aws-config-dir
           mountPath: /home/ping/.aws
           subPath: perpetual-license-aws-config
+      - name: seed-pingaccess-admin
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.3-release-branch-latest
+        imagePullPolicy: Always
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+        command: [ "sh", "-c", "cp -a /opt/staging/. /mnt/stg/" ]
+        volumeMounts:
+        - name: staging-dir
+          mountPath: /mnt/stg
       - name: pingaccess-upgrade
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
