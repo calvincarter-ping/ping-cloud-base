@@ -242,6 +242,9 @@ spec:
           mountPath: /opt/staging
         - name: out-dir
           mountPath: /opt/out
+        - name: tmp-dir
+          mountPath: /tmp
+          subPath: pingaccess-tmp
         - name: pingaccess-init
           mountPath: /opt/staging/hooks/logger.lib.sh
           subPath: logger.lib.sh
