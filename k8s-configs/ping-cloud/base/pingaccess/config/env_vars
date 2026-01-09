@@ -87,4 +87,4 @@ SKIP_LIVENESS=false
 # The default is that automation will determine SSM path to retrieve product license
 OVERRIDE_PRODUCT_LICENSE=
 
-PA_ADMIN_API_BASIC_AUTH_ENABLED=false
+PA_ADMIN_API_BASIC_AUTH_ENABLED=true
