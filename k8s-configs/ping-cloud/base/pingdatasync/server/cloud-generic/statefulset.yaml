@@ -235,6 +235,8 @@ spec:
           - configMapRef:
               name: pingcommon-environment-variables
         volumeMounts:
+          - name: logs-dir
+            mountPath: /opt/server/logs/tools/
           - name: staging-dir
             mountPath: /opt/staging
           - name: out-dir
@@ -270,6 +272,8 @@ spec:
         fsGroup: 9999
         runAsNonRoot: true
       volumes:
+        - name: logs-dir
+          emptyDir: {}
         - name: tmp-dir
           emptyDir: {}
         - name: staging-dir
