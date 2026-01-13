@@ -100,6 +100,7 @@ _Changes:_
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
 - [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
+- [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 
 
 ### 2.1.1
