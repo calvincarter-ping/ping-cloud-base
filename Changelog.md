@@ -37,6 +37,7 @@
 - Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
 - Update engine ingresses to cache healthcheck responses for 1s
 - Update PA 9.0 run.properties
+- Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
 
 _Changes:_
 
