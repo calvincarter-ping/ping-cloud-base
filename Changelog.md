@@ -38,6 +38,7 @@
 - Update engine ingresses to cache healthcheck responses for 1s
 - Update PA 9.0 run.properties
 - Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
+- To update prefix for Newrelic k8s resource components from release-name to nri-bundle
 
 _Changes:_
 
@@ -89,6 +90,7 @@ _Changes:_
 - [X] PDO-10823 Set Karpenter drift to false
 - [X] PDO-10895 Update PA 9.0 run.properties 
 - [X] PDO-10998 Update engine ingresses to cache healthcheck responses for 1s
+- [X] PDO-11102 NewRelic: Fix Helm release name to restore nri-bundle resource naming
 
 ### 2.1.2
 
