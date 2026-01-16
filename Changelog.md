@@ -56,6 +56,7 @@ _Changes:_
 - Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
 - Update engine ingresses to cache healthcheck responses for 1s
 - Update PA 9.0 run.properties
+- Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
 
 _Changes:_
 
@@ -88,6 +89,7 @@ _Changes:_
 - [X] PDO-9937 Fix Opensearch when using ui-connect.sh
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
 - [X] PDO-9865 Implement PA-WAS separation of ingresses in PCB
+- [X] PDO-9868 Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
 - [X] PDO-10066 Add self-service annotations and labels to ingresses
 - [X] PDO-10068 Configure PA engines in child regions to use OAuth2
 - [X] PDO-10087 Prevent customer changes to environment during upgrades via maintenance page
@@ -100,11 +102,21 @@ _Changes:_
 - [X] PDO-10397 Add Self-service IP allowlist vars and bootstrap config
 - [X] PDO-10545 FluentBit: The main pipeline-output is not being removed from the customer-hub cde
 - [X] PDO-10575 chub-values.yaml support
+- [X] PDO-10579 VolumeAutoscaler: Update Scale Up threshold and percent
+- [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
 - [X] PDO-10895 Update PA 9.0 run.properties 
 - [X] PDO-10998 Update engine ingresses to cache healthcheck responses for 1s
 
+### 2.1.2
+
+- Integrate PingDirectory service with external DNS by setting its policy to sync.
+
+_Changes:_
+
+- [X] PDO-8907 Integrate PingDirectory service with external DNS by setting its policy to sync
+- [X] PDO-10416 Restructure Backup Variables
 
 ### 2.1.1
 
