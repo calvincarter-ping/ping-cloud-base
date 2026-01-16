@@ -52,8 +52,6 @@ _Changes:_
 - Add Self-service IP allowlist vars and bootstrap config
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
 - Add backward compatible JSON filters for customer pipelines (PD)
-- Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
-- Update engine ingresses to cache healthcheck responses for 1s
 - Update PA 9.0 run.properties
 - Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
 - Update engine ingresses to cache healthcheck responses for 1s
