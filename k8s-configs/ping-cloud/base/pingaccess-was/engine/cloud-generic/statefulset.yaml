@@ -198,6 +198,9 @@ spec:
             memory: "2560Mi"
             cpu: 1
         volumeMounts:
+        - name: aws-config-dir
+          mountPath: /home/ping/.aws
+          subPath: pingaccess-was-aws-config-dir
         - name: staging-dir
           mountPath: /opt/staging
         - name: out-dir
