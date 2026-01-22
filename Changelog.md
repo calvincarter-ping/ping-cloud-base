@@ -15,6 +15,7 @@
 - Update NewRelic APM agent Java args logic
 - Upgrade pod-reaper to version 2.14.0
 - Bundle Documentation folder in profile-repo explaining all static files for all Products
+- Add feature flag to toggle Impossible login distance views for PF Opensearch dashboards
 
 _Changes:_
 
@@ -32,6 +33,7 @@ _Changes:_
 - [X] PDO-10816 Upgrade external-dns to version v0.20.0
 - [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
 - [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
+- [X] PDO-11030 Opensearch: ENABLE_IMPOSSIBLE_LOGIN toggle to Opensearch cluster configuration
 
 ### 2.2.0
 
