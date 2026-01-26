@@ -16,6 +16,8 @@ spec:
     metadata:
       labels:
         app: logstash-elastic
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
       securityContext:
         fsGroup: 1000
@@ -62,6 +64,11 @@ spec:
               configMapKeyRef:
                 name: cluster-info
                 key: primary_tenant_domain
+          - name: ENABLE_IMPOSSIBLE_LOGIN
+            valueFrom:
+              configMapKeyRef:
+                name: elk-environment-variables
+                key: ENABLE_IMPOSSIBLE_LOGIN
           - name: INDEX_TEMPLATES_PATH
             value: "/usr/share/opensearch/data/index-templates"
           - name: ALERTS_PATH
