@@ -17,7 +17,7 @@ spec:
       labels:
         app: logstash-elastic
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/config: "impossible-login-v1"
     spec:
       securityContext:
         fsGroup: 1000
