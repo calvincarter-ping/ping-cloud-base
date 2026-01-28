@@ -5,15 +5,27 @@
 - Upgrade cert-manager to version v1.19.1
 - Remove nri-kubernetes image reference
 - Update Security Contexts for external-dns namespace workloads
+- Update Security Contexts for prometheus namespace workloads
+- Update Security Contexts for ping-cloud namespace deployments and cronjobs 
+- Update Security Contexts for cert-manager workloads
 - Upgrade cluster-autoscaler to version 1.34
+- Upgrade external-dns to version v0.20.0
+- Update NewRelic APM agent Java args logic
+- Upgrade pod-reaper to version 2.14.0
 - Bundle Documentation folder in profle-repo explaining all static files for all Products
 
 _Changes:_
 
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
+- [X] PDO-10285 - NewRelic: Update Logic for APM Agent + newrelic-tags-exporter
+- [X] PDO-10483 Update Security Contexts for ping-cloud namespace workloads - part 1
+- [X] PDO-10484 Update Security Contexts for prometheus namespace workloads
+- [X] PDO-10485 Update Security Contexts for cert-manager namespace workloads
 - [X] PDO-10486 Update Security Contexts for external-dns namespace workloads
 - [X] PDO-10546 NewRelic: Remove NRI Kubernetes Images from PCD
 - [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
+- [X] PDO-10816 Upgrade external-dns to version v0.20.0
+- [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
 - [X] PDO-10728 Bundle Documentation folder in profle-repo explaining all static files for all Products
 
 ### 2.2.0
@@ -49,8 +61,9 @@ _Changes:_
 - Disable Basic Auth for PA Admin API after enabling OAuth
 - Add Self-service IP allowlist vars and bootstrap config
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
-- Add horizontalpodautoscalers resource to kube-state-metrics deployment to expose HPA metrics
 - Add backward compatible JSON filters for customer pipelines (PD)
+- Update engine ingresses to cache healthcheck responses for 1s
+- Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
 
 _Changes:_
 
@@ -98,6 +111,7 @@ _Changes:_
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
 - [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
+- [X] PDO-10998 Update engine ingresses to cache healthcheck responses for 1s
 
 
 ### 2.1.1
