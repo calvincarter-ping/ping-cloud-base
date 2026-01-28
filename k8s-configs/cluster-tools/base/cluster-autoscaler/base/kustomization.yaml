@@ -76,6 +76,5 @@ patches:
         value:
           "--balance-similar-node-groups=true"
       - op: add
-        path: /spec/template/spec/containers/0/securityContext
-        value:
-          privileged: false
+        path: /spec/template/spec/containers/0/securityContext/privileged
+        value: false
