@@ -12,7 +12,7 @@
 - Upgrade external-dns to version v0.20.0
 - Update NewRelic APM agent Java args logic
 - Upgrade pod-reaper to version 2.14.0
-- Bundle Documentation folder in profle-repo explaining all static files for all Products
+- Bundle Documentation folder in profile-repo explaining all static files for all Products
 
 _Changes:_
 
@@ -26,7 +26,7 @@ _Changes:_
 - [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
 - [X] PDO-10816 Upgrade external-dns to version v0.20.0
 - [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
-- [X] PDO-10728 Bundle Documentation folder in profle-repo explaining all static files for all Products
+- [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
 
 ### 2.2.0
 
