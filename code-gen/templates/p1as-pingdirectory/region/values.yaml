@@ -1,4 +1,12 @@
+global:
+  pingDirectoryProxyEnabled: true
+
+pingdirectoryproxy:
+  pingdirectoryproxyImage: 705370621539.dkr.ecr.us-west-2.amazonaws.com/dev/pingdirectoryproxy:pingdirectory-proxy-deploy-test
+
 pingdirectory:
+  pingdirectoryImage: 705370621539.dkr.ecr.us-west-2.amazonaws.com/dev/pingdirectory:pingdirectory-proxy-deploy-test
+  pingdirectoryServerTopologyImage: 705370621539.dkr.ecr.us-west-2.amazonaws.com/dev/pingdirectory-server-topology:pingdirectory-proxy-deploy-test
   ####### Backup Variables #######
   backup:
     backupRestorePod: "pingdirectory-0"
