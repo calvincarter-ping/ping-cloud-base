@@ -368,8 +368,6 @@ spec:
         emptyDir: {}
       - name: out-dir
         emptyDir: {}
-      - name: nginx-scratch-dir
-        emptyDir: {}
       - name: nginx-conf-dir
         emptyDir: {}
       - name: aws-config-dir
