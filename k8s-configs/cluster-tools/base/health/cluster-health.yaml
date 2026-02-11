@@ -49,4 +49,4 @@ spec:
       - name: tmp-dir
         emptyDir: {}
       securityContext:
-        runAsNonRoot: true      
+        runAsNonRoot: true
