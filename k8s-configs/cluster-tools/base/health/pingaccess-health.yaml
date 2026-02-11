@@ -27,6 +27,9 @@ spec:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
           privileged: false
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp
         command:
           - /bin/bash
           - -c
