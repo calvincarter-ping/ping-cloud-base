@@ -28,6 +28,9 @@ spec:
           privileged: false
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp
         resources:
           limits:
             memory: "60Mi"
@@ -55,6 +58,9 @@ spec:
           timeoutSeconds: 3
         ports:
         - containerPort: 80
+      volumes:
+      - name: tmp-dir
+        emptyDir: {}
 ---
 #
 # This service exposes the httpbin-pa port to the cluster.
