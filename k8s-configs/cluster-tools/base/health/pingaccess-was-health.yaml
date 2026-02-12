@@ -34,7 +34,7 @@ spec:
           - /bin/bash
           - -c
           # Eval schedule env var to strip any extra quotes from value
-          - eval PINGACCESS_WAS_HEALTHCHECK_SCHEDULE="${PINGACCESS_WAS_HEALTHCHECK_SCHEDULE}" ./robot_wrapper.py --path tests/pingaccess-was --include pingAccessWas --output /tmp/clusterHealth.xml --report /tmp/report.html --cron "${PINGACCESS_WAS_HEALTHCHECK_SCHEDULE}"
+          - eval PINGACCESS_WAS_HEALTHCHECK_SCHEDULE="${PINGACCESS_WAS_HEALTHCHECK_SCHEDULE}" ./robot_wrapper.py --path tests/pingaccess-was --include pingAccessWas --output /tmp/pingAccessWas.xml --report /tmp/report.html --cron "${PINGACCESS_WAS_HEALTHCHECK_SCHEDULE}"
         envFrom:
         - configMapRef:
             name: cluster-health-environment-variables
