@@ -175,6 +175,28 @@ disable_os_operator_crds() {
 }
 
 ########################################################################################################################
+# Enable or disable KMS component based on EBS_KMS_KEY_ARN
+########################################################################################################################
+enable_kms() {
+  cd "${TMP_DIR}"
+
+  log "EBS_KMS_KEY_ARN=${EBS_KMS_KEY_ARN}"
+
+  for kust_file in $(grep --exclude-dir=.git -rwl -e "components/kms" | grep "kustomization.yaml"); do
+    if [[ -n "${EBS_KMS_KEY_ARN}" ]]; then
+      log "Enabling KMS component in ${kust_file}"
+      uncomment_lines_in_file "${kust_file}" "components[/].*kms"
+    else
+      log "Disabling KMS component in ${kust_file}"
+      comment_lines_in_file "${kust_file}" "components[/].*kms"
+    fi
+  done
+}
+
+
+
+
+########################################################################################################################
 # Get the P1AS version from the version.txt located in the cluster-state-repo
 ########################################################################################################################
 get_version() {
@@ -336,6 +358,7 @@ monorepo_main() {
 
       feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
       enable_external_ingress
+      enable_kms
     )
     test $? -ne 0 && exit 1
   fi
