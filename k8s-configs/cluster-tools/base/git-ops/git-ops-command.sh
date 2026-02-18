@@ -182,16 +182,17 @@ enable_kms() {
 
   log "EBS_KMS_KEY_ARN=${EBS_KMS_KEY_ARN}"
 
-  for kust_file in $(grep --exclude-dir=.git -rwl -e "components/kms" | grep "kustomization.yaml"); do
-    if [[ -n "${EBS_KMS_KEY_ARN}" ]]; then
-      log "Enabling KMS component in ${kust_file}"
-      uncomment_lines_in_file "${kust_file}" "components[/].*kms"
-    else
-      log "Disabling KMS component in ${kust_file}"
-      comment_lines_in_file "${kust_file}" "components[/].*kms"
-    fi
-  done
+  # Match any KMS file
+  pattern="kms-storageclass\.yaml|kms-patch\.yaml"
+
+  if [[ -n "${EBS_KMS_KEY_ARN}" ]]; then
+    for kust_file in $(grep --exclude-dir=.git -rlE "${pattern}" | grep "kustomization.yaml"); do
+      log "Enabling KMS in ${kust_file}"
+      uncomment_lines_in_file "${kust_file}" "${pattern}"
+    done
+  fi
 }
+
 
 
 
