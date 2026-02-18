@@ -1,7 +1,6 @@
-- op: replace
-  path: /metadata/name
-  value: pingdatasync-gp3-kms
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: pingdatasync-gp3
+$patch: delete
 
-- op: add
-  path: /parameters/kmsKeyId
-  value: ${EBS_KMS_KEY_ARN}

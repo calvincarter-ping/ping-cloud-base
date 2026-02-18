@@ -4,12 +4,15 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 # Apply pingdatasync deployment resources
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdatasync/server?ref=${K8S_GIT_BRANCH}
+#- pingdatasync-gp3-kms.yaml
+
 
 
 images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdatasync${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdatasync${ECR_ENV}
   newTag: ${PINGDATASYNC_IMAGE_TAG}
+
 
 patchesJson6902:
 
@@ -39,9 +42,4 @@ patchesJson6902:
       value: pingdatasync-admin.${DNS_ZONE}
 
 patches:
-- path: kms-patch.yaml
-  target:
-    group: storage.k8s.io
-    version: v1
-    kind: StorageClass
-    name: pingdatasync-gp3
+#- path: kms-patch.yaml
