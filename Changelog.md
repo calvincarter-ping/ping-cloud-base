@@ -7,20 +7,39 @@
 - Update Security Contexts for external-dns namespace workloads
 - Update Security Contexts for ping-cloud namespace deployments and cronjobs
 - Update Security Contexts for ping-cloud namespace statefulsets
+- Update Security Contexts for prometheus namespace workloads
+- Update Security Contexts for pod-reaper namespace workloads
+- Update Security Contexts for health namespace workloads
 - Update Security Contexts for cert-manager workloads
+- Update Security Contexts for kube-system namespace workloads
 - Upgrade cluster-autoscaler to version 1.34
 - Upgrade external-dns to version v0.20.0
+- Update NewRelic APM agent Java args logic
+- Upgrade pod-reaper to version 2.14.0
+- Bundle Documentation folder in profile-repo explaining all static files for all Products
+- Update Security Contexts for elastic-stack-logging workloads (pt 2)
+- Enabled JSON for PA/PA-WAS/PF/PD
 
 _Changes:_
 
+- [X] PDO-8951 FluentBit: Remove K8s Metadata and Labels
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
+- [X] PDO-10285 - NewRelic: Update Logic for APM Agent + newrelic-tags-exporter
+- [X] PDO-10479 Update Security Contexts for kube-system namespace workloads
+- [X] PDO-10480 Update Security Contexts for pod-reaper namespace workloads
+- [X] PDO-10482 Update Security Contexts for health namespace workloads
 - [X] PDO-10483 Update Security Contexts for ping-cloud namespace workloads - part 1
 - [X] PDO-10877 Update Security Contexts for ping-cloud namespace workloads - part 2
+- [X] PDO-10484 Update Security Contexts for prometheus namespace workloads
 - [X] PDO-10485 Update Security Contexts for cert-manager namespace workloads
 - [X] PDO-10486 Update Security Contexts for external-dns namespace workloads
 - [X] PDO-10546 NewRelic: Remove NRI Kubernetes Images from PCD
 - [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
 - [X] PDO-10816 Upgrade external-dns to version v0.20.0
+- [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
+- [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
+- [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)
+- [X] PDO-10795 Enable JSON-Based Logging for PA / PF / PD / PA-WAS
 
 ### 2.2.0
 
@@ -56,6 +75,8 @@ _Changes:_
 - Add Self-service IP allowlist vars and bootstrap config
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
 - Add backward compatible JSON filters for customer pipelines (PD)
+- Update PA 9.0 run.properties
+- Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
 - Update engine ingresses to cache healthcheck responses for 1s
 - Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
 
@@ -90,6 +111,7 @@ _Changes:_
 - [X] PDO-9937 Fix Opensearch when using ui-connect.sh
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
 - [X] PDO-9865 Implement PA-WAS separation of ingresses in PCB
+- [X] PDO-9868 Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
 - [X] PDO-10066 Add self-service annotations and labels to ingresses
 - [X] PDO-10068 Configure PA engines in child regions to use OAuth2
 - [X] PDO-10087 Prevent customer changes to environment during upgrades via maintenance page
@@ -102,11 +124,22 @@ _Changes:_
 - [X] PDO-10397 Add Self-service IP allowlist vars and bootstrap config
 - [X] PDO-10545 FluentBit: The main pipeline-output is not being removed from the customer-hub cde
 - [X] PDO-10575 chub-values.yaml support
+- [X] PDO-10579 VolumeAutoscaler: Update Scale Up threshold and percent
+- [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
+- [X] PDO-10895 Update PA 9.0 run.properties
 - [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 - [X] PDO-10998 Update engine ingresses to cache healthcheck responses for 1s
 
+### 2.1.2
+
+- Integrate PingDirectory service with external DNS by setting its policy to sync.
+
+_Changes:_
+
+- [X] PDO-8907 Integrate PingDirectory service with external DNS by setting its policy to sync
+- [X] PDO-10416 Restructure Backup Variables
 
 ### 2.1.1
 

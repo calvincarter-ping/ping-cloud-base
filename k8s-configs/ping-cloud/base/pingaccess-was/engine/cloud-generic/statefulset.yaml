@@ -269,9 +269,6 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
-        - secretRef:
-            name: newrelic-license-key
-            optional: true
       securityContext:
         fsGroup: 9999
         runAsNonRoot: true
