@@ -189,7 +189,7 @@ spec:
           - /bin/sh
           - -c
           - python3 -u /app/p1_app_to_k8s.py -a pingaccess -t /app/templates/pingaccess-admin-p14c-secret.yaml && python3 -u /app/p1_app_to_k8s.py -a pingaccess -t /app/templates/pingaccess-admin-p14c-configmap.yaml
-      - name: seed-nginx-workload
+      - name: seed-prometheus-exporter
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -197,6 +197,13 @@ spec:
           allowPrivilegeEscalation: false
           privileged: false
           readOnlyRootFilesystem: true
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "32Mi"
+          limits:
+            cpu: "100m"
+            memory: "64Mi"
         imagePullPolicy: Always
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.3-release-branch-latest
         command: [ "sh", "-c", "cp -r /opt/bitnami/. /mnt/bitnami/" ]
@@ -213,6 +220,13 @@ spec:
           allowPrivilegeEscalation: false
           privileged: false
           readOnlyRootFilesystem: true
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "32Mi"
+          limits:
+            cpu: "100m"
+            memory: "64Mi"
         command: [ "sh", "-c", "cp -a /opt/staging/. /mnt/stg/ && cp -a /opt/out/. /mnt/out/" ]
         volumeMounts:
         - name: staging-dir
