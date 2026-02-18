@@ -175,21 +175,33 @@ disable_os_operator_crds() {
 }
 
 ########################################################################################################################
-# Enable or disable KMS component based on EBS_KMS_KEY_ARN
+# Enable KMS component based on EBS_KMS_KEY_ARN
 ########################################################################################################################
 enable_kms() {
   cd "${TMP_DIR}"
 
   log "EBS_KMS_KEY_ARN=${EBS_KMS_KEY_ARN}"
 
-  # Match any KMS file
-  pattern="kms-storageclass\.yaml|kms-patch\.yaml"
-
+  # Only proceed if KMS is enabled
   if [[ -n "${EBS_KMS_KEY_ARN}" ]]; then
-    for kust_file in $(grep --exclude-dir=.git -rlE "${pattern}" | grep "kustomization.yaml"); do
-      log "Enabling KMS in ${kust_file}"
-      uncomment_lines_in_file "${kust_file}" "${pattern}"
+    log "KMS is ENABLED - uncommenting KMS resources"
+    
+    # Define patterns for KMS resources
+    patterns=(
+      "^#- kms-storageclass\.yaml"
+      "^#- path: kms-patch\.yaml"
+    )
+    
+    # Loop through each pattern
+    for pattern in "${patterns[@]}"; do
+      # Find files containing this pattern
+      for kust_file in $(grep --exclude-dir=.git -rl "${pattern}" | grep "kustomization.yaml" 2>/dev/null || true); do
+        log "Uncommenting '${pattern}' in ${kust_file}"
+        uncomment_lines_in_file "${kust_file}" "${pattern}"
+      done
     done
+  else
+    log "KMS is DISABLED - no changes needed"
   fi
 }
 
