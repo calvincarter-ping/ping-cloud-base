@@ -18,7 +18,7 @@
 - Bundle Documentation folder in profile-repo explaining all static files for all Products
 - Update Security Contexts for elastic-stack-logging workloads (pt 2)
 - Enabled JSON for PA/PA-WAS/PF/PD
-- Add ENABLE_IMPOSSIBLE_LOGIN feature flag to conditionally deploy PingFederate Impossible Login OpenSearch dashboards
+- Add ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD feature flag to conditionally deploy PingFederate Impossible Login OpenSearch dashboards
 
 _Changes:_
 
