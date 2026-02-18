@@ -38,3 +38,10 @@ patchesJson6902:
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingdatasync-admin.${DNS_ZONE}
 
+patches:
+- path: kms-patch.yaml
+  target:
+    group: storage.k8s.io
+    version: v1
+    kind: StorageClass
+    name: pingdatasync-gp3

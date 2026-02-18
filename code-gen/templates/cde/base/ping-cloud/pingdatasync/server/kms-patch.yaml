@@ -1,0 +1,7 @@
+- op: replace
+  path: /metadata/name
+  value: pingdatasync-gp3-kms
+
+- op: add
+  path: /parameters/kmsKeyId
+  value: ${EBS_KMS_KEY_ARN}
