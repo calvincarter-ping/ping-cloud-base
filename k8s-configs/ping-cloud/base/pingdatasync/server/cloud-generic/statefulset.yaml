@@ -142,12 +142,10 @@ spec:
           limits:
             cpu: "100m"
             memory: "64Mi"
-        command: [ "sh", "-c", "cp -a /opt/staging/. /mnt/stg/ && cp -a /opt/out/. /mnt/out/" ]
+        command: [ "sh", "-c", "cp -a /opt/staging/. /mnt/stg/" ]
         volumeMounts:
         - name: staging-dir
           mountPath: /mnt/stg
-        - name: out-dir
-          mountPath: /mnt/out
       containers:
       - name: pingdatasync
         securityContext:
@@ -246,8 +244,6 @@ spec:
             mountPath: /opt/server/logs/tools/
           - name: staging-dir
             mountPath: /opt/staging
-          - name: out-dir
-            mountPath: /opt/out
           - name: tmp-dir
             mountPath: /tmp
             subPath: pingaccess-was-tmp
@@ -284,8 +280,6 @@ spec:
         - name: tmp-dir
           emptyDir: {}
         - name: staging-dir
-          emptyDir: {}
-        - name: out-dir
           emptyDir: {}
         - name: aws-config-dir
           emptyDir: {}
