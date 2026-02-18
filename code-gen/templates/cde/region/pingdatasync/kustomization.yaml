@@ -1,0 +1,5 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+patchesJson6902:
+#  - path: kms-patch.yaml

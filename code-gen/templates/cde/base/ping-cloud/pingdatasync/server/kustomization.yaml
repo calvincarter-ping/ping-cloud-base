@@ -5,8 +5,6 @@ resources:
 # Apply pingdatasync deployment resources
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdatasync/server?ref=${K8S_GIT_BRANCH}
 
-patchesJson6902:
-#  - path: kms-patch.yaml
 
 images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdatasync${ECR_ENV}
