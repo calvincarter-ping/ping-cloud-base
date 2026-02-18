@@ -1,7 +1,16 @@
-- op: replace
-  path: /metadata/name
-  value: pingdatasync-gp3-kms
+patchesJson6902:
+- target:
+    group: storage.k8s.io
+    version: v1
+    kind: StorageClass
+    name: pingdatasync-gp3
+  patch: |-
+    # Change StorageClass name
+    - op: replace
+      path: /metadata/name
+      value: pingdatasync-gp3-kms
 
-- op: add
-  path: /parameters/kmsKeyId
-  value: ${EBS_KMS_KEY_ARN}
+    # Add customer-managed KMS key
+    - op: add
+      path: /parameters/kmsKeyId
+      value: ${EBS_KMS_KEY_ARN}
