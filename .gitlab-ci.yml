@@ -280,20 +280,21 @@ integration-tests-chub:
   rules:
   - if: '$ENV_TYPE == "customer-hub"'
 
-# p1as-cluster-tools MR Test
-integration-tests-mr-p1as-cluster-tools:
+# cluster-tools integration Test
+cluster-tools:
   extends: .integration-tests-base
   parallel:
     matrix:
       - TEST:
         - ingress-nginx
+        - karpenter
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
         - "code-gen/templates/p1as-cluster-tools/**/*"
 
-# PingDirectory MR Test
-integration-tests-mr-pd:
+# PingDirectory integration Test
+pingdirectory:
   extends: .integration-tests-base
   variables:
     TEST: pingdirectory
@@ -302,8 +303,8 @@ integration-tests-mr-pd:
       changes:
         - "code-gen/templates/p1as-pingdirectory/**/*"
 
-# PingFederate MR Test
-integration-tests-mr-pf:
+# PingFederate integration Test
+pingfederate:
   extends: .integration-tests-base
   variables:
     TEST: pingfederate
@@ -312,8 +313,8 @@ integration-tests-mr-pf:
       changes:
         - "code-gen/templates/p1as-pingfederate/**/*"
 
-# PingAccess MR Test
-integration-tests-mr-pa:
+# PingAccess integration Test
+pingaccess:
   extends: .integration-tests-base
   variables:
     TEST: pingaccess
@@ -323,6 +324,17 @@ integration-tests-mr-pa:
         - "k8s-configs/ping-cloud/base/pingaccess/**/*"
         - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
         - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
+        - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
+
+# PingAccess-WAS integration Test
+pingaccess-was:
+  extends: .integration-tests-base
+  variables:
+    TEST: pingaccess-was
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
         - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
 
 ## Chaos testing stage ##

@@ -18,7 +18,7 @@ ingress-nginx-public:
       autoscaling:
         minReplicas: 3
         maxReplicas: 3
-        targetCPUUtilizationPercentage: 72
+        targetCPUUtilizationPercentage: 70
       service:
         annotations:
           ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
