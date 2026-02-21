@@ -22,7 +22,7 @@ patchesJson6902:
     group: apps
     version: v1
     kind: StatefulSet
-    name: pingaccess-was-admin
+    name: pingaccess-was-admin2
   patch: |
     - op: add
       path: /spec/template/spec/containers/0/envFrom/-
