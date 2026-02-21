@@ -280,6 +280,19 @@ integration-tests-chub:
   rules:
   - if: '$ENV_TYPE == "customer-hub"'
 
+# Argocd integration test
+argocd:
+  extends: .integration-tests-base
+  variables:
+    TEST: argocd
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "k8s-configs/ping-cloud/base/argocd/**/*"
+        - "code-gen/templates/common/base/argocd/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: always
+
 # cluster-tools integration Test
 cluster-tools:
   extends: .integration-tests-base
@@ -287,7 +300,7 @@ cluster-tools:
     matrix:
       - TEST:
         - ingress-nginx
-        - karpenter
+        - system-scaling
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -336,6 +349,29 @@ pingaccess-was:
       changes:
         - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
         - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
+
+# self-service integration test
+self-service:
+  extends: .integration-tests-base
+  variables:
+    TEST: self-service
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "code-gen/templates/p1as-self-service/**/*"
+
+# observability integration test
+observability:
+  extends: .integration-tests-base
+  parallel:
+    matrix:
+      - TEST:
+        - logging
+        - monitoring
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "code-gen/templates/p1as-observability/**/*"
 
 ## Chaos testing stage ##
 chaos-tests:
