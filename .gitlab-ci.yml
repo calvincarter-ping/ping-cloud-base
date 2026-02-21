@@ -1,10 +1,14 @@
 workflow:
   rules:
-    - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-      when: never
-    - if: $CI_MERGE_REQUEST_ID
-      when: never
-    - when: always
+  - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+        when: never
+  # 1. If an MR is open, run a "Merge Request Pipeline"
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  # 2. If a branch is pushed but HAS an open MR, don't run a redundant branch pipeline
+  - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+    when: never
+  # 3. Otherwise, run for standard branch pushes (like your nightly schedule)
+  - if: $CI_COMMIT_BRANCH
 
 ## Pipeline stages ##
 stages:
@@ -244,7 +248,7 @@ integration-tests:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
     - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
-    # Run for scheduled nightly builds
+    # Run scheduled nightly builds
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 integration-tests-scheduled-pipeline:
