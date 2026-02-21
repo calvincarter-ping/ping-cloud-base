@@ -165,6 +165,13 @@ pa-was-integration-tests:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
   dependencies:
     - find-cluster
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
+        - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: always
 
 ################################################
 # All integration tests defined to run on the  #
@@ -245,8 +252,8 @@ integration-tests:
       - TEST: *all-tests
   rules:
     # DO NOT run this full suite on Merge Requests
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
+    # - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    #   when: never
     - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
     # Run scheduled nightly builds
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
@@ -315,6 +322,11 @@ chaos-tests:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
   dependencies:
     - find-cluster
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: always
 
 .cleanup-base:
   stage: cleanup
