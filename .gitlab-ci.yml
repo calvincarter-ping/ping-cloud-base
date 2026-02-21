@@ -283,7 +283,7 @@ integration-tests-chub:
 # p1as-cluster-tools MR Test
 integration-tests-mr-p1as-cluster-tools:
   extends: .integration-tests-base
-  variables:
+  parallel:
     matrix:
       - TEST:
         - ingress-nginx
