@@ -1,7 +1,7 @@
 workflow:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-          when: never
+      when: never
     # 1. If an MR is open, run a "Merge Request Pipeline"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     # 2. If a branch is pushed but HAS an open MR, don't run a redundant branch pipeline
