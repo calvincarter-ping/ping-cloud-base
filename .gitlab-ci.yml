@@ -252,8 +252,8 @@ integration-tests:
       - TEST: *all-tests
   rules:
     # DO NOT run this full suite on Merge Requests
-    # - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    #   when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
     - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
     # Run scheduled nightly builds
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
@@ -287,8 +287,6 @@ integration-tests-mr-pd:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
         - "code-gen/templates/p1as-pingdirectory/**/*"
-      when: on_success
-    - when: never
 
 # PingFederate MR Test
 integration-tests-mr-pf:
@@ -299,8 +297,6 @@ integration-tests-mr-pf:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
         - "code-gen/templates/p1as-pingfederate/**/*"
-      when: on_success
-    - when: never
 
 # PingAccess MR Test
 integration-tests-mr-pa:
@@ -314,8 +310,6 @@ integration-tests-mr-pa:
         - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
         - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
         - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
-      when: on_success
-    - when: never
 
 ## Chaos testing stage ##
 chaos-tests:
