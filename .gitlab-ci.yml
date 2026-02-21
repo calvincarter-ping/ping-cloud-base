@@ -280,6 +280,18 @@ integration-tests-chub:
   rules:
   - if: '$ENV_TYPE == "customer-hub"'
 
+# p1as-cluster-tools MR Test
+integration-tests-mr-p1as-cluster-tools:
+  extends: .integration-tests-base
+  variables:
+    matrix:
+      - TEST:
+        - ingress-nginx
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "code-gen/templates/p1as-cluster-tools/**/*"
+
 # PingDirectory MR Test
 integration-tests-mr-pd:
   extends: .integration-tests-base
