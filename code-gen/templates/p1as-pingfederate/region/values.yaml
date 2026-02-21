@@ -13,7 +13,7 @@ pingfederate:
     pfLogLevel: "INFO"
     verbose: false
     # PingFederate Heap
-    pfMinHeap: "1536m"
+    pfMinHeap: "1537m"
     pfMaxHeap: "1536m"
     pfMinYgen: "768m"
     pfMaxYgen: "768m"
