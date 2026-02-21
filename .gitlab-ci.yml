@@ -241,6 +241,11 @@ integration-tests:
       - TEST: *all-tests
   rules:
     - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
+    # Run for scheduled nightly builds
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    # DO NOT run this full suite on Merge Requests
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
 
 integration-tests-scheduled-pipeline:
   extends: .integration-tests-base
@@ -261,6 +266,22 @@ integration-tests-chub:
       - TEST: *chub-tests
   rules:
   - if: '$ENV_TYPE == "customer-hub"'
+
+# Only run integration tests related to the merge request changes
+integration-tests-mr:
+  extends: .integration-tests-base
+  parallel:
+    matrix:
+      - TEST: pingdirectory
+        TRACKED_FILES: "*p1as-pingdirectory/**/*"
+      - TEST: pingfederate
+        TRACKED_FILES: "*p1as-pingfederate/**/*"
+      - TEST: pingaccess
+        TRACKED_FILES: "*p1as-pingaccess/**/*"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - $TRACKED_FILES
 
 ## Chaos testing stage ##
 chaos-tests:
