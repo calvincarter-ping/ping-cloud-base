@@ -158,24 +158,28 @@ pre-check:
   dependencies:
     - find-cluster
 
-## PA-WAS stage ##
-pa-was-integration-tests:
-  stage: pa-was-test
-  retry: 1
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
-  dependencies:
-    - find-cluster
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
-        - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: always
+## PA-WAS stage #############################
+#
+# Maybe this is not needed now since we have 
+# an integration test for pingaccess-was
+############################################
+# pa-was-integration-tests:
+#   stage: pa-was-test
+#   retry: 1
+#   tags:
+#     - default-gitlab-runner-ping-cloud
+#   image: ${K8S_DEPLOY_TOOLS}
+#   script:
+#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
+#   dependencies:
+#     - find-cluster
+#   rules:
+#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+#       changes:
+#         - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
+#         - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
+#     - if: '$CI_PIPELINE_SOURCE == "schedule"'
+#       when: always
 
 ################################################
 # All integration tests defined to run on the  #
@@ -199,22 +203,6 @@ pa-was-integration-tests:
   - self-service
   - argocd
   - system-scaling
-
-#################################################
-# All integration tests defined to run on the  #
-# traditionally deployed P1AS                  #
-################################################
-.schedule-tests: &schedule-tests
-  - pingdirectory
-  - pingdelegator
-  - pingfederate
-  - pingaccess
-  - pingcloud-services
-  - pingdatasync
-  - common
-  - monitoring
-  - health
-  - pingone
 
 ################################################
 # All integration tests defined to run on the  #
@@ -262,14 +250,108 @@ integration-tests:
     - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
     # Run scheduled nightly builds
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
 
-integration-tests-scheduled-pipeline:
+.mr-rules-map:
+  argocd: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes:
+      - "k8s-configs/ping-cloud/base/argocd/**/*"
+      - "code-gen/templates/common/base/argocd/**/*"
+  cert-manager: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
+  common: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: "code-gen/templates/common/base/ping-cloud/**/*"
+  health: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: "k8s-configs/cluster-tools/base/health/**/*"
+  cluster-tools: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: "code-gen/templates/p1as-cluster-tools/**/*"
+  logging: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: 
+      - "k8s-configs/cluster-tools/base/logging/**/*"
+      - "code-gen/templates/common/base/cluster-tools/logging/**/*"
+  monitoring: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: 
+      - "k8s-configs/cluster-tools/base/monitoring/**/*"
+      - "code-gen/templates/common/base/cluster-tools/monitoring/**/*"
+  pingaccess: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: 
+      - "k8s-configs/ping-cloud/base/pingaccess/**/*"
+      - "k8s-configs/ping-cloud/prod/large/pingaccess/**/*"
+      - "k8s-configs/ping-cloud/prod/medium/pingaccess/**/*"
+      - "k8s-configs/ping-cloud/prod/small/pingaccess/**/*"
+      - "k8s-configs/ping-cloud/prod/x-small/pingaccess/**/*"
+      - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
+      - "k8s-configs/ping-cloud/base/pingaccess/**/*"
+      - "code-gen/templates/p1as-pingaccess/**/*"
+  pingaccess-was: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes:
+      - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
+      - "k8s-configs/ping-cloud/prod/large/pingaccess-was/**/*"
+      - "k8s-configs/ping-cloud/prod/medium/pingaccess-was/**/*"
+      - "k8s-configs/ping-cloud/prod/small/pingaccess-was/**/*"
+      - "k8s-configs/ping-cloud/prod/x-small/pingaccess-was/**/*" 
+      - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
+      - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
+  pingcentral: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: 
+      - "k8s-configs/ping-cloud/base/pingcentral/**/*"
+      - "k8s-configs/ping-cloud/prod/large/pingcentral/**/*"
+      - "k8s-configs/ping-cloud/prod/medium/pingcentral/**/*"
+      - "k8s-configs/ping-cloud/prod/small/pingcentral/**/*"
+      - "k8s-configs/ping-cloud/prod/x-small/pingcentral/**/*"
+      - "k8s-configs/ping-cloud/base/pingcentral/**/*"
+  pingcloud-services: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: "k8s-configs/ping-cloud/base/pingcloud-services/**/*"
+  pingdatasync: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes:
+      - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
+      - "k8s-configs/ping-cloud/prod/large/pingdatasync/**/*"
+      - "k8s-configs/ping-cloud/prod/medium/pingdatasync/**/*"
+      - "k8s-configs/ping-cloud/prod/small/pingdatasync/**/*"
+      - "k8s-configs/ping-cloud/prod/x-small/pingdatasync/**/*"
+      - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
+  pingdelegator: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes:
+      - "k8s-configs/ping-cloud/base/pingdelegator/**/*"
+      - "k8s-configs/ping-cloud/prod/large/pingdelegator/**/*"
+      - "k8s-configs/ping-cloud/prod/medium/pingdelegator/**/*"
+      - "k8s-configs/ping-cloud/prod/small/pingdelegator/**/*"
+      - "k8s-configs/ping-cloud/prod/x-small/pingdelegator/**/*"
+      - "code-gen/templates/cde/base/ping-cloud/pingdelegator/**/*"
+  pingdirectory: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: "code-gen/templates/p1as-pingdirectory/**/*"
+  pingfederate: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: "code-gen/templates/p1as-pingfederate/**/*"
+  pingone: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: "k8s-configs/ping-cloud/base/pingone/**/*"
+  self-service: 
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: "code-gen/templates/p1as-self-service/**/*"
+
+# Nightly Build Tests
+nightly-build-tests:
   extends: .integration-tests-base
   variables:
     TEST: ${TEST}
   parallel:
     matrix:
-      - TEST: *schedule-tests
+      - TEST: *all-tests
   rules:
     - if: '$ENV_TYPE != "customer-hub" && $CI_PIPELINE_SOURCE == "schedule"'
 
@@ -288,22 +370,28 @@ argocd:
   extends: .integration-tests-base
   variables:
     TEST: argocd
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "k8s-configs/ping-cloud/base/argocd/**/*"
-        - "code-gen/templates/common/base/argocd/**/*"
+  rules: !reference [.mr-rules-map, argocd]
 
 # cert-manager integration test
 cert-manager:
   extends: .integration-tests-base
   variables:
     TEST: cert-manager
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "k8s-configs/cluster-tools/base/cert-manager/**/*"
-        - "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
+  rules: !reference [.mr-rules-map, cert-manager]
+
+# common integration test
+common:
+  extends: .integration-tests-base
+  variables:
+    TEST: common
+  rules: !reference [.mr-rules-map, common]
+
+# Health integration test
+health:
+  extends: .integration-tests-base
+  variables:
+    TEST: health
+  rules: !reference [.mr-rules-map, health]
 
 # cluster-tools integration Test
 cluster-tools:
@@ -313,108 +401,91 @@ cluster-tools:
       - TEST:
         - ingress-nginx
         - system-scaling
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "code-gen/templates/p1as-cluster-tools/**/*"
+  rules: !reference [.mr-rules-map, cluster-tools]
 
-# PingDirectory integration Test
-pingdirectory:
+# logging integration test
+logging:
   extends: .integration-tests-base
   variables:
-    TEST: pingdirectory
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "code-gen/templates/p1as-pingdirectory/**/*"
+    TEST: logging
+  rules: !reference [.mr-rules-map, logging]
 
-# PingDelegator integration test
-pingdelegator:
+# monitoring integration test
+monitoring:
   extends: .integration-tests-base
   variables:
-    TEST: pingdelegator
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "k8s-configs/ping-cloud/base/pingdelegator/**/*"
-        - "k8s-configs/ping-cloud/prod/large/pingdelegator/**/*"
-        - "k8s-configs/ping-cloud/prod/medium/pingdelegator/**/*"
-        - "k8s-configs/ping-cloud/prod/small/pingdelegator/**/*"
-        - "k8s-configs/ping-cloud/prod/x-small/pingdelegator/**/*"
-        - "code-gen/templates/cde/base/ping-cloud/pingdelegator/**/*"
-
-# PingFederate integration Test
-pingfederate:
-  extends: .integration-tests-base
-  variables:
-    TEST: pingfederate
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "code-gen/templates/p1as-pingfederate/**/*"
+    TEST: monitoring
+  rules: !reference [.mr-rules-map, monitoring]
 
 # PingAccess integration Test
 pingaccess:
   extends: .integration-tests-base
   variables:
     TEST: pingaccess
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "k8s-configs/ping-cloud/base/pingaccess/**/*"
-        - "k8s-configs/ping-cloud/prod/large/pingaccess/**/*"
-        - "k8s-configs/ping-cloud/prod/medium/pingaccess/**/*"
-        - "k8s-configs/ping-cloud/prod/small/pingaccess/**/*"
-        - "k8s-configs/ping-cloud/prod/x-small/pingaccess/**/*"
-        - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
+  rules: !reference [.mr-rules-map, pingaccess]
 
 # PingAccess WAS integration Test
 pingaccess-was:
   extends: .integration-tests-base
   variables:
     TEST: pingaccess-was
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
-        - "k8s-configs/ping-cloud/prod/large/pingaccess-was/**/*"
-        - "k8s-configs/ping-cloud/prod/medium/pingaccess-was/**/*"
-        - "k8s-configs/ping-cloud/prod/small/pingaccess-was/**/*"
-        - "k8s-configs/ping-cloud/prod/x-small/pingaccess-was/**/*"
-        - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
+  rules: !reference [.mr-rules-map, pingaccess-was]
+
+# PingCentral integration Test
+pingcentral:
+  extends: .integration-tests-base
+  variables:
+    TEST: pingcentral
+  rules: !reference [.mr-rules-map, pingcentral]
+
+# PingCloud Services integration Test
+pingcloud-services:
+  extends: .integration-tests-base
+  variables:
+    TEST: pingcloud-services
+  rules: !reference [.mr-rules-map, pingcloud-services]
+
+# PingDataSync integration Test
+pingdatasync:
+  extends: .integration-tests-base
+  variables:
+    TEST: pingdatasync
+  rules: !reference [.mr-rules-map, pingdatasync]
+
+# PingDelegator integration test
+pingdelegator:
+  extends: .integration-tests-base
+  variables:
+    TEST: pingdelegator
+  rules: !reference [.mr-rules-map, pingdelegator]
+
+# PingDirectory integration Test
+pingdirectory:
+  extends: .integration-tests-base
+  variables:
+    TEST: pingdirectory
+  rules: !reference [.mr-rules-map, pingdirectory]
+
+# PingFederate integration Test
+pingfederate:
+  extends: .integration-tests-base
+  variables:
+    TEST: pingfederate
+  rules: !reference [.mr-rules-map, pingfederate]
+
+# PingOne integration Test
+pingone:
+  extends: .integration-tests-base
+  variables:
+    TEST: pingone
+  rules: !reference [.mr-rules-map, pingone]
 
 # self-service integration test
 self-service:
   extends: .integration-tests-base
   variables:
     TEST: self-service
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "code-gen/templates/p1as-self-service/**/*"
-
-# observability integration test
-observability:
-  extends: .integration-tests-base
-  parallel:
-    matrix:
-      - TEST:
-        - logging
-        - monitoring
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "code-gen/templates/p1as-observability/**/*"
-
-# Health integration test
-health:
-  extends: .integration-tests-base
-  variables:
-    TEST: health
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "k8s-configs/cluster-tools/base/health/**/*"
+  rules: !reference [.mr-rules-map, self-service]
 
 ## Chaos testing stage ##
 chaos-tests:
