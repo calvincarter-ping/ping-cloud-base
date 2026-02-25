@@ -16,7 +16,7 @@ ingress-nginx-public:
         ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}
     controller:
       autoscaling:
-        minReplicas: 4
+        minReplicas: 3
         maxReplicas: 3
         targetCPUUtilizationPercentage: 70
       service:

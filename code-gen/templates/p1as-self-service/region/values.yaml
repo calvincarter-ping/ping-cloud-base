@@ -13,7 +13,7 @@ selfService:
     # Resource limits for pods
     resources:
       limits:
-        memory: 601Mi
+        memory: 600Mi
         cpu:  400m
       requests:
         memory: 400Mi

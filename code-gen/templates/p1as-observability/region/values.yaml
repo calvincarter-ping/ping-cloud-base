@@ -9,7 +9,7 @@ cloudwatch:
 
   resources:
     limits:
-      cpu:  201m
+      cpu:  200m
       memory: 200Mi
     requests:
       cpu: 200m
