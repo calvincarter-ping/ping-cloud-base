@@ -316,7 +316,8 @@ integration-tests:
       - "k8s-configs/ping-cloud/base/pingcentral/**/*"
   pingcloud-services: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: "k8s-configs/ping-cloud/base/pingcloud-services/**/*"
+    changes: 
+      - "k8s-configs/ping-cloud/base/pingcloud-services/**/*"
   pingdatasync: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     changes:
@@ -337,7 +338,8 @@ integration-tests:
       - "code-gen/templates/cde/base/ping-cloud/pingdelegator/**/*"
   pingdirectory: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: "code-gen/templates/p1as-pingdirectory/**/*"
+    changes: 
+      - "code-gen/templates/p1as-pingdirectory/**/*"
   pingfederate: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     changes: 
