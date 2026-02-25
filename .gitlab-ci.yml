@@ -261,11 +261,11 @@ integration-tests:
   cert-manager: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     changes: 
-      "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
+      - "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
   common: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     changes: 
-      "code-gen/templates/common/base/ping-cloud/**/*"
+      - "code-gen/templates/common/base/ping-cloud/**/*"
   health: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     changes: 
