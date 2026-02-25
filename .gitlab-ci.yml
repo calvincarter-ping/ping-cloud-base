@@ -20,6 +20,7 @@ stages:
 - find-cluster
 - deploy
 - pre-check-test
+- pa-was-test
 - integration-test
 - chaos
 - cleanup
@@ -157,6 +158,25 @@ pre-check:
   dependencies:
     - find-cluster
 
+## PA-WAS stage #############################
+pa-was-integration-tests:
+  stage: pa-was-test
+  retry: 1
+  tags:
+    - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
+  dependencies:
+    - find-cluster
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
+        - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: always
+
 ################################################
 # All integration tests defined to run on the  #
 # traditionally deployed P1AS                  #
@@ -271,16 +291,6 @@ integration-tests:
       - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
       - "k8s-configs/ping-cloud/base/pingaccess/**/*"
       - "code-gen/templates/p1as-pingaccess/**/*"
-  pingaccess-was: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes:
-      - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
-      - "k8s-configs/ping-cloud/prod/large/pingaccess-was/**/*"
-      - "k8s-configs/ping-cloud/prod/medium/pingaccess-was/**/*"
-      - "k8s-configs/ping-cloud/prod/small/pingaccess-was/**/*"
-      - "k8s-configs/ping-cloud/prod/x-small/pingaccess-was/**/*" 
-      - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
-      - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
   pingcentral: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     changes: 
@@ -408,13 +418,6 @@ pingaccess:
   variables:
     TEST: pingaccess
   rules: !reference [.mr-rules-map, pingaccess]
-
-# PingAccess WAS integration Test
-pingaccess-was:
-  extends: .integration-tests-base
-  variables:
-    TEST: pingaccess-was
-  rules: !reference [.mr-rules-map, pingaccess-was]
 
 # PingCentral integration Test
 pingcentral:
