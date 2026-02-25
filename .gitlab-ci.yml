@@ -260,16 +260,20 @@ integration-tests:
       - "code-gen/templates/common/base/argocd/**/*"
   cert-manager: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
+    changes: 
+      "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
   common: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: "code-gen/templates/common/base/ping-cloud/**/*"
+    changes: 
+      "code-gen/templates/common/base/ping-cloud/**/*"
   health: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: "k8s-configs/cluster-tools/base/health/**/*"
+    changes: 
+      - "k8s-configs/cluster-tools/base/health/**/*"
   cluster-tools: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: "code-gen/templates/p1as-cluster-tools/**/*"
+    changes: 
+      - "code-gen/templates/p1as-cluster-tools/**/*"
   logging: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     changes: 
@@ -336,13 +340,16 @@ integration-tests:
     changes: "code-gen/templates/p1as-pingdirectory/**/*"
   pingfederate: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: "code-gen/templates/p1as-pingfederate/**/*"
+    changes: 
+      - "code-gen/templates/p1as-pingfederate/**/*"
   pingone: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: "k8s-configs/ping-cloud/base/pingone/**/*"
+    changes: 
+      - "k8s-configs/ping-cloud/base/pingone/**/*"
   self-service: 
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: "code-gen/templates/p1as-self-service/**/*"
+    changes: 
+      - "code-gen/templates/p1as-self-service/**/*"
 
 # Nightly Build Tests
 nightly-build-tests:
