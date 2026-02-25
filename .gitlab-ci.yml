@@ -20,7 +20,6 @@ stages:
 - find-cluster
 - deploy
 - pre-check-test
-- pa-was-test
 - integration-test
 - chaos
 - cleanup
@@ -157,25 +156,6 @@ pre-check:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
   dependencies:
     - find-cluster
-
-## PA-WAS stage #############################
-pa-was-integration-tests:
-  stage: pa-was-test
-  retry: 1
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
-  dependencies:
-    - find-cluster
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
-        - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: always
 
 ################################################
 # All integration tests defined to run on the  #
