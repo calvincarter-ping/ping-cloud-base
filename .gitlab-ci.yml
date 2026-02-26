@@ -158,7 +158,7 @@ pre-check:
   dependencies:
     - find-cluster
 
-## PA-WAS stage #############################
+## PA-WAS stage ##
 pa-was-integration-tests:
   stage: pa-was-test
   retry: 1
