@@ -128,6 +128,20 @@ deploy:
     YAML_OUT_DIR: $CI_PROJECT_DIR/out
   before_script:
     - mkdir -p $YAML_OUT_DIR
+    # Cleanup up legacy Karpenter webhooks to prevent startup issues with Karpenter
+    - | 
+      echo "Cleaning up legacy Karpenter webhooks if they exist to prevent startup issues with Karpenter"
+      kubectl delete validatingwebhookconfiguration \
+        defaulting.webhook.karpenter.k8s.aws \
+        validation.webhook.config.karpenter.sh \
+        validation.webhook.karpenter.k8s.aws \
+        validation.webhook.karpenter.sh \
+        --ignore-not-found
+      kubectl delete mutatingwebhookconfigurations defaulting.webhook.karpenter.k8s.aws --ignore-not-found
+      
+    # Ensure Karpenter starts up properly
+    - echo "Restarting Karpenter to ensure it starts up cleanly without the old webhooks"
+    - kubectl rollout restart deployment karpenter -n kube-system
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
   artifacts:
