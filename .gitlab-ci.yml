@@ -254,7 +254,7 @@ integration-tests:
 
 .manual-web-rule: &manual-web-rule
   - if: '$CI_PIPELINE_SOURCE == "web"'
-    when: automatic
+    when: manual
     allow_failure: true
 
 .mr-rules-map:
