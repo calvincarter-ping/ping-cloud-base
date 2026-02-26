@@ -11,8 +11,8 @@ workflow:
     # Scheduled pipelines
     - if: $CI_PIPELINE_SOURCE == "schedule"
     # If a branch is pushed but HAS an open MR, don't run a redundant branch pipeline
-    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
-      when: never
+    # - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+    #   when: never
     # Otherwise, run for standard branch pushes
     - if: $CI_COMMIT_BRANCH
 
