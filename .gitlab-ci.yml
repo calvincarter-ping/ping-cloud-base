@@ -128,6 +128,7 @@ deploy:
     YAML_OUT_DIR: $CI_PROJECT_DIR/out
   before_script:
     - mkdir -p $YAML_OUT_DIR
+    - source ${SHARED_CI_SCRIPTS_DIR}/common.sh
     # Cleanup up legacy Karpenter webhooks to prevent startup issues with Karpenter
     - | 
       echo "Cleaning up legacy Karpenter webhooks if they exist to prevent startup issues with Karpenter"
