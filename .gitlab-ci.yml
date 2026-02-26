@@ -252,38 +252,49 @@ integration-tests:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
 
+.manual-web-rule: &manual-web-rule
+  - if: '$CI_PIPELINE_SOURCE == "web"'
+    when: automatic
+
 .mr-rules-map:
   argocd: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
         - "k8s-configs/ping-cloud/base/argocd/**/*"
         - "code-gen/templates/common/base/argocd/**/*"
+    - <<: *manual-web-rule
   cert-manager: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
+    - <<: *manual-web-rule
   common: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/common/base/ping-cloud/**/*"
+    - <<: *manual-web-rule
   health: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/cluster-tools/base/health/**/*"
+    - <<: *manual-web-rule
   cluster-tools: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/p1as-cluster-tools/**/*"
+    - <<: *manual-web-rule
   logging: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/cluster-tools/base/logging/**/*"
         - "code-gen/templates/common/base/cluster-tools/logging/**/*"
+    - <<: *manual-web-rule
   monitoring: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/cluster-tools/base/monitoring/**/*"
         - "code-gen/templates/common/base/cluster-tools/monitoring/**/*"
+    - <<: *manual-web-rule
   pingaccess: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
@@ -295,6 +306,7 @@ integration-tests:
         - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
         - "k8s-configs/ping-cloud/base/pingaccess/**/*"
         - "code-gen/templates/p1as-pingaccess/**/*"
+    - <<: *manual-web-rule
   pingcentral: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
@@ -304,10 +316,12 @@ integration-tests:
         - "k8s-configs/ping-cloud/prod/small/pingcentral/**/*"
         - "k8s-configs/ping-cloud/prod/x-small/pingcentral/**/*"
         - "k8s-configs/ping-cloud/base/pingcentral/**/*"
+    - <<: *manual-web-rule
   pingcloud-services: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/ping-cloud/base/pingcloud-services/**/*"
+    - <<: *manual-web-rule
   pingdatasync: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -317,6 +331,7 @@ integration-tests:
         - "k8s-configs/ping-cloud/prod/small/pingdatasync/**/*"
         - "k8s-configs/ping-cloud/prod/x-small/pingdatasync/**/*"
         - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
+    - <<: *manual-web-rule
   pingdelegator: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -326,22 +341,27 @@ integration-tests:
         - "k8s-configs/ping-cloud/prod/small/pingdelegator/**/*"
         - "k8s-configs/ping-cloud/prod/x-small/pingdelegator/**/*"
         - "code-gen/templates/cde/base/ping-cloud/pingdelegator/**/*"
+    - <<: *manual-web-rule
   pingdirectory: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/p1as-pingdirectory/**/*"
+    - <<: *manual-web-rule
   pingfederate: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/p1as-pingfederate/**/*"
+    - <<: *manual-web-rule
   pingone: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/ping-cloud/base/pingone/**/*"
+    - <<: *manual-web-rule
   self-service: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/p1as-self-service/**/*"
+    - <<: *manual-web-rule
 
 # Nightly Build Tests
 nightly-build-tests:
