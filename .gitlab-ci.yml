@@ -2,6 +2,8 @@ workflow:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: always
     # Handle Tag Pipelines (Ensures releases/tags trigger the pipeline)
     - if: $CI_COMMIT_TAG
     # If an MR is open, run a "Merge Request Pipeline"
@@ -13,13 +15,6 @@ workflow:
       when: never
     # Otherwise, run for standard branch pushes
     - if: $CI_COMMIT_BRANCH
-    # FALLBACK: Allow manual runs (web), API triggers, and parent/child pipelines
-    - if: >
-        $CI_PIPELINE_SOURCE == "web" || 
-        $CI_PIPELINE_SOURCE == "api" || 
-        $CI_PIPELINE_SOURCE == "trigger" || 
-        $CI_PIPELINE_SOURCE == "parent_pipeline"
-      when: always
 
 ## Pipeline stages ##
 stages:
@@ -261,32 +256,46 @@ integration-tests:
       changes:
         - "k8s-configs/ping-cloud/base/argocd/**/*"
         - "code-gen/templates/common/base/argocd/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   cert-manager: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   common: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/common/base/ping-cloud/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   health: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/cluster-tools/base/health/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   cluster-tools: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/p1as-cluster-tools/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   logging: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/cluster-tools/base/logging/**/*"
         - "code-gen/templates/common/base/cluster-tools/logging/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   monitoring: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/cluster-tools/base/monitoring/**/*"
         - "code-gen/templates/common/base/cluster-tools/monitoring/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   pingaccess: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
@@ -298,6 +307,8 @@ integration-tests:
         - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
         - "k8s-configs/ping-cloud/base/pingaccess/**/*"
         - "code-gen/templates/p1as-pingaccess/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   pingcentral: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
@@ -307,10 +318,14 @@ integration-tests:
         - "k8s-configs/ping-cloud/prod/small/pingcentral/**/*"
         - "k8s-configs/ping-cloud/prod/x-small/pingcentral/**/*"
         - "k8s-configs/ping-cloud/base/pingcentral/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   pingcloud-services: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/ping-cloud/base/pingcloud-services/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   pingdatasync: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -320,6 +335,8 @@ integration-tests:
         - "k8s-configs/ping-cloud/prod/small/pingdatasync/**/*"
         - "k8s-configs/ping-cloud/prod/x-small/pingdatasync/**/*"
         - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   pingdelegator: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -329,22 +346,32 @@ integration-tests:
         - "k8s-configs/ping-cloud/prod/small/pingdelegator/**/*"
         - "k8s-configs/ping-cloud/prod/x-small/pingdelegator/**/*"
         - "code-gen/templates/cde/base/ping-cloud/pingdelegator/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   pingdirectory: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/p1as-pingdirectory/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   pingfederate: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/p1as-pingfederate/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   pingone: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "k8s-configs/ping-cloud/base/pingone/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
   self-service: 
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/p1as-self-service/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
 
 # Nightly Build Tests
 nightly-build-tests:
