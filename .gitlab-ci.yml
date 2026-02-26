@@ -257,94 +257,94 @@ integration-tests:
 
 .mr-rules-map:
   argocd: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes:
-      - "k8s-configs/ping-cloud/base/argocd/**/*"
-      - "code-gen/templates/common/base/argocd/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "k8s-configs/ping-cloud/base/argocd/**/*"
+        - "code-gen/templates/common/base/argocd/**/*"
   cert-manager: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
   common: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "code-gen/templates/common/base/ping-cloud/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "code-gen/templates/common/base/ping-cloud/**/*"
   health: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "k8s-configs/cluster-tools/base/health/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "k8s-configs/cluster-tools/base/health/**/*"
   cluster-tools: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "code-gen/templates/p1as-cluster-tools/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "code-gen/templates/p1as-cluster-tools/**/*"
   logging: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "k8s-configs/cluster-tools/base/logging/**/*"
-      - "code-gen/templates/common/base/cluster-tools/logging/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "k8s-configs/cluster-tools/base/logging/**/*"
+        - "code-gen/templates/common/base/cluster-tools/logging/**/*"
   monitoring: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "k8s-configs/cluster-tools/base/monitoring/**/*"
-      - "code-gen/templates/common/base/cluster-tools/monitoring/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "k8s-configs/cluster-tools/base/monitoring/**/*"
+        - "code-gen/templates/common/base/cluster-tools/monitoring/**/*"
   pingaccess: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "k8s-configs/ping-cloud/base/pingaccess/**/*"
-      - "k8s-configs/ping-cloud/prod/large/pingaccess/**/*"
-      - "k8s-configs/ping-cloud/prod/medium/pingaccess/**/*"
-      - "k8s-configs/ping-cloud/prod/small/pingaccess/**/*"
-      - "k8s-configs/ping-cloud/prod/x-small/pingaccess/**/*"
-      - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
-      - "k8s-configs/ping-cloud/base/pingaccess/**/*"
-      - "code-gen/templates/p1as-pingaccess/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "k8s-configs/ping-cloud/base/pingaccess/**/*"
+        - "k8s-configs/ping-cloud/prod/large/pingaccess/**/*"
+        - "k8s-configs/ping-cloud/prod/medium/pingaccess/**/*"
+        - "k8s-configs/ping-cloud/prod/small/pingaccess/**/*"
+        - "k8s-configs/ping-cloud/prod/x-small/pingaccess/**/*"
+        - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
+        - "k8s-configs/ping-cloud/base/pingaccess/**/*"
+        - "code-gen/templates/p1as-pingaccess/**/*"
   pingcentral: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "k8s-configs/ping-cloud/base/pingcentral/**/*"
-      - "k8s-configs/ping-cloud/prod/large/pingcentral/**/*"
-      - "k8s-configs/ping-cloud/prod/medium/pingcentral/**/*"
-      - "k8s-configs/ping-cloud/prod/small/pingcentral/**/*"
-      - "k8s-configs/ping-cloud/prod/x-small/pingcentral/**/*"
-      - "k8s-configs/ping-cloud/base/pingcentral/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "k8s-configs/ping-cloud/base/pingcentral/**/*"
+        - "k8s-configs/ping-cloud/prod/large/pingcentral/**/*"
+        - "k8s-configs/ping-cloud/prod/medium/pingcentral/**/*"
+        - "k8s-configs/ping-cloud/prod/small/pingcentral/**/*"
+        - "k8s-configs/ping-cloud/prod/x-small/pingcentral/**/*"
+        - "k8s-configs/ping-cloud/base/pingcentral/**/*"
   pingcloud-services: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "k8s-configs/ping-cloud/base/pingcloud-services/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "k8s-configs/ping-cloud/base/pingcloud-services/**/*"
   pingdatasync: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes:
-      - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
-      - "k8s-configs/ping-cloud/prod/large/pingdatasync/**/*"
-      - "k8s-configs/ping-cloud/prod/medium/pingdatasync/**/*"
-      - "k8s-configs/ping-cloud/prod/small/pingdatasync/**/*"
-      - "k8s-configs/ping-cloud/prod/x-small/pingdatasync/**/*"
-      - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
+        - "k8s-configs/ping-cloud/prod/large/pingdatasync/**/*"
+        - "k8s-configs/ping-cloud/prod/medium/pingdatasync/**/*"
+        - "k8s-configs/ping-cloud/prod/small/pingdatasync/**/*"
+        - "k8s-configs/ping-cloud/prod/x-small/pingdatasync/**/*"
+        - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
   pingdelegator: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes:
-      - "k8s-configs/ping-cloud/base/pingdelegator/**/*"
-      - "k8s-configs/ping-cloud/prod/large/pingdelegator/**/*"
-      - "k8s-configs/ping-cloud/prod/medium/pingdelegator/**/*"
-      - "k8s-configs/ping-cloud/prod/small/pingdelegator/**/*"
-      - "k8s-configs/ping-cloud/prod/x-small/pingdelegator/**/*"
-      - "code-gen/templates/cde/base/ping-cloud/pingdelegator/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - "k8s-configs/ping-cloud/base/pingdelegator/**/*"
+        - "k8s-configs/ping-cloud/prod/large/pingdelegator/**/*"
+        - "k8s-configs/ping-cloud/prod/medium/pingdelegator/**/*"
+        - "k8s-configs/ping-cloud/prod/small/pingdelegator/**/*"
+        - "k8s-configs/ping-cloud/prod/x-small/pingdelegator/**/*"
+        - "code-gen/templates/cde/base/ping-cloud/pingdelegator/**/*"
   pingdirectory: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "code-gen/templates/p1as-pingdirectory/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "code-gen/templates/p1as-pingdirectory/**/*"
   pingfederate: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "code-gen/templates/p1as-pingfederate/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "code-gen/templates/p1as-pingfederate/**/*"
   pingone: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "k8s-configs/ping-cloud/base/pingone/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "k8s-configs/ping-cloud/base/pingone/**/*"
   self-service: 
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes: 
-      - "code-gen/templates/p1as-self-service/**/*"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: 
+        - "code-gen/templates/p1as-self-service/**/*"
 
 # Nightly Build Tests
 nightly-build-tests:
