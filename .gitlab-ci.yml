@@ -245,8 +245,10 @@ integration-tests:
     # DO NOT run this full suite on Merge Requests
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: never
     - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
-    # Run scheduled nightly builds
+    # Do not run on nightly builds
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
 
