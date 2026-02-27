@@ -2,14 +2,14 @@ workflow:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
-    - if: $CI_MERGE_REQUEST_ID
-      when: never
+    # - if: $CI_MERGE_REQUEST_ID
+    #   when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
     # Allow the sources you actually care about
     - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
-    # - when: always
+    - when: always
 
 ## Pipeline stages ##
 stages:
