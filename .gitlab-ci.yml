@@ -24,7 +24,7 @@ variables:
   AUTO_MERGE: $AUTO_MERGE
   DELETE_ENV_AFTER_PIPELINE: 'true'
   CLUSTER_POSTFIXES: '_9 _10 _11 _12'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v2.3-release-branch
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:karpenter_cleanup_sm
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   # 01-test-ocsp-stapling.sh causes other failures due to NGINX restart - ticket to fix is PDO-8100
   BRANCH_SKIP_TESTS: >
@@ -128,21 +128,6 @@ deploy:
     YAML_OUT_DIR: $CI_PROJECT_DIR/out
   before_script:
     - mkdir -p $YAML_OUT_DIR
-    - source ${SHARED_CI_SCRIPTS_DIR}/common.sh
-    # Cleanup up legacy Karpenter webhooks to prevent startup issues with Karpenter
-    - | 
-      echo "Cleaning up legacy Karpenter webhooks if they exist to prevent startup issues with Karpenter"
-      kubectl delete validatingwebhookconfiguration \
-        defaulting.webhook.karpenter.k8s.aws \
-        validation.webhook.config.karpenter.sh \
-        validation.webhook.karpenter.k8s.aws \
-        validation.webhook.karpenter.sh \
-        --ignore-not-found
-      kubectl delete mutatingwebhookconfigurations defaulting.webhook.karpenter.k8s.aws --ignore-not-found
-      
-    # Ensure Karpenter starts up properly
-    - echo "Restarting Karpenter to ensure it starts up cleanly without the old webhooks"
-    - kubectl rollout restart deployment karpenter -n kube-system
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
   artifacts:
