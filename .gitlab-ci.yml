@@ -238,6 +238,8 @@ integration-tests:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: never
+    - if: "$CI_PIPELINE_SOURCE == 'push'"
+      when: never
     - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
     # Do not run on nightly builds
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
