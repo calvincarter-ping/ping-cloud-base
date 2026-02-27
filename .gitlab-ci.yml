@@ -2,15 +2,9 @@ workflow:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
-    # If an MR is open, run ONLY the MR pipeline (detached)
-    # - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    # This creates the "branch" pipeline in your screenshot
-    # - if: $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "web"
-    # Run for scheduled nightly builds
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_COMMIT_BRANCH
-    - if: $CI_COMMIT_TAG
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - when: always
 
 ## Pipeline stages ##
 stages:
