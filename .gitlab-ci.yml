@@ -3,9 +3,9 @@ workflow:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
     # If an MR is open, run ONLY the MR pipeline (detached)
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     # This creates the "branch" pipeline in your screenshot
-    - if: $CI_PIPELINE_SOURCE == "push"
+    # - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "web"
     # Run for scheduled nightly builds
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -249,7 +249,7 @@ integration-tests:
       when: never
 
 .manual-web-rule: &manual-web-rule
-  - if: '$CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "push"'
+  - if: '$CI_PIPELINE_SOURCE == "web"'
     when: manual
     allow_failure: true
 
