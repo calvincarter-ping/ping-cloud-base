@@ -4,6 +4,7 @@ workflow:
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
     - when: always
 
 ## Pipeline stages ##
