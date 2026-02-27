@@ -5,7 +5,11 @@ workflow:
     - if: $CI_MERGE_REQUEST_ID
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - when: always
+    # Allow the sources you actually care about
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    # - when: always
 
 ## Pipeline stages ##
 stages:
