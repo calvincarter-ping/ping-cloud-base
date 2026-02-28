@@ -277,7 +277,7 @@ integration-tests:
         - "k8s-configs/cluster-tools/base/health/**/*"
 
   cluster-tools: 
-    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: 
         - "code-gen/templates/p1as-cluster-tools/**/*"
 
