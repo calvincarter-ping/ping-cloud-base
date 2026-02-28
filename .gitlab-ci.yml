@@ -3,10 +3,11 @@ workflow:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # If it's a branch push BUT an MR is already open, skip this pipeline
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "web"
-    - when: always
+    - if: $CI_COMMIT_BRANCH
 
 ## Pipeline stages ##
 stages:
