@@ -34,6 +34,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+        runAsNonRoot: true
       serviceAccountName: logstash-elastic
       affinity:
         podAntiAffinity:
@@ -94,6 +95,8 @@ spec:
             runAsUser: 9031
             runAsGroup: 9999
             allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: os-notifications-channels
               mountPath: /usr/share/opensearch/data/notifications
@@ -113,6 +116,8 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
           args:
@@ -161,6 +166,8 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           env:
             - name: CONTAINER_NAME
               value: logstash
@@ -286,6 +293,8 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
           args:
