@@ -21,7 +21,7 @@
 - Enabled JSON for PA/PA-WAS/PF/PD
 - Add ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD feature flag to conditionally deploy PingFederate Impossible Login OpenSearch dashboards
 - Update to include dedicated pipeline for S3
-- Implement ISM rollover and update existing ISM lifecycle to (hot → warm → delete) under ping_30day_policy and ping_7day_policy
+- Add indices:admin/aliases and indices:admin/rollover permissions to OpenSearch bootstrap role for ISM rollover support
 
 _Changes:_
 
