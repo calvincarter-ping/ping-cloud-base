@@ -394,6 +394,9 @@ spec:
         - name: logstash-config
           configMap:
             name: logstash-config
+            items:
+              - key: logstash.yml
+                path: logstash.yml
         - name: logstash-pipelines
           configMap:
             name: pipeline
