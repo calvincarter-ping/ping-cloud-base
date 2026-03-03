@@ -313,6 +313,10 @@ spec:
               subPath: logstash.yml
             - name: logstash-data
               mountPath: /usr/share/logstash/data
+            # Ensure the specific GeoIP path is mounted to a writable volume
+            - name: logstash-data
+              mountPath: /usr/share/logstash/data/geoip
+              subPath: geoip
             - name: tmp-dir
               mountPath: /tmp
             - name: logstash-pipelines
@@ -375,6 +379,8 @@ spec:
         - name: logstash-config
           emptyDir: {}
         - name: logstash-data
+          emptyDir: {}
+        - name: logstash-geoip
           emptyDir: {}
         - name: tmp-dir
           emptyDir: {}
