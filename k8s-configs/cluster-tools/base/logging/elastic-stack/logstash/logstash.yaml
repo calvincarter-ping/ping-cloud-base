@@ -13,29 +13,29 @@ data:
       path.config: "/usr/share/logstash/pipeline/dlq"
       pipeline.workers: 1
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: logstash-config
-data:
-  logstash.yml: |
-    config.reload.automatic: ${CONFIG_RELOAD_AUTOMATIC}
-    dead_letter_queue.enable: ${DEAD_LETTER_QUEUE_ENABLE}
-    http.host: 0.0.0.0
-    log.format: ${LOG_FORMAT}
-    log.level: ${LOG_LEVEL}
-    node.name: ${NODE_NAME}
-    path.dead_letter_queue: ${PATH_DEAD_LETTER_QUEUE}
-    pipeline.batch.size: ${PIPELINE_BATCH_SIZE}
-    pipeline.ecs_compatibility: ${PIPELINE_ECS_COMPATIBILITY}
-    pipeline.ordered: ${PIPELINE_ORDERED}
-    pipeline.workers: ${PIPELINE_WORKERS}
-    queue.drain: ${QUEUE_DRAIN}
-    queue.max_bytes: ${QUEUE_MAX_BYTES}
-    queue.type: ${QUEUE_TYPE}
-    xpack.monitoring.elasticsearch.hosts:
-    - http://elasticsearch:9200
-    xpack.monitoring.enabled: ${XPACK_MONITORING_ENABLED}
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: logstash-config
+# data:
+#   logstash.yml: |
+#     config.reload.automatic: ${CONFIG_RELOAD_AUTOMATIC}
+#     dead_letter_queue.enable: ${DEAD_LETTER_QUEUE_ENABLE}
+#     http.host: 0.0.0.0
+#     log.format: ${LOG_FORMAT}
+#     log.level: ${LOG_LEVEL}
+#     node.name: ${NODE_NAME}
+#     path.dead_letter_queue: ${PATH_DEAD_LETTER_QUEUE}
+#     pipeline.batch.size: ${PIPELINE_BATCH_SIZE}
+#     pipeline.ecs_compatibility: ${PIPELINE_ECS_COMPATIBILITY}
+#     pipeline.ordered: ${PIPELINE_ORDERED}
+#     pipeline.workers: ${PIPELINE_WORKERS}
+#     queue.drain: ${QUEUE_DRAIN}
+#     queue.max_bytes: ${QUEUE_MAX_BYTES}
+#     queue.type: ${QUEUE_TYPE}
+#     xpack.monitoring.elasticsearch.hosts:
+#     - http://elasticsearch:9200
+#     xpack.monitoring.enabled: ${XPACK_MONITORING_ENABLED}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -73,17 +73,17 @@ spec:
                         - logstash-elastic
                 topologyKey: "topology.kubernetes.io/zone"
       initContainers:
-        - name: init-config
-          image: public.ecr.aws/docker/library/busybox:latest
-          command: ['sh', '-c', 'cp /raw/logstash.yml /config/logstash.yml']
-          volumeMounts:
-            - name: logstash-config-raw
-              mountPath: /raw
-            - name: logstash-config
-              mountPath: /config
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
+        # - name: init-config
+        #   image: public.ecr.aws/docker/library/busybox:latest
+        #   command: ['sh', '-c', 'cp /raw/logstash.yml /config/logstash.yml']
+        #   volumeMounts:
+        #     - name: logstash-config-raw
+        #       mountPath: /raw
+        #     - name: logstash-config
+        #       mountPath: /config
+        #   securityContext:
+        #     runAsUser: 1000
+        #     runAsGroup: 1000
         - name: opensearch-bootstrap
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
@@ -315,9 +315,11 @@ spec:
               name: http-cw-input
               protocol: TCP
           volumeMounts:
+            # - name: logstash-config
+            #   mountPath: /usr/share/logstash/config/logstash.yml
+            #   subPath: logstash.yml
             - name: logstash-config
-              mountPath: /usr/share/logstash/config/logstash.yml
-              subPath: logstash.yml
+              mountPath: /usr/share/logstash/config
             - name: logstash-data
               mountPath: /usr/share/logstash/data
             - name: tmp-dir
@@ -373,12 +375,12 @@ spec:
               memory: 100Mi
       terminationGracePeriodSeconds: 60
       volumes:
-        - name: logstash-config-raw
-          configMap:
-            name: logstash-config
-            items:
-              - key: logstash.yml
-                path: logstash.yml
+        # - name: logstash-config-raw
+        #   configMap:
+        #     name: logstash-config
+        #     items:
+        #       - key: logstash.yml
+        #         path: logstash.yml
         - name: logstash-config
           emptyDir: {}
         - name: logstash-data
