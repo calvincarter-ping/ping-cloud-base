@@ -20,15 +20,13 @@ metadata:
 data:
   logstash.yml: |
     node.name: "${NODE_NAME}"
-    http.host: "0.0.0.0"
+    api.http.host: "0.0.0.0" 
     log.format: "${LOG_FORMAT}"
     pipeline.batch.size: ${PIPELINE_BATCH_SIZE}
     pipeline.workers: ${PIPELINE_WORKERS}
     queue.type: "${QUEUE_TYPE}"
     path.dead_letter_queue: "${PATH_DEAD_LETTER_QUEUE}"
     xpack.monitoring.enabled: false
-    # Explicitly set the GeoIP path to a writable subdirectory
-    path.geoip_databases: "/usr/share/logstash/data/geoip"
 ---
 apiVersion: apps/v1
 kind: StatefulSet
