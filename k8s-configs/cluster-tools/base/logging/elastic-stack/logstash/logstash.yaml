@@ -318,12 +318,12 @@ spec:
             # - name: logstash-config
             #   mountPath: /usr/share/logstash/config/logstash.yml
             #   subPath: logstash.yml
-            - name: logstash-config
-              mountPath: /usr/share/logstash/config
-            - name: logstash-data
-              mountPath: /usr/share/logstash/data
-            - name: tmp-dir
-              mountPath: /tmp
+            # - name: logstash-config
+            #   mountPath: /usr/share/logstash/config
+            # - name: logstash-data
+            #   mountPath: /usr/share/logstash/data
+            # - name: tmp-dir
+            #   mountPath: /tmp
             - name: logstash-pipelines
               mountPath: /usr/share/logstash/config/pipelines.yml
               subPath: pipelines.yml
@@ -344,7 +344,7 @@ spec:
             runAsGroup: 1000
             allowPrivilegeEscalation: false
             privileged: false
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
           args:
@@ -381,12 +381,12 @@ spec:
         #     items:
         #       - key: logstash.yml
         #         path: logstash.yml
-        - name: logstash-config
-          emptyDir: {}
-        - name: logstash-data
-          emptyDir: {}
-        - name: tmp-dir
-          emptyDir: {}
+        # - name: logstash-config
+        #   emptyDir: {}
+        # - name: logstash-data
+        #   emptyDir: {}
+        # - name: tmp-dir
+          # emptyDir: {}
         - name: logstash-pipelines
           configMap:
             name: pipeline
