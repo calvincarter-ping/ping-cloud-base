@@ -27,6 +27,8 @@ data:
     queue.type: "${QUEUE_TYPE}"
     path.dead_letter_queue: "${PATH_DEAD_LETTER_QUEUE}"
     xpack.monitoring.enabled: false
+    # Explicitly set the GeoIP path to a writable subdirectory
+    path.geoip_databases: "/usr/share/logstash/data/geoip"
 ---
 apiVersion: apps/v1
 kind: StatefulSet
