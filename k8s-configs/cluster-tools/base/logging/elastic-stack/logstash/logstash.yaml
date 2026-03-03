@@ -27,8 +27,6 @@ data:
     queue.type: "${QUEUE_TYPE}"
     path.dead_letter_queue: "${PATH_DEAD_LETTER_QUEUE}"
     xpack.monitoring.enabled: false
-    # Explicitly set the GeoIP path to a writable volume
-    path.geoip_databases: "/usr/share/logstash/data/geoip"
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -313,8 +311,6 @@ spec:
               subPath: logstash.yml
             - name: logstash-data
               mountPath: /usr/share/logstash/data
-            - name: logstash-geoip
-              mountPath: /usr/share/logstash/data/geoip
             - name: tmp-dir
               mountPath: /tmp
             - name: logstash-pipelines
@@ -377,8 +373,6 @@ spec:
         - name: logstash-config
           emptyDir: {}
         - name: logstash-data
-          emptyDir: {}
-        - name: logstash-geoip
           emptyDir: {}
         - name: tmp-dir
           emptyDir: {}
