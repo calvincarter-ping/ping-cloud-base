@@ -358,6 +358,7 @@ spec:
             name: logstash-config
             items:
               - key: logstash.yml
+                path: logstash.yml
         - name: logstash-data
           emptyDir: {}
         - name: tmp-dir
