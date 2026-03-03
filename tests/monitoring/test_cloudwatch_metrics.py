@@ -11,18 +11,20 @@ class TestCloudWatchLogs(unittest.TestCase):
 
     aws_client = boto3.client("logs", region_name=aws_region)
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/prometheus"
-    metrics = ["kube_endpoint_address_available", "kube_node_status_condition"]
+    metrics = ["kube_endpoint_address", "kube_node_status_condition"]
 
     def check_log_group_exists(self):
         response = self.aws_client.describe_log_groups(
             logGroupNamePrefix=self.log_group_name
         )
         log_groups = response.get("logGroups", [])
-        self.assertTrue(len(log_groups) > 0, f"Log group '{self.log_group_name}' does not exist.")
+        self.assertTrue(
+            len(log_groups) > 0, f"Log group '{self.log_group_name}' does not exist."
+        )
 
     def get_all_log_streams(self):
         self.check_log_group_exists()
-        
+
         response = self.aws_client.describe_log_streams(
             logGroupName=self.log_group_name, orderBy="LastEventTime", descending=True
         )
