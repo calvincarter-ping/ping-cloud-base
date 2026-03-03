@@ -64,6 +64,17 @@ spec:
                         - logstash-elastic
                 topologyKey: "topology.kubernetes.io/zone"
       initContainers:
+        - name: init-config
+          image: public.ecr.aws/docker/library/busybox:latest
+          command: ['sh', '-c', 'cp /raw/logstash.yml /config/logstash.yml']
+          volumeMounts:
+            - name: logstash-config-raw
+              mountPath: /raw
+            - name: logstash-config
+              mountPath: /config
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
         - name: opensearch-bootstrap
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
@@ -295,7 +306,7 @@ spec:
               name: http-cw-input
               protocol: TCP
           volumeMounts:
-            - name: logstash-config-volume
+            - name: logstash-config
               mountPath: /usr/share/logstash/config/logstash.yml
               subPath: logstash.yml
             - name: logstash-data
@@ -353,12 +364,14 @@ spec:
               memory: 100Mi
       terminationGracePeriodSeconds: 60
       volumes:
-        - name: logstash-config-volume
+        - name: logstash-config-raw
           configMap:
             name: logstash-config
             items:
               - key: logstash.yml
                 path: logstash.yml
+        - name: logstash-config
+          emptyDir: {}
         - name: logstash-data
           emptyDir: {}
         - name: tmp-dir
