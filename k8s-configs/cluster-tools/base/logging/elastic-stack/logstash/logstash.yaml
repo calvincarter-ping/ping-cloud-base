@@ -75,10 +75,8 @@ spec:
       initContainers:
         - name: seed-logstash
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v2.3-release-branch-latest
-          command: ['sh', '-c', 'cp /usr/share/logstash/config/ /config']
+          command: ['sh', '-c', 'cp -r /usr/share/logstash/config/ /config']
           volumeMounts:
-            # - name: logstash-config-raw
-            #   mountPath: /raw
             - name: logstash-config
               mountPath: /config
           securityContext:
