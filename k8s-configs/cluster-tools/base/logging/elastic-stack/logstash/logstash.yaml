@@ -281,6 +281,8 @@ spec:
               name: http-cw-input
               protocol: TCP
           volumeMounts:
+            - name: logstash-config
+              mountPath: /usr/share/logstash/config
             - name: logstash-pipelines
               mountPath: /usr/share/logstash/config/pipelines.yml
               subPath: pipelines.yml
@@ -332,6 +334,8 @@ spec:
               memory: 100Mi
       terminationGracePeriodSeconds: 60
       volumes:
+        - name: logstash-config
+          emptyDir: {}
         - name: logstash-pipelines
           configMap:
             name: pipeline
