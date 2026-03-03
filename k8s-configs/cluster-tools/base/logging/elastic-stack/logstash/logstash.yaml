@@ -19,14 +19,23 @@ metadata:
   name: logstash-config
 data:
   logstash.yml: |
-    node.name: "${NODE_NAME}"
-    api.http.host: "0.0.0.0" 
-    log.format: "${LOG_FORMAT}"
+    config.reload.automatic: ${CONFIG_RELOAD_AUTOMATIC}
+    dead_letter_queue.enable: ${DEAD_LETTER_QUEUE_ENABLE}
+    http.host: 0.0.0.0
+    log.format: ${LOG_FORMAT}
+    log.level: ${LOG_LEVEL}
+    node.name: ${NODE_NAME}
+    path.dead_letter_queue: ${PATH_DEAD_LETTER_QUEUE}
     pipeline.batch.size: ${PIPELINE_BATCH_SIZE}
+    pipeline.ecs_compatibility: ${PIPELINE_ECS_COMPATIBILITY}
+    pipeline.ordered: ${PIPELINE_ORDERED}
     pipeline.workers: ${PIPELINE_WORKERS}
-    queue.type: "${QUEUE_TYPE}"
-    path.dead_letter_queue: "${PATH_DEAD_LETTER_QUEUE}"
-    xpack.monitoring.enabled: false
+    queue.drain: ${QUEUE_DRAIN}
+    queue.max_bytes: ${QUEUE_MAX_BYTES}
+    queue.type: ${QUEUE_TYPE}
+    xpack.monitoring.elasticsearch.hosts:
+    - http://elasticsearch:9200
+    xpack.monitoring.enabled: ${XPACK_MONITORING_ENABLED}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -311,10 +320,6 @@ spec:
               subPath: logstash.yml
             - name: logstash-data
               mountPath: /usr/share/logstash/data
-            # Ensure the specific GeoIP path is mounted to a writable volume
-            - name: logstash-data
-              mountPath: /usr/share/logstash/data/geoip
-              subPath: geoip
             - name: tmp-dir
               mountPath: /tmp
             - name: logstash-pipelines
@@ -377,8 +382,6 @@ spec:
         - name: logstash-config
           emptyDir: {}
         - name: logstash-data
-          emptyDir: {}
-        - name: logstash-geoip
           emptyDir: {}
         - name: tmp-dir
           emptyDir: {}
