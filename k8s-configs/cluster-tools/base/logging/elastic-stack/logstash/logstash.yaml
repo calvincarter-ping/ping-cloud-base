@@ -60,17 +60,22 @@ spec:
 
               cp -r /usr/share/logstash/data/* /mnt/data/
 
+              cp -r /tmp/* /mnt/tmp/
+
               ls -l /mnt/config
               ls -l /mnt/data
+              ls -l /mnt/tmp
               
               # Create the specific sub-directory the GeoIP downloader is dying on
-              mkdir -p /mnt/data/ingest-metadata
+              # mkdir -p /mnt/data/ingest-metadata
               mkdir -p /mnt/data/tmp
           volumeMounts:
             - name: logstash-config
               mountPath: /mnt/config
             - name: logstash-data
               mountPath: /mnt/data
+            - name: tmp-dir
+              mountPath: /mnt/tmp
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
