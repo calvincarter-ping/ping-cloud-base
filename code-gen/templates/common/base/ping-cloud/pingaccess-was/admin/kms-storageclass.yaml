@@ -3,8 +3,8 @@ kind: StorageClass
 metadata:
   labels:
     app: ping-cloud
-    role: pingaccess
-  name: pingaccess-gp3-kms
+    role: pingaccess-was
+  name: pingaccess-was-gp3-kms
 allowVolumeExpansion: true
 provisioner: ebs.csi.aws.com
 reclaimPolicy: Delete

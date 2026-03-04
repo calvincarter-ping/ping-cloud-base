@@ -182,23 +182,22 @@ enable_kms() {
 
   log "EBS_KMS_KEY_ARN=${EBS_KMS_KEY_ARN}"
 
-  # Only proceed if KMS is enabled
   if [[ -n "${EBS_KMS_KEY_ARN}" ]]; then
     log "KMS is ENABLED - uncommenting KMS resources"
-    
-    # Define patterns for KMS resources
+
+    # Patterns to uncomment
     patterns=(
-      "^#- kms-storageclass\.yaml"
-      "^#- path: kms-patch\.yaml"
+      '^#- kms-storageclass\.yaml'
+      '^#- path: kms-.*\.yaml'
     )
-    
-    # Loop through each pattern
+
     for pattern in "${patterns[@]}"; do
-      # Find files containing this pattern
-      for kust_file in $(grep --exclude-dir=.git -rl "${pattern}" | grep "kustomization.yaml" 2>/dev/null || true); do
+      while IFS= read -r kust_file; do
         log "Uncommenting '${pattern}' in ${kust_file}"
         uncomment_lines_in_file "${kust_file}" "${pattern}"
-      done
+      done < <(
+        grep --exclude-dir=.git -rl "${pattern}" . 2>/dev/null | grep "kustomization.yaml" || true
+      )
     done
   else
     log "KMS is DISABLED - no changes needed"

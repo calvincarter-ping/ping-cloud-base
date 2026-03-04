@@ -115,4 +115,5 @@ patchesJson6902:
       value: "${NEW_RELIC_ENVIRONMENT_NAME}"
 
 patches:
-#- path: kms-patch.yaml
+#- path: kms-opensearch-patch.yaml
+#- path: kms-logstash-patch.yaml
