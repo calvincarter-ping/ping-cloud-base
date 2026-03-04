@@ -238,6 +238,9 @@ spec:
               value: "true"
             - name: PATH_DEAD_LETTER_QUEUE
               value: "/usr/share/logstash/data/queue/dead_letter"
+            # 1. Force the Ruby layer to use your writable data/tmp
+            - name: TMPDIR
+              value: "/usr/share/logstash/data/tmp"
             - name: LS_JAVA_OPTS
               # Heap/direct split sized for stable GC and IO buffer headroom.
               # Point Java/JRuby to a sub-folder inside our writable volume
