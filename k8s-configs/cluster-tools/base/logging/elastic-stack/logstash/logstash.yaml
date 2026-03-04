@@ -66,8 +66,7 @@ spec:
               ls -l /mnt/data
               ls -l /mnt/tmp
               
-              # Create the specific sub-directory the GeoIP downloader is dying on
-              # mkdir -p /mnt/data/ingest-metadata
+              # Create logstash tmp directory
               mkdir -p /mnt/data/tmp
           volumeMounts:
             - name: logstash-config
