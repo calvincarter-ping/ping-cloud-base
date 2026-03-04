@@ -57,15 +57,8 @@ spec:
             - |
               # Copy the default configs into the writable volume
               cp -r /usr/share/logstash/config/* /mnt/config/
-
               cp -r /usr/share/logstash/data/* /mnt/data/
-
-              cp -r /tmp/* /mnt/tmp/
-
-              ls -l /mnt/config
-              ls -l /mnt/data
-              ls -l /mnt/tmp
-              
+              cp -r /tmp/* /mnt/tmp/              
               # Create logstash tmp directory
               mkdir -p /mnt/data/tmp
           volumeMounts:
@@ -324,7 +317,6 @@ spec:
               mountPath: /usr/share/logstash/data
             - name: tmp-dir
               mountPath: /tmp
-              mode: 1775
             - name: logstash-config
               mountPath: /usr/share/logstash/config
             - name: logstash-logs
@@ -386,6 +378,7 @@ spec:
           emptyDir: {}
         - name: tmp-dir
           emptyDir: {}
+          mode: 1775
         - name: logstash-config
           emptyDir: {}
         - name: logstash-logs
