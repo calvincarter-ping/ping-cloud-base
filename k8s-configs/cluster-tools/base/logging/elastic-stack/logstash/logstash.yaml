@@ -90,14 +90,11 @@ spec:
               # Create the specific sub-directory the GeoIP downloader is dying on
               mkdir -p /usr/share/logstash/data/ingest-metadata
               
-              # Ensure the logstash user (1000) owns these volumes
-              chown -R 1000:1000 /mnt/config
-              chown -R 1000:1000 /usr/share/logstash/data
           volumeMounts:
             - name: logstash-config
               mountPath: /mnt/config
             - name: logstash-data
-              mountPath: /usr/share/logstash/data
+              mountPath: /mnt/data
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
