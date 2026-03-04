@@ -216,6 +216,8 @@ spec:
               value: 'false'
             - name: LOG_FORMAT
               value: json
+            - name: LOG_LEVEL
+              value: "debug"
             - name: PIPELINE_BATCH_SIZE
               # Base default; overridden by per-pipeline `pipeline.batch.size` in pipeline config.
               value: '500'
@@ -374,14 +376,6 @@ spec:
               memory: 100Mi
       terminationGracePeriodSeconds: 60
       volumes:
-        # - name: logstash-config-raw
-        #   configMap:
-        #     name: logstash-config
-        #     items:
-        #       - key: logstash.yml
-        #         path: logstash.yml
-        # - name: logstash-config
-        #   emptyDir: {}
         - name: logstash-data
           emptyDir: {}
         - name: tmp-dir
