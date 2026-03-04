@@ -1,6 +1,5 @@
 import unittest
 import os
-import json
 import boto3
 from datetime import datetime, timedelta
 
@@ -22,65 +21,49 @@ class TestCloudWatchLogs(unittest.TestCase):
             len(log_groups) > 0, f"Log group '{self.log_group_name}' does not exist."
         )
 
-    def get_all_log_streams(self):
-        self.check_log_group_exists()
-
-        response = self.aws_client.describe_log_streams(
-            logGroupName=self.log_group_name, orderBy="LastEventTime", descending=True
-        )
-        log_streams = response.get("logStreams", [])
-        self.assertTrue(len(log_streams) > 0, "No log streams found in the log group.")
-        return [stream["logStreamName"] for stream in log_streams]
-
-    def check_metrics_in_logs(self, log_stream_name):
+    def check_metric_in_log_group(self, metric_name):
+        # Container Insights metric logs can be bursty; search a wider window.
         dt_now_ms = round(datetime.now().timestamp() * 1000)
-        dt_past_ms = round((datetime.now() - timedelta(minutes=5)).timestamp() * 1000)
+        dt_past_ms = round((datetime.now() - timedelta(minutes=30)).timestamp() * 1000)
 
-        found_metrics = {metric: False for metric in self.metrics}
         next_token = None
-        start_time = datetime.now()
-        max_duration = timedelta(minutes=2)
-
         while True:
             kwargs = {
                 "logGroupName": self.log_group_name,
-                "logStreamName": log_stream_name,
                 "startTime": dt_past_ms,
                 "endTime": dt_now_ms,
+                "filterPattern": f'"{metric_name}"',
+                "limit": 10000,
             }
-
             if next_token:
                 kwargs["nextToken"] = next_token
 
-            response = self.aws_client.get_log_events(**kwargs)
+            response = self.aws_client.filter_log_events(**kwargs)
 
-            for event in response.get("events", []):
-                log_data = json.loads(event.get("message", "{}"))
-                for metric in self.metrics:
-                    if metric in log_data:
-                        found_metrics[metric] = True
+            if response.get("events"):
+                return True
 
-            if all(found_metrics.values()):
-                return found_metrics
-
-            next_token = response.get("nextForwardToken")
-
-            if (datetime.now() - start_time) > max_duration or not next_token:
+            new_token = response.get("nextToken")
+            if not new_token or new_token == next_token:
                 break
+            next_token = new_token
 
-        return found_metrics
+        return False
 
     def test_metrics_in_logs(self):
-        log_streams = self.get_all_log_streams()
+        self.check_log_group_exists()
 
-        for log_stream_name in log_streams:
-            found_metrics = self.check_metrics_in_logs(log_stream_name)
-            if all(found_metrics.values()):
-                break
+        found_metrics = {
+            metric: self.check_metric_in_log_group(metric) for metric in self.metrics
+        }
+        missing_metrics = [metric for metric, found in found_metrics.items() if not found]
 
         self.assertTrue(
             all(found_metrics.values()),
-            f"Not all required metrics were found in the logs for log group '{self.log_group_name}'.",
+            (
+                f"Missing metrics in CloudWatch logs for log group '{self.log_group_name}' "
+                f"(lookback: 30 minutes): {', '.join(missing_metrics)}"
+            ),
         )
 
 
