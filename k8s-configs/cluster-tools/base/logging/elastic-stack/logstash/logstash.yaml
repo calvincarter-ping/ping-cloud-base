@@ -13,29 +13,29 @@ data:
       path.config: "/usr/share/logstash/pipeline/dlq"
       pipeline.workers: 1
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: logstash-config
-data:
-  logstash.yml: |
-    config.reload.automatic: ${CONFIG_RELOAD_AUTOMATIC}
-    dead_letter_queue.enable: ${DEAD_LETTER_QUEUE_ENABLE}
-    http.host: 0.0.0.0
-    log.format: ${LOG_FORMAT}
-    log.level: ${LOG_LEVEL}
-    node.name: ${NODE_NAME}
-    path.dead_letter_queue: ${PATH_DEAD_LETTER_QUEUE}
-    pipeline.batch.size: ${PIPELINE_BATCH_SIZE}
-    pipeline.ecs_compatibility: ${PIPELINE_ECS_COMPATIBILITY}
-    pipeline.ordered: ${PIPELINE_ORDERED}
-    pipeline.workers: ${PIPELINE_WORKERS}
-    queue.drain: ${QUEUE_DRAIN}
-    queue.max_bytes: ${QUEUE_MAX_BYTES}
-    queue.type: ${QUEUE_TYPE}
-    xpack.monitoring.elasticsearch.hosts:
-    - http://elasticsearch:9200
-    xpack.monitoring.enabled: ${XPACK_MONITORING_ENABLED}
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: logstash-config
+# data:
+#   logstash.yml: |
+#     config.reload.automatic: ${CONFIG_RELOAD_AUTOMATIC}
+#     dead_letter_queue.enable: ${DEAD_LETTER_QUEUE_ENABLE}
+#     http.host: 0.0.0.0
+#     log.format: ${LOG_FORMAT}
+#     log.level: ${LOG_LEVEL}
+#     node.name: ${NODE_NAME}
+#     path.dead_letter_queue: ${PATH_DEAD_LETTER_QUEUE}
+#     pipeline.batch.size: ${PIPELINE_BATCH_SIZE}
+#     pipeline.ecs_compatibility: ${PIPELINE_ECS_COMPATIBILITY}
+#     pipeline.ordered: ${PIPELINE_ORDERED}
+#     pipeline.workers: ${PIPELINE_WORKERS}
+#     queue.drain: ${QUEUE_DRAIN}
+#     queue.max_bytes: ${QUEUE_MAX_BYTES}
+#     queue.type: ${QUEUE_TYPE}
+#     xpack.monitoring.elasticsearch.hosts:
+#     - http://elasticsearch:9200
+#     xpack.monitoring.enabled: ${XPACK_MONITORING_ENABLED}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -75,10 +75,29 @@ spec:
       initContainers:
         - name: seed-logstash
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v2.3-release-branch-latest
-          command: ['sh', '-c', 'cp -r /usr/share/logstash/config/* /mnt/config/']
+          command: 
+            - 'sh'
+            - '-c'
+            - |
+              # Copy the default configs into the writable volume
+              cp -r /usr/share/logstash/config/* /mnt/config/
+
+              cp -r /usr/share/logstash/data/* /mnt/data/
+
+              ls -l /mnt/config
+              ls -l /mnt/data
+              
+              # Create the specific sub-directory the GeoIP downloader is dying on
+              mkdir -p /usr/share/logstash/data/ingest-metadata
+              
+              # Ensure the logstash user (1000) owns these volumes
+              chown -R 1000:1000 /mnt/config
+              chown -R 1000:1000 /usr/share/logstash/data
           volumeMounts:
             - name: logstash-config
               mountPath: /mnt/config
+            - name: logstash-data
+              mountPath: /usr/share/logstash/data
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
