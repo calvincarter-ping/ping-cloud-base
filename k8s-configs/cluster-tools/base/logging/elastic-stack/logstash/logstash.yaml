@@ -211,10 +211,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-            - name: API_HTTP_HOST
-              value: "0.0.0.0"
-            - name: PIPELINE_BUFFER_TYPE
-              value: "direct"
             - name: CONFIG_RELOAD_AUTOMATIC
               value: 'false'
             - name: LOG_FORMAT
@@ -241,7 +237,7 @@ spec:
               value: "true"
             - name: PATH_DEAD_LETTER_QUEUE
               value: "/usr/share/logstash/data/queue/dead_letter"
-            # Force Java/Ruby layer to use your writable data/tmp
+            # 1. Force the Ruby layer to use your writable data/tmp
             - name: TMPDIR
               value: "/usr/share/logstash/data/tmp"
             - name: LS_JAVA_OPTS
