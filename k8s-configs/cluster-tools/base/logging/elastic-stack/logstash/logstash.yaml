@@ -99,8 +99,9 @@ spec:
             - name: logstash-data
               mountPath: /usr/share/logstash/data
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
+            # chown test 
+            runAsUser: 0
+            privileged: false
         - name: opensearch-bootstrap
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
@@ -259,7 +260,7 @@ spec:
               value: "/usr/share/logstash/data/queue/dead_letter"
             - name: LS_JAVA_OPTS
               # Heap/direct split sized for stable GC and IO buffer headroom.
-              value: "-Xms4g -Xmx4g -XX:MaxDirectMemorySize=2g"
+              value: "-Xms4g -Xmx4g -XX:MaxDirectMemorySize=2g -Djava.io.tmpdir=/tmp"
             - name: XPACK_MONITORING_ENABLED
               value: "false"
             - name: OS_USER
