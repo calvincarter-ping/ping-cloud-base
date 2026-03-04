@@ -99,8 +99,8 @@ spec:
             - name: logstash-data
               mountPath: /usr/share/logstash/data
           securityContext:
-            # chown test 
-            runAsUser: 0
+            runAsUser: 1000
+            runAsGroup: 1000
             privileged: false
         - name: opensearch-bootstrap
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v2.3-release-branch-latest
