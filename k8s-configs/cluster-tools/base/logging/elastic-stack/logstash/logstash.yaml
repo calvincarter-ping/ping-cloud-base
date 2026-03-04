@@ -88,7 +88,7 @@ spec:
               ls -l /mnt/data
               
               # Create the specific sub-directory the GeoIP downloader is dying on
-              mkdir -p /usr/share/logstash/data/ingest-metadata
+              mkdir -p /mnt/data/ingest-metadata
               
           volumeMounts:
             - name: logstash-config
@@ -257,7 +257,9 @@ spec:
               value: "/usr/share/logstash/data/queue/dead_letter"
             - name: LS_JAVA_OPTS
               # Heap/direct split sized for stable GC and IO buffer headroom.
-              value: "-Xms4g -Xmx4g -XX:MaxDirectMemorySize=2g -Djava.io.tmpdir=/tmp"
+              # Point Java/JRuby to a sub-folder inside our writable volume
+              # This bypasses the world-writable /tmp logstash warning entirely
+              value: "-Xms4g -Xmx4g -XX:MaxDirectMemorySize=2g -Djava.io.tmpdir=/usr/share/logstash/data/tmp"
             - name: XPACK_MONITORING_ENABLED
               value: "false"
             - name: OS_USER
@@ -339,6 +341,7 @@ spec:
               mountPath: /usr/share/logstash/data
             - name: tmp-dir
               mountPath: /tmp
+              mode: 
             - name: logstash-config
               mountPath: /usr/share/logstash/config
               # subPath: logstash.yml
