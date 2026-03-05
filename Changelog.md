@@ -17,9 +17,11 @@
 - Upgrade pod-reaper to version 2.14.0
 - Bundle Documentation folder in profile-repo explaining all static files for all Products
 - Update Security Contexts for elastic-stack-logging workloads (pt 2)
+- Implement KMS changes for EBS
 
 _Changes:_
 
+- [X] PDO-8391 Implement KMS changes for EBS
 - [X] PDO-8951 FluentBit: Remove K8s Metadata and Labels
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
 - [X] PDO-10285 - NewRelic: Update Logic for APM Agent + newrelic-tags-exporter
