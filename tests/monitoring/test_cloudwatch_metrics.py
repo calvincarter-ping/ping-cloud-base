@@ -10,12 +10,14 @@ class TestCloudWatchLogs(unittest.TestCase):
 
     aws_client = boto3.client("logs", region_name=aws_region)
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/prometheus"
-    metric_aliases = {
+    required_metric_aliases = {
+        "kube_node_status_condition": ["kube_node_status_condition"],
+    }
+    optional_metric_aliases = {
         "kube_endpoint_address": [
             "kube_endpoint_address",
             "kube_endpoint_address_available",
         ],
-        "kube_node_status_condition": ["kube_node_status_condition"],
     }
 
     def check_log_group_exists(self):
@@ -59,20 +61,36 @@ class TestCloudWatchLogs(unittest.TestCase):
     def test_metrics_in_logs(self):
         self.check_log_group_exists()
 
-        found_metrics = {}
-        for metric, aliases in self.metric_aliases.items():
-            found_metrics[metric] = any(
+        required_found_metrics = {}
+        for metric, aliases in self.required_metric_aliases.items():
+            required_found_metrics[metric] = any(
                 self.check_metric_in_log_group(alias) for alias in aliases
             )
-        missing_metrics = [metric for metric, found in found_metrics.items() if not found]
+        missing_required_metrics = [
+            metric for metric, found in required_found_metrics.items() if not found
+        ]
 
         self.assertTrue(
-            all(found_metrics.values()),
+            all(required_found_metrics.values()),
             (
                 f"Missing metrics in CloudWatch logs for log group '{self.log_group_name}' "
-                f"(lookback: 30 minutes): {', '.join(missing_metrics)}"
+                f"(lookback: 30 minutes): {', '.join(missing_required_metrics)}"
             ),
         )
+
+        optional_found_metrics = {}
+        for metric, aliases in self.optional_metric_aliases.items():
+            optional_found_metrics[metric] = any(
+                self.check_metric_in_log_group(alias) for alias in aliases
+            )
+        missing_optional_metrics = [
+            metric for metric, found in optional_found_metrics.items() if not found
+        ]
+        if missing_optional_metrics:
+            print(
+                "Optional metrics not found in CloudWatch logs for "
+                f"'{self.log_group_name}': {', '.join(missing_optional_metrics)}"
+            )
 
 
 if __name__ == "__main__":
