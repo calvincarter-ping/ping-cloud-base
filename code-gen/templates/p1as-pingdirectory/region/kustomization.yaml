@@ -12,20 +12,15 @@ resources:
   - custom-resources
 
 
-helmGlobals:
-  configHome: /helm-working-dir
-
 helmCharts:
   - name: p1as-pingdirectory
     additionalValuesFiles:
       - ../../values-files/base/values.yaml   # base values.yaml
       - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
       - values.yaml   # app specific values.yaml
-    version: v2.3-PDO-8391
-    valuesInline:
-      ecrRegistryName: "705370621539.dkr.ecr.us-west-2.amazonaws.com/dev"
-      profileBranch: PDO-8391
-    repo: oci://705370621539.dkr.ecr.us-west-2.amazonaws.com/dev
+    version: v2.3-release-branch-latest
+    repo: oci://${ECR_REGISTRY_NAME}/dev
+
 
 ### This field is used to trigger a resync of the p1as-pingdirectory helm chart ###
 configMapGenerator:
