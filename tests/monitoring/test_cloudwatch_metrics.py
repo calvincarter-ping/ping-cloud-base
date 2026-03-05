@@ -10,7 +10,13 @@ class TestCloudWatchLogs(unittest.TestCase):
 
     aws_client = boto3.client("logs", region_name=aws_region)
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/prometheus"
-    metrics = ["kube_endpoint_address", "kube_node_status_condition"]
+    metric_aliases = {
+        "kube_endpoint_address": [
+            "kube_endpoint_address",
+            "kube_endpoint_address_available",
+        ],
+        "kube_node_status_condition": ["kube_node_status_condition"],
+    }
 
     def check_log_group_exists(self):
         response = self.aws_client.describe_log_groups(
@@ -53,9 +59,11 @@ class TestCloudWatchLogs(unittest.TestCase):
     def test_metrics_in_logs(self):
         self.check_log_group_exists()
 
-        found_metrics = {
-            metric: self.check_metric_in_log_group(metric) for metric in self.metrics
-        }
+        found_metrics = {}
+        for metric, aliases in self.metric_aliases.items():
+            found_metrics[metric] = any(
+                self.check_metric_in_log_group(alias) for alias in aliases
+            )
         missing_metrics = [metric for metric, found in found_metrics.items() if not found]
 
         self.assertTrue(
