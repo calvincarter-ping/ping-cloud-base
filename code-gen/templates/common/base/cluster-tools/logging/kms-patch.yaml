@@ -17,10 +17,19 @@ metadata:
 spec:
   volumeClaimTemplates:
   - metadata:
-      name: logstash-gp3-kms
+      name: logstash-gp3-kms  
+      annotations:
+        volume.autoscaler.kubernetes.io/scale-above-percent: "85"
+        volume.autoscaler.kubernetes.io/scale-up-percent: "25"
+      labels:
+        app: logstash-elastic
     spec:
-      storageClassName: logstash-gp3-kms
-
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: logstash-gp3-kms  
+      resources:
+        requests:
+          storage: 50Gi
   template:
     spec:
       containers:
@@ -28,6 +37,7 @@ spec:
         volumeMounts:
         - name: logstash-gp3-kms
           mountPath: /usr/share/logstash/data/queue
+          readOnly: false
 ---
 apiVersion: opensearch.opster.io/v1
 kind: OpenSearchCluster

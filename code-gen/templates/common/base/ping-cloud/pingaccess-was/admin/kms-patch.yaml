@@ -15,5 +15,12 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: out-dir
+      annotations:
+        volume.autoscaler.kubernetes.io/ignore: "true"
     spec:
+      accessModes:
+      - ReadWriteOnce
       storageClassName: pingaccess-was-gp3-kms
+      resources:
+        requests:
+          storage: 20Gi
