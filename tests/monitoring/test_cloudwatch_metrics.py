@@ -3,6 +3,21 @@ import os
 import boto3
 from datetime import datetime, timedelta
 
+
+class TestCloudWatchLogs(unittest.TestCase):
+    aws_region = os.environ.get("AWS_REGION", "us-west-2")
+    k8s_cluster_name = os.environ["CLUSTER_NAME"]
+
+    aws_client = boto3.client("logs", region_name=aws_region)
+    log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/prometheus"
+    metrics = ["kube_endpoint_address", "kube_node_status_condition"]
+
+    def check_log_group_exists(self):
+        response = self.aws_client.describe_log_groups(
+            logGroupNamePrefix=self.log_group_name
+        )
+        log_groups = response.get("logGroups", [])
+        self.assertTrue(
             len(log_groups) > 0, f"Log group '{self.log_group_name}' does not exist."
         )
 
@@ -41,7 +56,9 @@ from datetime import datetime, timedelta
         found_metrics = {
             metric: self.check_metric_in_log_group(metric) for metric in self.metrics
         }
-        missing_metrics = [metric for metric, found in found_metrics.items() if not found]
+        missing_metrics = [
+            metric for metric, found in found_metrics.items() if not found
+        ]
 
         self.assertTrue(
             all(found_metrics.values()),
@@ -50,3 +67,7 @@ from datetime import datetime, timedelta
                 f"(lookback: 30 minutes): {', '.join(missing_metrics)}"
             ),
         )
+
+
+if __name__ == "__main__":
+    unittest.main()
