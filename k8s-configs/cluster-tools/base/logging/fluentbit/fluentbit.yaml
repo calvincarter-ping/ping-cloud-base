@@ -130,10 +130,10 @@ spec:
           timeoutSeconds: 5
         resources:
             limits:
-              cpu: "2"
+              cpu: "1"
               memory: 2Gi
             requests:
-              cpu: "2"
+              cpu: "1"
               memory: 2Gi
         ports:
           - containerPort: 2020
