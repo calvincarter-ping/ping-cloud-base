@@ -1,6 +1,22 @@
+# ----------------------------
+# Delete old StorageClasses
+# ----------------------------
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: pingaccess-was-gp3
 $patch: delete
-
+# ----------------------------
+# Update StatefulSet storageClassName
+# ----------------------------
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess-was-admin
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      storageClassName: pingaccess-was-kms-gp3
