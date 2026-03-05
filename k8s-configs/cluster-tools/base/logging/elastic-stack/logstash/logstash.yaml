@@ -230,7 +230,7 @@ spec:
               value: "true"
             - name: PATH_DEAD_LETTER_QUEUE
               value: "/usr/share/logstash/data/queue/dead_letter"
-            # 1. Force the Ruby layer to use your writable data/tmp
+            # Force the Ruby layer to use your writable data/tmp
             - name: TMPDIR
               value: "/usr/share/logstash/data/tmp"
             - name: LS_JAVA_OPTS
