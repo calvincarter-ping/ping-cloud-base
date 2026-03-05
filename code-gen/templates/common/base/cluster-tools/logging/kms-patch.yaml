@@ -19,14 +19,14 @@ spec:
   - metadata:
       name: logstash-gp3-kms
     spec:
-      storageClassName: logstash-kms-gp3
+      storageClassName: logstash-gp3-kms
 
   template:
     spec:
       containers:
       - name: logstash
         volumeMounts:
-        - name: logstash-kms-gp3
+        - name: logstash-gp3-kms
           mountPath: /usr/share/logstash/data/queue
 ---
 apiVersion: opensearch.opster.io/v1
