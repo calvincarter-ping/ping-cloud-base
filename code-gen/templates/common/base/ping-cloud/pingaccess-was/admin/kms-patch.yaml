@@ -16,4 +16,4 @@ spec:
   - metadata:
       name: out-dir
     spec:
-      storageClassName: pingaccess-was-kms-gp3
+      storageClassName: pingaccess-was-gp3-kms

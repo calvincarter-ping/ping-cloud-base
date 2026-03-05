@@ -17,7 +17,7 @@ metadata:
 spec:
   volumeClaimTemplates:
   - metadata:
-      name: logstash-kms-gp3
+      name: logstash-gp3-kms
     spec:
       storageClassName: logstash-kms-gp3
 
@@ -38,5 +38,5 @@ spec:
     - component: hot
       persistence:
         pvc:
-          storageClass: opensearch-kms-gp3
+          storageClass: opensearch-gp3-kms
 
