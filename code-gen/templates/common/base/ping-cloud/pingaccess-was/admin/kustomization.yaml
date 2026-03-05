@@ -56,5 +56,5 @@ patchesJson6902:
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingaccess-was-cluster.${DNS_ZONE}
 
-patches:
-#- path: kms-patch.yaml
+patchesStrategicMerge:
+#- kms-patch.yaml

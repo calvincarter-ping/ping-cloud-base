@@ -1,6 +1,19 @@
+# Delete old StorageClass (non-KMS)
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: pingdatasync-gp3
 $patch: delete
 
+---
+# Update StatefulSet to use KMS-enabled StorageClass
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingdatasync
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      storageClassName: pingdatasync-kms-gp3

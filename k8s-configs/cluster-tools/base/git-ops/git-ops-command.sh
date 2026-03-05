@@ -188,7 +188,7 @@ enable_kms() {
     # Patterns to uncomment
     patterns=(
       '^#- kms-storageclass\.yaml'
-      '^#- path: kms-.*\.yaml'
+      '^#- kms-.*\.yaml'
     )
 
     for pattern in "${patterns[@]}"; do
@@ -196,9 +196,10 @@ enable_kms() {
         log "Uncommenting '${pattern}' in ${kust_file}"
         uncomment_lines_in_file "${kust_file}" "${pattern}"
       done < <(
-        grep --exclude-dir=.git -rl "${pattern}" . 2>/dev/null | grep "kustomization.yaml" || true
+        grep --exclude-dir=.git -rlE "${pattern}" . 2>/dev/null | grep "kustomization.yaml" || true
       )
     done
+
   else
     log "KMS is DISABLED - no changes needed"
   fi

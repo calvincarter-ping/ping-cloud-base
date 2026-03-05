@@ -93,6 +93,8 @@ patchesStrategicMerge:
       additionalConfig:
         opensearch_security.openid.base_redirect_url: "https://logs.${DNS_ZONE}"
 
+#- kms-patch.yaml
+
 patchesJson6902:
 - target:
     kind: Service
@@ -113,7 +115,3 @@ patchesJson6902:
     - op: replace
       path: /data/newrelic_cluster_name
       value: "${NEW_RELIC_ENVIRONMENT_NAME}"
-
-patches:
-#- path: kms-opensearch-patch.yaml
-#- path: kms-logstash-patch.yaml
