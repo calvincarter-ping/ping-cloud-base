@@ -29,6 +29,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+        runAsNonRoot: true
       serviceAccountName: logstash-elastic-s3
       affinity:
         podAntiAffinity:
@@ -70,6 +71,8 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           env:
             - name: CONTAINER_NAME
               value: logstash
