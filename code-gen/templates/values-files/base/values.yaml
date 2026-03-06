@@ -246,8 +246,7 @@ global:
   p14cIntegration:
     image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.3-release-branch-latest
   # prometheus-json-exporter application settings
-  prometheusJsonExporter:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.3-release-branch-latest
+  prometheusJsonExporterImageTag: v1.0.0
   grpRadiusProxy:
     image: public.ecr.aws/r2h3l6e4/pingcloud-services/grp-radiusproxy/dev:v2.3-release-branch-latest
 
