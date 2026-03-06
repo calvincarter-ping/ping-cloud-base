@@ -108,6 +108,11 @@ spec:
               value: 'false'
             - name: LOG_FORMAT
               value: json
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cluster-info
+                  key: log.level
             - name: PIPELINE_BATCH_SIZE
               # Base default; overridden by per-pipeline `pipeline.batch.size` in pipeline config.
               value: '1200'
@@ -124,9 +129,17 @@ spec:
               value: 10gb
             - name: QUEUE_DRAIN
               value: "true"
+            # Force the Ruby layer to use your writable data/tmp
+            - name: TMPDIR
+              value: "/usr/share/logstash/data/tmp"
             - name: LS_JAVA_OPTS
               # Heap/direct split sized for stable GC and IO buffer headroom.
-              value: "-Xms3g -Xmx3g -XX:MaxDirectMemorySize=1g"
+              # Point Java/JRuby to a sub-folder inside our writable volume
+              # This bypasses the world-writable /tmp logstash warning entirely
+              value: >-
+                -Xms3g -Xmx3g -XX:MaxDirectMemorySize=1g
+                -Djava.io.tmpdir=/usr/share/logstash/data/tmp 
+                -Dlogstash.geoip.database.path=/usr/share/logstash/data/plugins/filters/geoip
             - name: XPACK_MONITORING_ENABLED
               value: "false"
             - name: S3_BUCKET
