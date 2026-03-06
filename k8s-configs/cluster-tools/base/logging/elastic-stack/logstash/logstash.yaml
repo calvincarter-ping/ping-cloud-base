@@ -209,7 +209,10 @@ spec:
             - name: LOG_FORMAT
               value: json
             - name: LOG_LEVEL
-              value: "info"
+              valueFrom:
+                configMapKeyRef:
+                  name: cluster-info
+                  key: log.level
             - name: PIPELINE_BATCH_SIZE
               # Base default; overridden by per-pipeline `pipeline.batch.size` in pipeline config.
               value: '500'
