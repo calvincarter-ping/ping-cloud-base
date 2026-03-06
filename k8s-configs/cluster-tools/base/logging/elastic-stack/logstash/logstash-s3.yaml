@@ -71,6 +71,13 @@ spec:
         - name: exporter
           image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/logstash-exporter:v0.0.1
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 9198
               name: metrics
