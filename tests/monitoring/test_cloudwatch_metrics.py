@@ -1,5 +1,6 @@
 import unittest
 import os
+import json
 import boto3
 from datetime import datetime, timedelta
 from json import JSONDecodeError
@@ -11,7 +12,7 @@ class TestCloudWatchLogs(unittest.TestCase):
 
     aws_client = boto3.client("logs", region_name=aws_region)
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/prometheus"
-    metrics = ["kube_endpoint_address", "kube_node_status_condition"]
+    metrics = ["kube_endpoint_address_available", "kube_node_status_condition"]
 
     def check_log_group_exists(self):
         response = self.aws_client.describe_log_groups(
@@ -22,27 +23,39 @@ class TestCloudWatchLogs(unittest.TestCase):
             len(log_groups) > 0, f"Log group '{self.log_group_name}' does not exist."
         )
 
-    def check_metric_in_log_group(self, metric_name):
-        # Container Insights metric logs can be bursty; search a wider window.
+    def get_all_log_streams(self):
+        self.check_log_group_exists()
+
+        response = self.aws_client.describe_log_streams(
+            logGroupName=self.log_group_name, orderBy="LastEventTime", descending=True
+        )
+        log_streams = response.get("logStreams", [])
+        self.assertTrue(len(log_streams) > 0, "No log streams found in the log group.")
+        return [stream["logStreamName"] for stream in log_streams]
+
+    def check_metrics_in_logs(self, log_stream_name):
         dt_now_ms = round(datetime.now().timestamp() * 1000)
-        dt_past_ms = round((datetime.now() - timedelta(minutes=30)).timestamp() * 1000)
+        dt_past_ms = round((datetime.now() - timedelta(minutes=5)).timestamp() * 1000)
 
         found_metrics = {metric: False for metric in self.metrics}
         events_seen = 0
         parse_errors = 0
         next_token = None
+        start_time = datetime.now()
+        max_duration = timedelta(minutes=2)
+
         while True:
             kwargs = {
                 "logGroupName": self.log_group_name,
+                "logStreamName": log_stream_name,
                 "startTime": dt_past_ms,
                 "endTime": dt_now_ms,
-                "filterPattern": f'"{metric_name}"',
-                "limit": 10000,
             }
+
             if next_token:
                 kwargs["nextToken"] = next_token
 
-            response = self.aws_client.filter_log_events(**kwargs)
+            response = self.aws_client.get_log_events(**kwargs)
 
             for event in response.get("events", []):
                 events_seen += 1
@@ -66,7 +79,6 @@ class TestCloudWatchLogs(unittest.TestCase):
 
             if (datetime.now() - start_time) > max_duration or not next_token:
                 break
-            next_token = new_token
 
         return {
             "found_metrics": found_metrics,
@@ -91,7 +103,9 @@ class TestCloudWatchLogs(unittest.TestCase):
         sampled_diag = [
             {
                 "stream": stream,
-                "missing_metrics": [m for m, ok in data["found_metrics"].items() if not ok],
+                "missing_metrics": [
+                    m for m, ok in data["found_metrics"].items() if not ok
+                ],
                 "events_seen": data["events_seen"],
                 "parse_errors": data["parse_errors"],
             }

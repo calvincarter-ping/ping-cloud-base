@@ -22,6 +22,7 @@
 - Add ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD feature flag to conditionally deploy PingFederate Impossible Login OpenSearch dashboards
 - Update to include dedicated pipeline for S3
 - Enable Logstash exporter scraping endpoint arg + service annotations
+- Upgrade kube-state-metrics to version 2.18.0
 
 _Changes:_
 
