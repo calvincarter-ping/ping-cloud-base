@@ -2,6 +2,7 @@ import unittest
 import os
 import boto3
 from datetime import datetime, timedelta
+from json import JSONDecodeError
 
 
 class TestCloudWatchLogs(unittest.TestCase):
@@ -26,6 +27,9 @@ class TestCloudWatchLogs(unittest.TestCase):
         dt_now_ms = round(datetime.now().timestamp() * 1000)
         dt_past_ms = round((datetime.now() - timedelta(minutes=30)).timestamp() * 1000)
 
+        found_metrics = {metric: False for metric in self.metrics}
+        events_seen = 0
+        parse_errors = 0
         next_token = None
         while True:
             kwargs = {
@@ -40,31 +44,67 @@ class TestCloudWatchLogs(unittest.TestCase):
 
             response = self.aws_client.filter_log_events(**kwargs)
 
-            if response.get("events"):
-                return True
+            for event in response.get("events", []):
+                events_seen += 1
+                try:
+                    log_data = json.loads(event.get("message", "{}"))
+                except JSONDecodeError:
+                    parse_errors += 1
+                    continue
+                for metric in self.metrics:
+                    if metric in log_data:
+                        found_metrics[metric] = True
 
-            new_token = response.get("nextToken")
-            if not new_token or new_token == next_token:
+            if all(found_metrics.values()):
+                return {
+                    "found_metrics": found_metrics,
+                    "events_seen": events_seen,
+                    "parse_errors": parse_errors,
+                }
+
+            next_token = response.get("nextForwardToken")
+
+            if (datetime.now() - start_time) > max_duration or not next_token:
                 break
             next_token = new_token
 
-        return False
+        return {
+            "found_metrics": found_metrics,
+            "events_seen": events_seen,
+            "parse_errors": parse_errors,
+        }
 
     def test_metrics_in_logs(self):
-        self.check_log_group_exists()
+        log_streams = self.get_all_log_streams()
+        stream_diagnostics = {}
+        found_metrics = {metric: False for metric in self.metrics}
 
-        found_metrics = {
-            metric: self.check_metric_in_log_group(metric) for metric in self.metrics
-        }
-        missing_metrics = [
-            metric for metric, found in found_metrics.items() if not found
+        for log_stream_name in log_streams:
+            result = self.check_metrics_in_logs(log_stream_name)
+            found_metrics = result["found_metrics"]
+            stream_diagnostics[log_stream_name] = result
+            if all(found_metrics.values()):
+                break
+
+        missing = [metric for metric, present in found_metrics.items() if not present]
+        sampled_streams = list(stream_diagnostics.items())[:5]
+        sampled_diag = [
+            {
+                "stream": stream,
+                "missing_metrics": [m for m, ok in data["found_metrics"].items() if not ok],
+                "events_seen": data["events_seen"],
+                "parse_errors": data["parse_errors"],
+            }
+            for stream, data in sampled_streams
         ]
 
         self.assertTrue(
             all(found_metrics.values()),
             (
-                f"Missing metrics in CloudWatch logs for log group '{self.log_group_name}' "
-                f"(lookback: 30 minutes): {', '.join(missing_metrics)}"
+                f"Not all required metrics were found in the logs for log group "
+                f"'{self.log_group_name}'. Missing metrics: {missing}. "
+                f"Checked {len(stream_diagnostics)} stream(s). "
+                f"Sample stream diagnostics: {sampled_diag}"
             ),
         )
 
