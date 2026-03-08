@@ -1079,7 +1079,12 @@ if test ! "${KNOWN_HOSTS_CLUSTER_STATE_REPO}"; then
   # With some versions of ssh-keyscan (for example starting with MacOS 15.0), the host portion is returned in the output
   # Since not all versions of ssh-keyscan do this, we don't assume they will function the same way and instead
   # remove the hostname from the output, otherwise the yaml and known hosts will break
-  KNOWN_HOSTS_CLUSTER_STATE_REPO="$(ssh-keyscan -t "${SSH_HOST_KEY_TYPE}" -H "${URL_HOST}" 2>/dev/null | grep -v "${URL_HOST}")"
+  echo "=== DEBUG: Known hosts retrieval for ${URL_HOST} ==="
+  echo "1. Testing connectivity: $(nc -zv ${URL_HOST} 22 2>&1 || echo 'FAILED')"
+  echo "2. Running ssh-keyscan:"
+  KNOWN_HOSTS_CLUSTER_STATE_REPO="$(ssh-keyscan -v -t "${SSH_HOST_KEY_TYPE}" -H "${URL_HOST}" 2>&1 | tee /dev/stderr)"
+  echo "3. Filtered result: $(echo "$KNOWN_HOSTS_CLUSTER_STATE_REPO" | grep -v "${URL_HOST}")"
+  echo "=== END DEBUG ==="
 fi
 export KNOWN_HOSTS_CLUSTER_STATE_REPO
 
