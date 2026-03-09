@@ -4,8 +4,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - storage.yaml
 - logstash.yaml
+- logstash-s3.yaml
 - hpa.yaml
 - unused-pv-cleanup.yaml
 - secret.yaml
 - pdb.yaml
 - customer_pipelines
+
+patchesStrategicMerge:
+# This patch is conditionally enabled by git-ops-command.sh
+# based on the ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD flag (true/false).
+#- patch-opensearch-bootstrap-pf-impossible-login.yaml
