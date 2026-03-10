@@ -28,13 +28,12 @@ patchesStrategicMerge:
 - |-
   apiVersion: v1
   kind: Secret
-  type: Opaque
   metadata:
     name: argo-git-deploy
     namespace: argocd
-  data:
+  stringData:
     identity: |
-      ${SSH_ID_KEY_BASE64}
+      ${SSH_ID_KEY}
 
 - |-
   apiVersion: apps/v1
