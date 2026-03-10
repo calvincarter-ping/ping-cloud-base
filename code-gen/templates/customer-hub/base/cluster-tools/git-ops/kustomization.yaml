@@ -6,7 +6,6 @@ namespace: argocd
 resources:
   - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/git-ops?ref=${K8S_GIT_BRANCH}
   - argocd-application-set.yaml
-  - argocd-repo-secret.yaml
 
 patchesStrategicMerge:
   - argocd-strategic-patches.yaml
