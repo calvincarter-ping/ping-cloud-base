@@ -6,7 +6,8 @@
 - Remove nri-kubernetes image reference
 - Update Security Contexts for external-dns namespace workloads
 - Update Security Contexts for prometheus namespace workloads
-- Update Security Contexts for ping-cloud namespace deployments and cronjobs 
+- Update Security Contexts for ping-cloud namespace deployments and cronjobs
+- Update Security Contexts for PingDatasync and Pingdirectory
 - Update Security Contexts for pod-reaper namespace workloads
 - Update Security Contexts for health namespace workloads
 - Update Security Contexts for cert-manager workloads
@@ -21,6 +22,7 @@
 - Enabled JSON for PA/PA-WAS/PF/PD
 - Add ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD feature flag to conditionally deploy PingFederate Impossible Login OpenSearch dashboards
 - Update to include dedicated pipeline for S3
+- Enable Logstash exporter scraping endpoint arg + service annotations
 
 _Changes:_
 
@@ -42,8 +44,10 @@ _Changes:_
 - [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
 - [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)
 - [X] PDO-10795 Enable JSON-Based Logging for PA / PF / PD / PA-WAS
+- [X] PDO-10877 Update Security Contexts for ping-cloud namespace workloads - part2
 - [X] PDO-11030 OpenSearch: Enable conditional deploy of PingFederate Impossible Login Distance Map from Dashboards
 - [X] PDO-11091 Logstash: Implement  (Fluent Bit → 2x Logstash StatefulSets)
+- [X] PDO-11092 Grafana: Update Dashboards for (Fluent Bit → 2x Logstash)
 
 ### 2.2.0
 

@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pipeline
+  name: logstash-pipelines
 data:
   pipelines.yml: |
     - pipeline.id: main
@@ -162,6 +162,8 @@ spec:
               mountPath: /enrichment-cache-files
       containers:
         - name: exporter
+          args:
+          - --logstash.endpoint=http://localhost:9600
           image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/logstash-exporter:v0.0.1
           imagePullPolicy: IfNotPresent
           securityContext:
@@ -387,7 +389,7 @@ spec:
           emptyDir: {}
         - name: logstash-pipelines
           configMap:
-            name: pipeline
+            name: logstash-pipelines
             items:
               - key: pipelines.yml
                 path: pipelines.yml
