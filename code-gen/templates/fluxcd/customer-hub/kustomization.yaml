@@ -37,7 +37,7 @@ patchesStrategicMerge:
     url: ${CLUSTER_STATE_REPO_URL}
     type: git
     sshPrivateKey: |
-      ${SSH_ID_KEY_BASE64}
+      ${SSH_ID_KEY}
 
 - |-
   apiVersion: apps/v1
