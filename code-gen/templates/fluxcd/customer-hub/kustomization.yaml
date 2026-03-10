@@ -25,15 +25,19 @@ patchesStrategicMerge:
 - argocd-strategic-patches.yaml
 
 ### Deploy key to the cluster state repo ###
-# - |-
-#   apiVersion: v1
-#   kind: Secret
-#   metadata:
-#     name: argo-git-deploy
-#     namespace: argocd
-#   stringData:
-#     identity: |
-#       ${SSH_ID_KEY}
+- |-
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: argo-git-deploy
+    namespace: argocd
+    labels:
+      argocd.argoproj.io/secret-type: repository
+  stringData:
+    url: ${CLUSTER_STATE_REPO_URL}
+    type: git
+    sshPrivateKey: |
+      ${SSH_ID_KEY_BASE64}
 
 - |-
   apiVersion: apps/v1
