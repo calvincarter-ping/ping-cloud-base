@@ -28,7 +28,7 @@
 - Upgrade kube-state-metrics to version 2.18.0
 - Implement KMS changes for EBS
 - Add p1as-observability prometheus Helm chart to PCB
-- Update prometheus-job-exporter and prometheus-json-exporter image paths as part of migrating it to ping-cloud-common repo
+- Update prometheus-job-exporter and prometheus-json-exporter image paths (v3.0.0) as part of migrating to ping-cloud-common repo
 
 _Changes:_
 
