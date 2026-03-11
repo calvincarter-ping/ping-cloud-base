@@ -12,6 +12,7 @@
 - Update Security Contexts for health namespace workloads
 - Update Security Contexts for cert-manager workloads
 - Update Security Contexts for kube-system namespace workloads
+- Update Security Contexts for elastic-stack-logging namespace workloads
 - Upgrade cluster-autoscaler to version 1.34
 - Upgrade external-dns to version v0.20.0
 - Update NewRelic APM agent Java args logic
@@ -22,7 +23,8 @@
 - Add ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD feature flag to conditionally deploy PingFederate Impossible Login OpenSearch dashboards
 - Update to include dedicated pipeline for S3
 - Enable Logstash exporter scraping endpoint arg + service annotations
-- Implement KMS changes for EBS
+- Add indices:admin/aliases and indices:admin/rollover permissions to OpenSearch bootstrap role for ISM rollover support
+- Upgrade kube-state-metrics to version 2.18.0
 
 _Changes:_
 
@@ -35,6 +37,7 @@ _Changes:_
 - [X] PDO-10482 Update Security Contexts for health namespace workloads
 - [X] PDO-10483 Update Security Contexts for ping-cloud namespace workloads - part 1
 - [X] PDO-10484 Update Security Contexts for prometheus namespace workloads
+- [X] PDO-10481 Update Security Contexts for elastic-stack-logging namespace workloads
 - [X] PDO-10485 Update Security Contexts for cert-manager namespace workloads
 - [X] PDO-10486 Update Security Contexts for external-dns namespace workloads
 - [X] PDO-10546 NewRelic: Remove NRI Kubernetes Images from PCD
@@ -44,8 +47,10 @@ _Changes:_
 - [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
 - [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)
 - [X] PDO-10795 Enable JSON-Based Logging for PA / PF / PD / PA-WAS
+- [X] PDO-10819 Upgrade kube-state-metrics to version 2.18.0
 - [X] PDO-10877 Update Security Contexts for ping-cloud namespace workloads - part2
 - [X] PDO-11030 OpenSearch: Enable conditional deploy of PingFederate Impossible Login Distance Map from Dashboards
+- [X] PDO-11071 OpenSearch: Implement Logstash → Write Alias + ISM Rollover (40GB or Daily), Read-Only + Delete
 - [X] PDO-11091 Logstash: Implement  (Fluent Bit → 2x Logstash StatefulSets)
 - [X] PDO-11092 Grafana: Update Dashboards for (Fluent Bit → 2x Logstash)
 
