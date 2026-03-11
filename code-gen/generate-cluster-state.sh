@@ -104,8 +104,8 @@
 # DEFAULT_CLUSTER_UPTIME           | The cluster default uptime used by kube-downscaler | Mon-Fri 09:00-:18:00 UTC
 #                                  | to downscale resource outside workhours            |
 #                                  |                                                    |
-# EBS_KMS_KEY_ARN                  | IAM role that the Karpenter controller will use to | No defaults
-#                                  | provision new instances                            |
+# EBS_KMS_KEY_ARN                  | ARN of the AWS KMS key used to encrypt             | No defaults
+#                                  | Amazon EBS volumes                                 |
 #                                  |                                                    |
 # ENVIRONMENTS                     | The environments the customer is entitled to. This | dev test stage prod customer-hub
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
