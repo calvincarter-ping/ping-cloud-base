@@ -25,6 +25,7 @@
 - Enable Logstash exporter scraping endpoint arg + service annotations
 - Add indices:admin/aliases and indices:admin/rollover permissions to OpenSearch bootstrap role for ISM rollover support
 - Upgrade kube-state-metrics to version 2.18.0
+- Implement KMS changes for EBS
 
 _Changes:_
 
