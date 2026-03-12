@@ -49,4 +49,33 @@ spec:
       persistence:
         pvc:
           storageClass: opensearch-gp3-kms
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic-s3
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: logstash-s3-gp3-kms
+      annotations:
+        volume.autoscaler.kubernetes.io/scale-above-percent: "85"
+        volume.autoscaler.kubernetes.io/scale-up-percent: "25"
+      labels:
+        app: logstash-elastic-s3
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: logstash-gp3-kms
+      resources:
+        requests:
+          storage: 12Gi
+  template:
+    spec:
+      containers:
+      - name: logstash
+        volumeMounts:
+        - name: logstash-s3-gp3-kms
+          mountPath: /usr/share/logstash/data/queue
+          readOnly: false
 
