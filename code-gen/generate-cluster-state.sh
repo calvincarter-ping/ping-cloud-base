@@ -154,6 +154,8 @@
 #                                  |                                                    |
 # KARPENTER_INSTANCE_PROFILE       | Karpenter Instance profile attached to EKS Clsuter | KarpenterInstanceProfile
 #                                  | IAM Node role                                      |
+# KARPENTER_CONTROLLER_IAM_ROLE    | IAM role that the Karpenter controller will use to | KarpenterControllerRole
+#                                  | provision new instances                            |
 #                                  |                                                    |
 # LOG_ARCHIVE_URL                  | The URL of the log archives. If provided, logs are | The string "unused".
 #                                  | periodically captured and sent to this URL. For    |
