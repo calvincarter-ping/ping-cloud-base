@@ -270,10 +270,10 @@ class TestLogstash(unittest.TestCase):
         pod = self.workload_pods[label][0]
 
         raw_bucket = self._get_pod_env_var(pod, "S3_BUCKET")
-        if not raw_bucket:
-            self.skipTest(
-                "S3_BUCKET env var not set in logstash-elastic-s3 pod; skipping S3 bucket check."
-            )
+        self.assertTrue(
+            raw_bucket,
+            f"S3_BUCKET env var must be set in logstash-elastic-s3 pod {pod}."
+        )
         bucket_name = raw_bucket.removeprefix("s3://")
         command = [
             "sh", "-c",
@@ -288,6 +288,11 @@ class TestLogstash(unittest.TestCase):
             object_count = int(raw) if raw and raw.lower() != "none" else 0
         except ValueError:
             object_count = 0
+
+        print(
+            f"S3 bucket '{bucket_name}' object count: {object_count} "
+            f"(acceptable threshold: <= {ACCEPTABLE_S3_THRESHOLD})"
+        )
 
         self.assertLessEqual(
             object_count,
