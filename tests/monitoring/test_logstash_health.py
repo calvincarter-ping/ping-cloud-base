@@ -3,6 +3,9 @@ import json
 from ast import literal_eval
 from k8s_utils import K8sUtils
 
+# Maximum number of leftover objects tolerated in the S3 logstash bucket.
+ACCEPTABLE_S3_THRESHOLD = 1000
+
 
 def parse_output(output, pod):
     try:
@@ -169,6 +172,12 @@ class TestLogstash(unittest.TestCase):
                 self.assertIsInstance(events["out"], (int, float), f"events.out is not numeric in pod {pod}")
                 self.assertGreaterEqual(events["in"], 0, f"events.in must be >= 0 in pod {pod}")
                 self.assertGreaterEqual(events["out"], 0, f"events.out must be >= 0 in pod {pod}")
+                self.assertEqual(
+                    events["in"],
+                    events["out"],
+                    f"s3 pipeline in pod {pod}: events_in ({events['in']}) != events_out ({events['out']}). "
+                    f"The S3 pipeline is a pass-through — all ingested events must be flushed to S3.",
+                )
 
                 # Validate failure counters when exposed by this Logstash build/plugin set.
                 failure_counters = self._collect_failure_counters(stats_json)
@@ -178,6 +187,110 @@ class TestLogstash(unittest.TestCase):
                         0,
                         f"{counter_name} is negative for s3 pipeline in pod {pod}: {counter_value}"
                     )
+
+    def test_main_customer_pipeline_events_and_failures(self):
+        """
+        Validates events schema, consistency, and failure counters for the main and
+        customer pipelines running in logstash-elastic pods.
+
+        Checks:
+          - events.in and events.out keys are present.
+          - Both values are numeric (int or float).
+          - events_in >= events_out (fail if events_out exceeds events_in).
+          - All failure counters exposed by the Logstash build are non-negative.
+        """
+        label = "app=logstash-elastic"
+        pipelines = ["main", "customer"]
+        pods = self.workload_pods.get(label, [])
+        self.assertTrue(pods, f"No Logstash pods found for label {label}")
+
+        for pod in pods:
+            for pipeline_name in pipelines:
+                with self.subTest(label=label, pod=pod, pipeline=pipeline_name):
+                    command = [
+                        "curl", "-s",
+                        f"http://localhost:9600/_node/stats/pipelines/{pipeline_name}?pretty",
+                    ]
+                    output = self.exec_in_logstash_container(pod, command)
+                    stats_json = parse_output(output, pod)
+                    pipeline_stats = self._extract_pipeline_stats(stats_json, pipeline_name)
+
+                    events = pipeline_stats.get("events", {})
+                    if not events:
+                        # Pipeline idle but initialised — no schema to validate.
+                        continue
+
+                    self.assertIn("in", events, f"events.in missing for '{pipeline_name}' in pod {pod}")
+                    self.assertIn("out", events, f"events.out missing for '{pipeline_name}' in pod {pod}")
+                    self.assertIsInstance(
+                        events["in"], (int, float),
+                        f"events.in is not numeric for '{pipeline_name}' in pod {pod}",
+                    )
+                    self.assertIsInstance(
+                        events["out"], (int, float),
+                        f"events.out is not numeric for '{pipeline_name}' in pod {pod}",
+                    )
+                    self.assertGreaterEqual(
+                        events["in"],
+                        events["out"],
+                        f"Pipeline '{pipeline_name}' in pod {pod}: "
+                        f"events_out ({events['out']}) exceeds events_in ({events['in']}). "
+                        "Possible pipeline misconfiguration or stats corruption.",
+                    )
+
+                    failure_counters = self._collect_failure_counters(stats_json)
+                    for counter_name, counter_value in failure_counters:
+                        self.assertGreaterEqual(
+                            counter_value,
+                            0,
+                            f"{counter_name} is negative for '{pipeline_name}' pipeline in pod {pod}: {counter_value}",
+                        )
+
+
+    def _get_pod_env_var(self, pod_name, var_name):
+        """Return the value of an environment variable from inside the logstash container."""
+        output = self.exec_in_logstash_container(
+            pod_name, ["sh", "-c", f"printf '%s' \"${var_name}\""]
+        )
+        return output.strip()
+
+    def test_s3_bucket_object_count(self):
+        """
+        Validates that the S3 bucket used by logstash-elastic-s3 does not accumulate
+        leftover objects beyond ACCEPTABLE_S3_THRESHOLD.
+
+        A non-zero count indicates a previous cleanup/flush job failure and must be
+        investigated before the deployment is considered healthy.
+        """
+        label = "app=logstash-elastic-s3"
+        pod = self.workload_pods[label][0]
+
+        bucket_name = self._get_pod_env_var(pod, "S3_BUCKET_NAME")
+        if not bucket_name:
+            self.skipTest(
+                "S3_BUCKET_NAME env var not set in logstash-elastic-s3 pod; skipping S3 bucket check."
+            )
+        command = [
+            "sh", "-c",
+            "aws s3api list-objects-v2 "
+            "--bucket \"$S3_BUCKET_NAME\" "
+            "--region \"$AWS_REGION\" "
+            "--query 'length(Contents[])' "
+            "--output text 2>/dev/null || echo 0",
+        ]
+        raw = self.exec_in_logstash_container(pod, command).strip()
+        try:
+            object_count = int(raw) if raw and raw.lower() != "none" else 0
+        except ValueError:
+            object_count = 0
+
+        self.assertLessEqual(
+            object_count,
+            ACCEPTABLE_S3_THRESHOLD,
+            f"S3 bucket '{bucket_name}' contains {object_count} leftover object(s), "
+            f"exceeding the acceptable threshold of {ACCEPTABLE_S3_THRESHOLD}. "
+            "A prior cleanup job may have failed — review the bucket before proceeding.",
+        )
 
 
 if __name__ == "__main__":
