@@ -230,6 +230,10 @@ class TestLogstash(unittest.TestCase):
                         events["out"], (int, float),
                         f"events.out is not numeric for '{pipeline_name}' in pod {pod}",
                     )
+                    print(
+                        f"  [{pipeline_name}] pod {pod}: "
+                        f"events_in={events['in']}, events_out={events['out']}"
+                    )
                     self.assertGreaterEqual(
                         events["in"],
                         events["out"],
@@ -265,15 +269,16 @@ class TestLogstash(unittest.TestCase):
         label = "app=logstash-elastic-s3"
         pod = self.workload_pods[label][0]
 
-        bucket_name = self._get_pod_env_var(pod, "S3_BUCKET_NAME")
-        if not bucket_name:
+        raw_bucket = self._get_pod_env_var(pod, "S3_BUCKET")
+        if not raw_bucket:
             self.skipTest(
-                "S3_BUCKET_NAME env var not set in logstash-elastic-s3 pod; skipping S3 bucket check."
+                "S3_BUCKET env var not set in logstash-elastic-s3 pod; skipping S3 bucket check."
             )
+        bucket_name = raw_bucket.removeprefix("s3://")
         command = [
             "sh", "-c",
-            "aws s3api list-objects-v2 "
-            "--bucket \"$S3_BUCKET_NAME\" "
+            f"aws s3api list-objects-v2 "
+            f"--bucket '{bucket_name}' "
             "--region \"$AWS_REGION\" "
             "--query 'length(Contents[])' "
             "--output text 2>/dev/null || echo 0",
