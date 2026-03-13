@@ -274,14 +274,12 @@ class TestLogstash(unittest.TestCase):
             raw_bucket,
             f"S3_BUCKET env var must be set in logstash-elastic-s3 pod {pod}."
         )
-        bucket_name = raw_bucket.removeprefix("s3://")
+        bucket_uri_without_scheme = raw_bucket.removeprefix("s3://")
+        bucket_name = bucket_uri_without_scheme.split("/", 1)[0]
+        bucket_prefix = "application/"
         command = [
             "sh", "-c",
-            f"aws s3api list-objects-v2 "
-            f"--bucket '{bucket_name}' "
-            "--region \"$AWS_REGION\" "
-            "--query 'length(Contents[])' "
-            "--output text 2>/dev/null || echo 0",
+            f"aws s3 ls 's3://{bucket_name}/{bucket_prefix}' --recursive 2>/dev/null | wc -l",
         ]
         raw = self.exec_in_logstash_container(pod, command).strip()
         try:
@@ -290,7 +288,7 @@ class TestLogstash(unittest.TestCase):
             object_count = 0
 
         print(
-            f"S3 bucket '{bucket_name}' object count: {object_count} "
+            f"S3 path 's3://{bucket_name}/{bucket_prefix}' object count: {object_count} "
             f"(acceptable threshold: <= {ACCEPTABLE_S3_THRESHOLD})"
         )
 
