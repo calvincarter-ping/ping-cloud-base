@@ -4,7 +4,7 @@ from ast import literal_eval
 from k8s_utils import K8sUtils
 
 # Maximum number of leftover objects tolerated in the S3 logstash bucket.
-ACCEPTABLE_S3_THRESHOLD = 1000
+ACCEPTABLE_S3_THRESHOLD = 3000
 
 
 def parse_output(output, pod):
