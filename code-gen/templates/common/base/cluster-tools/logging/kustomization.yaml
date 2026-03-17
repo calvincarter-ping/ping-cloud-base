@@ -104,6 +104,8 @@ patchesStrategicMerge:
       additionalConfig:
         opensearch_security.openid.base_redirect_url: "https://logs.${DNS_ZONE}"
 
+# This patch is conditionally enabled by git-ops-command.sh when EBS_KMS_KEY_ARN is set,
+# which automatically uncomments KMS-related resources/patches to enable KMS encryption
 #- kms-patch.yaml
 
 patchesJson6902:
