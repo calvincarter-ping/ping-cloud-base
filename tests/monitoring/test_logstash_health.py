@@ -256,7 +256,7 @@ class TestLogstash(unittest.TestCase):
     def _get_pod_env_var(self, pod_name, var_name):
         """Return the value of an environment variable from inside the logstash container."""
         output = self.exec_in_logstash_container(
-            pod_name, ["sh", "-c", f"printf '%s' \"${var_name}\""]
+            pod_name, ["printenv", var_name]
         )
         return output.strip()
 
