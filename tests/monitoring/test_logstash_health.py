@@ -1,6 +1,8 @@
 import unittest
 import json
 from ast import literal_eval
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError, PartialCredentialsError
 from k8s_utils import K8sUtils
 
 # Maximum number of leftover objects tolerated in the S3 logstash bucket.
@@ -274,18 +276,33 @@ class TestLogstash(unittest.TestCase):
             raw_bucket,
             f"S3_BUCKET env var must be set in logstash-elastic-s3 pod {pod}."
         )
+
         bucket_uri_without_scheme = raw_bucket.removeprefix("s3://")
         bucket_name = bucket_uri_without_scheme.split("/", 1)[0]
         bucket_prefix = "application/"
-        command = [
-            "sh", "-c",
-            f"aws s3 ls 's3://{bucket_name}/{bucket_prefix}' --recursive 2>/dev/null | wc -l",
-        ]
-        raw = self.exec_in_logstash_container(pod, command).strip()
+
         try:
-            object_count = int(raw) if raw and raw.lower() != "none" else 0
-        except ValueError:
+            sts_client = boto3.client("sts")
+            identity = sts_client.get_caller_identity()
+            print(
+                f"Using local AWS identity: {identity.get('Arn', 'unknown')}"
+            )
+
+            s3_client = boto3.client("s3")
+            paginator = s3_client.get_paginator("list_objects_v2")
             object_count = 0
+            for page in paginator.paginate(Bucket=bucket_name, Prefix=bucket_prefix):
+                object_count += len(page.get("Contents", []))
+        except (NoCredentialsError, PartialCredentialsError) as ex:
+            self.fail(
+                f"Local AWS credentials are not configured for S3 check. "
+                f"Unable to count objects in s3://{bucket_name}/{bucket_prefix}. Error: {ex}"
+            )
+        except (ClientError, BotoCoreError) as ex:
+            self.fail(
+                f"Failed to list S3 objects for s3://{bucket_name}/{bucket_prefix} using local boto3. "
+                f"Error: {ex}"
+            )
 
         print(
             f"S3 path 's3://{bucket_name}/{bucket_prefix}' object count: {object_count} "
