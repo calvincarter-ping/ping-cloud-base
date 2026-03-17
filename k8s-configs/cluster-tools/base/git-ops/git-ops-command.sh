@@ -175,40 +175,6 @@ disable_os_operator_crds() {
     done
 }
 
-########################################################################################################################
-# Enable KMS component based on EBS_KMS_KEY_ARN
-########################################################################################################################
-enable_kms() {
-  cd "${TMP_DIR}"
-
-  log "EBS_KMS_KEY_ARN=${EBS_KMS_KEY_ARN}"
-
-  if [[ -n "${EBS_KMS_KEY_ARN}" ]]; then
-    log "KMS is ENABLED - uncommenting KMS resources"
-
-    # Patterns to uncomment
-    patterns=(
-      '^#- kms-storageclass\.yaml'
-      '^#- kms-.*\.yaml'
-    )
-
-    for pattern in "${patterns[@]}"; do
-      while IFS= read -r kust_file; do
-        log "Uncommenting '${pattern}' in ${kust_file}"
-        uncomment_lines_in_file "${kust_file}" "${pattern}"
-      done < <(
-        grep --exclude-dir=.git -rlE "${pattern}" . 2>/dev/null | grep "kustomization.yaml" || true
-      )
-    done
-
-  else
-    log "KMS is DISABLED - no changes needed"
-  fi
-}
-
-
-
-
 
 ########################################################################################################################
 # Get the P1AS version from the version.txt located in the cluster-state-repo
