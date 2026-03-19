@@ -147,9 +147,7 @@ class TestPfTemplatesUI(unittest.TestCase):
 		cls.tenant_domain = os.getenv("TENANT_DOMAIN")
 		cls.self_service_url = f"https://self-service.{cls.tenant_domain}"
 		cls.region = os.getenv("REGION", "us-west-2")
-		cls.config_data_bucket = (
-			os.getenv("CONFIG_DATA_BUCKET_URI")
-		).replace("s3://", "").strip("/")
+		cls.config_data_bucket = CONFIG_DATA_BUCKET_URI.replace("s3://", "").strip("/")
 
 		resources_dir = Path(__file__).parent / "resources"
 		cls.templates_zip_path = resources_dir / "templates.zip"
