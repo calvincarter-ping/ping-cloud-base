@@ -338,7 +338,6 @@ monorepo_main() {
 
       feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
       enable_external_ingress
-      enable_kms
     )
     test $? -ne 0 && exit 1
   fi
