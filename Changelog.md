@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.2.1
+
+- Add CONFIG_DATA_BUCKET_URI for PingFederate language-packs/templates S3 sync
+
+_Changes:_
+
+- [X] PDO-10894 Add PF pod S3 sync logic
+
 ### 2.2.0
 
 - OSD: Enable Save Query and CSV Export of Logs
