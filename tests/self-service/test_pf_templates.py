@@ -441,10 +441,10 @@ class TestPfTemplatesUI(unittest.TestCase):
 		keys = set()
 		with zipfile.ZipFile(zip_path, "r") as zf:
 			for info in zf.infolist():
-				if info.is_dir():
+				if info.is_dir() or "MACOSX" in info.filename:
 					continue
 				clean_name = info.filename.lstrip("/")
-				keys.add(f"pingfederate/templates/{clean_name}")
+				keys.add(clean_name)
 		return keys
 
 	def get_s3_keys_under_prefix(self, bucket: str, prefix: str) -> set[str]:
@@ -533,6 +533,7 @@ class TestPfTemplatesUI(unittest.TestCase):
 
 		# Verify uploaded objects and deployed bundle were written to config-data bucket.
 		expected_keys = self.get_expected_template_object_keys(self.templates_zip_path)
+		expected_keys = set([f"pingfederate/templates/{key}" for key in expected_keys])
 		actual_keys = self.get_s3_keys_under_prefix(
 			bucket=self.config_data_bucket,
 			prefix="pingfederate/templates/",
