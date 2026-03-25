@@ -1,10 +1,10 @@
 # Customer-hub overrides for p1as-observability.
-# Customer-hub does not deploy OpenSearch, so opensearch-grafana-credentials
-# will never exist. Override optional: false (base) to optional: true so
-# prometheus-agent can start without the secret.
+# Customer-hub does not deploy OpenSearch, so the opensearch-grafana-credentials secret does not exist.
+# Clearing extraVolumes and extraVolumeMounts prevents prometheus-agent from failing when the secret is not found.
 prometheus-agent:
   server:
-    #Extra volumes and volume mounts are intentionally left blank to remove the opensearch-grafana-credentials secret from customer-hub.
+    # Override extraVolumes and extraVolumeMounts to empty arrays. Since customer-hub does not deploy OpenSearch,
+    # the opensearch-grafana-credentials secret will not exist and clearing these mounts prevents pod startup failure.
     extraVolumes: []
     extraVolumeMounts: []
 
