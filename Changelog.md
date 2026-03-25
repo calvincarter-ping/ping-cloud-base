@@ -27,8 +27,11 @@
 - Add indices:admin/aliases and indices:admin/rollover permissions to OpenSearch bootstrap role for ISM rollover support
 - Upgrade kube-state-metrics to version 2.18.0
 - Implement KMS changes for EBS
+<<<<<<< HEAD
 - Add p1as-observability prometheus Helm chart to PCB
 - Update prometheus-job-exporter and prometheus-json-exporter image paths (v3.0.0) as part of migrating to ping-cloud-common repo
+=======
+>>>>>>> d7fdb4c8d (PDO-10825: Rebased and resolve conflicts)
 
 _Changes:_
 
@@ -49,7 +52,6 @@ _Changes:_
 - [X] PDO-10546 NewRelic: Remove NRI Kubernetes Images from PCD
 - [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
 - [X] PDO-10816 Upgrade external-dns to version v0.20.0
-- [X] PDO-10825 CI/CD Validation for Split Logstash Pipelines
 - [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
 - [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
 - [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)

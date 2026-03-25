@@ -19,10 +19,16 @@ def parse_output(output, pod):
 
 class TestLogstash(unittest.TestCase):
     namespace = "elastic-stack-logging"
+    LOGSTASH_LABEL = "app=logstash-elastic"
+    LOGSTASH_S3_LABEL = "app=logstash-elastic-s3"
+    MAIN_CUSTOMER_PIPELINES = ["main", "customer"]
+    S3_PIPELINE = "s3"
+    S3_BUCKET_PREFIX = "application/"
+    FAILURE_COUNTER_KEYS = {"failures", "failure", "failed", "non_retryable_failures", "retry_failures"}
     workload_pods = {}
     workload_pipelines = {
-        "app=logstash-elastic": ["main", "customer", "dlq"],
-        "app=logstash-elastic-s3": ["s3"],
+        LOGSTASH_LABEL: ["main", "customer", "dlq"],
+        LOGSTASH_S3_LABEL: [S3_PIPELINE],
     }
     required_plugins = [
         "logstash-input-dead_letter_queue",
@@ -88,7 +94,7 @@ class TestLogstash(unittest.TestCase):
         pipeline_status = pipeline_stats.get("status", "")
 
         expected_statuses = {"green"}
-        if label == "app=logstash-elastic-s3" and pipeline_name == "s3":
+        if label == self.LOGSTASH_S3_LABEL and pipeline_name == self.S3_PIPELINE:
             # On low/no traffic, Logstash may report 'unknown' for these pipelines.
             expected_statuses.add("unknown")
         if pipeline_status:
@@ -130,7 +136,7 @@ class TestLogstash(unittest.TestCase):
         counters = []
         if isinstance(obj, dict):
             for key, value in obj.items():
-                if key in {"failures", "failure", "failed", "non_retryable_failures", "retry_failures"} and isinstance(value, (int, float)):
+                if key in self.FAILURE_COUNTER_KEYS and isinstance(value, (int, float)):
                     counters.append((key, value))
                 counters.extend(self._collect_failure_counters(value))
         elif isinstance(obj, list):
@@ -139,16 +145,16 @@ class TestLogstash(unittest.TestCase):
         return counters
 
     def test_s3_pipeline_stats_events_and_failures(self):
-        label = "app=logstash-elastic-s3"
+        label = self.LOGSTASH_S3_LABEL
         pods = self.workload_pods.get(label, [])
         self.assertTrue(pods, f"No Logstash pods found for label {label}")
 
         for pod in pods:
             with self.subTest(label=label, pod=pod):
-                command = ["curl", "-s", "http://localhost:9600/_node/stats/pipelines/s3?pretty"]
+                command = ["curl", "-s", f"http://localhost:9600/_node/stats/pipelines/{self.S3_PIPELINE}?pretty"]
                 output = self.exec_in_logstash_container(pod, command)
                 stats_json = parse_output(output, pod)
-                pipeline_stats = self._extract_pipeline_stats(stats_json, "s3")
+                pipeline_stats = self._extract_pipeline_stats(stats_json, self.S3_PIPELINE)
                 self.assertTrue(
                     isinstance(pipeline_stats, dict) and pipeline_stats,
                     f"No s3 pipeline stats returned for pod {pod}"
@@ -201,8 +207,8 @@ class TestLogstash(unittest.TestCase):
           - events_in >= events_out (fail if events_out exceeds events_in).
           - All failure counters exposed by the Logstash build are non-negative.
         """
-        label = "app=logstash-elastic"
-        pipelines = ["main", "customer"]
+        label = self.LOGSTASH_LABEL
+        pipelines = self.MAIN_CUSTOMER_PIPELINES
         pods = self.workload_pods.get(label, [])
         self.assertTrue(pods, f"No Logstash pods found for label {label}")
 
@@ -268,7 +274,7 @@ class TestLogstash(unittest.TestCase):
         A non-zero count indicates a previous cleanup/flush job failure and must be
         investigated before the deployment is considered healthy.
         """
-        label = "app=logstash-elastic-s3"
+        label = self.LOGSTASH_S3_LABEL
         pod = self.workload_pods[label][0]
 
         raw_bucket = self._get_pod_env_var(pod, "S3_BUCKET")
@@ -279,7 +285,7 @@ class TestLogstash(unittest.TestCase):
 
         bucket_uri_without_scheme = raw_bucket.removeprefix("s3://")
         bucket_name = bucket_uri_without_scheme.split("/", 1)[0]
-        bucket_prefix = "application/"
+        bucket_prefix = self.S3_BUCKET_PREFIX
 
         try:
             sts_client = boto3.client("sts")
