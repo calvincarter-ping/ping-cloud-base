@@ -104,6 +104,9 @@
 # DEFAULT_CLUSTER_UPTIME           | The cluster default uptime used by kube-downscaler | Mon-Fri 09:00-:18:00 UTC
 #                                  | to downscale resource outside workhours            |
 #                                  |                                                    |
+# EBS_KMS_KEY_ARN                  | ARN of the AWS KMS key used to encrypt             | No defaults
+#                                  | Amazon EBS volumes                                 |
+#                                  |                                                    |
 # ENVIRONMENTS                     | The environments the customer is entitled to. This | dev test stage prod customer-hub
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
 #                                  |                                                    |
@@ -151,7 +154,6 @@
 #                                  |                                                    |
 # KARPENTER_INSTANCE_PROFILE       | Karpenter Instance profile attached to EKS Clsuter | KarpenterInstanceProfile
 #                                  | IAM Node role                                      |
-#                                  |                                                    |
 # KARPENTER_CONTROLLER_IAM_ROLE    | IAM role that the Karpenter controller will use to | KarpenterControllerRole
 #                                  | provision new instances                            |
 #                                  |                                                    |
@@ -453,6 +455,7 @@ ${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE}
 ${IRSA_CLUSTER_AUTOSCALER_KEY_VALUE}
 ${GLOBAL_DNS_IAM_ROLE}
 ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
+${EBS_KMS_KEY_ARN}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 ${PF_PROVISIONING_ENABLED}
 ${PF_RDS_SECRET_PATH}
@@ -752,9 +755,27 @@ organize_code_for_csr() {
           fi
           ;;
       esac
+
+      # Handle secondary/child region values overrides.
+      # secondary-values.yaml is merged into values.yaml for non-primary regions,
+      # allowing region-specific overrides (e.g. optional secrets that only exist in primary).
+      secondary_values_files=$(find "${app_target_dir}" -type f -name "secondary-values.yaml")
+      if [ -n "${secondary_values_files}" ]; then
+        if test "${REGION}" != "${PRIMARY_REGION}"; then
+          for secondary_values_file in ${secondary_values_files}; do
+            echo "Child region (${REGION}) — merging ${secondary_values_file} into values.yaml"
+            yq -i ". *= load(\"${secondary_values_file}\")" "${secondary_values_file//secondary-/}"
+            rm -f $secondary_values_file
+          done
+        else
+          # Primary region — delete secondary-values.yaml files (not needed)
+          find "${app_target_dir}" -type f -name "secondary-values.yaml" -exec rm -f {} +
+        fi
+      fi
     fi
   done
 }
+
 
 # Checking required tools and environment variables.
 check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync" "yq"
@@ -865,6 +886,7 @@ echo "Initial NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_K
 echo "Initial CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
 echo "Initial KARPENTER_INSTANCE_PROFILE: ${KARPENTER_INSTANCE_PROFILE}"
 echo "Initial KARPENTER_CONTROLLER_IAM_ROLE: ${KARPENTER_CONTROLLER_IAM_ROLE}"
+echo "Initial EBS_KMS_KEY_ARN : ${EBS_KMS_KEY_ARN}"
 echo "Initial DEFAULT_CLUSTER_UPTIME: ${DEFAULT_CLUSTER_UPTIME}"
 
 echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
@@ -983,6 +1005,7 @@ export IRSA_INGRESS_ANNOTATION_KEY_VALUE=${IRSA_INGRESS_ANNOTATION_KEY_VALUE:-''
 export CLUSTER_ENDPOINT=${CLUSTER_ENDPOINT:-''}
 export KARPENTER_INSTANCE_PROFILE=${KARPENTER_INSTANCE_PROFILE:-"KarpenterInstanceProfile"}
 export KARPENTER_CONTROLLER_IAM_ROLE=${KARPENTER_CONTROLLER_IAM_ROLE:-"KarpenterControllerRole"}
+export EBS_KMS_KEY_ARN=${EBS_KMS_KEY_ARN:-''}
 export DEFAULT_CLUSTER_UPTIME=${DEFAULT_CLUSTER_UPTIME:-"Mon-Fri 09:00-18:00 UTC"}
 
 export KARPENTER_ROLE_ANNOTATION_KEY_VALUE=${KARPENTER_ROLE_ANNOTATION_KEY_VALUE:-''}
@@ -1184,6 +1207,7 @@ echo "Using IRSA_INGRESS_ANNOTATION_KEY_VALUE: ${IRSA_INGRESS_ANNOTATION_KEY_VAL
 echo "Using CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
 echo "Using KARPENTER_INSTANCE_PROFILE: ${KARPENTER_INSTANCE_PROFILE}"
 echo "Using KARPENTER_CONTROLLER_IAM_ROLE: ${KARPENTER_CONTROLLER_IAM_ROLE}"
+echo "Using EBS_KMS_KEY_ARN: ${EBS_KMS_KEY_ARN}"
 echo "Using DEFAULT_CLUSTER_UPTIME: ${DEFAULT_CLUSTER_UPTIME}"
 
 echo "Using KARPENTER_ROLE_ANNOTATION_KEY_VALUE: ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}"
@@ -1391,6 +1415,8 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   #Getting Global Domain
   set_var "GLOBAL_TENANT_DOMAIN" "global.${TENANT_DOMAIN_NO_DOT_SUFFIX}" "/pcpt/global-dns/hosted-zone/zone-name" ""
 
+  set_var "EBS_KMS_KEY_ARN" "" "${ACCOUNT_BASE_PATH}" "${ENV}/customer/ebs/kms/key/arn" ""
+
 
   ######################################################################################################################
   # Enable Cloudwatch according to the account type
@@ -1553,10 +1579,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
-    if test "${ENV}" != "${CUSTOMER_HUB}"; then
-      # Remove patch that deletes volumeMount from Prometheus, in primary region and non-chub envs only
-      yq 'del(.patchesJson6902)' "${PRIMARY_PING_KUST_FILE}" -i
-    fi
   else
     # Child regions
     if test "${HEALTHCHECKS_ENABLED}" != "true"; then
