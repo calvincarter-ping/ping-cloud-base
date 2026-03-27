@@ -27,11 +27,8 @@
 - Add indices:admin/aliases and indices:admin/rollover permissions to OpenSearch bootstrap role for ISM rollover support
 - Upgrade kube-state-metrics to version 2.18.0
 - Implement KMS changes for EBS
-<<<<<<< HEAD
 - Add p1as-observability prometheus Helm chart to PCB
 - Update prometheus-job-exporter and prometheus-json-exporter image paths (v3.0.0) as part of migrating to ping-cloud-common repo
-=======
->>>>>>> d7fdb4c8d (PDO-10825: Rebased and resolve conflicts)
 
 _Changes:_
 
