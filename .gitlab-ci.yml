@@ -167,18 +167,7 @@ pa-was-integration-tests:
   dependencies:
     - find-cluster
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - "k8s-configs/ping-cloud/base/pingaccess-was/**/*"
-        - "code-gen/templates/common/base/ping-cloud/pingaccess-was/**/*"
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: always
-
-################################################
-# All integration tests defined to run on the  #
-# traditionally deployed P1AS                  #
-################################################
-.all-tests: &all-tests
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
   - pingdirectory
   - pingdelegator
   - pingfederate
@@ -229,6 +218,8 @@ pa-was-integration-tests:
       - tests/pingone/latest_logs/
     when: on_failure
 
+# Full suite for API/trigger/parent_pipeline sources only.
+# MR and branch push use per-component jobs below; schedule uses nightly-build-tests.
 integration-tests:
   extends: .integration-tests-base
   variables:
@@ -237,96 +228,103 @@ integration-tests:
     matrix:
       - TEST: *all-tests
   rules:
-    # DO NOT run this full suite on Merge Requests
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: never
-    - if: "$CI_PIPELINE_SOURCE == 'push'"
-      when: never
-    - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
-    # Do not run on nightly builds
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
+    - when: on_success  # api / trigger / parent_pipeline only
 
 .mr-rules-map:
-  argocd: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  argocd:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
       changes:
         - "k8s-configs/ping-cloud/base/argocd/**/*"
         - "code-gen/templates/common/base/argocd/**/*"
 
-  cert-manager: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  cert-manager:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "code-gen/templates/common/base/cluster-tools/cert-manager/**/*"
 
-  common: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  common:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "code-gen/templates/common/base/ping-cloud/**/*"
 
-  health: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  health:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "k8s-configs/cluster-tools/base/health/**/*"
 
-  cluster-tools: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  cluster-tools:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "code-gen/templates/p1as-cluster-tools/**/*"
 
-  logging: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  ingress-nginx:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "k8s-configs/cluster-tools/base/ingress-nginx/**/*"
+        - "code-gen/templates/common/base/cluster-tools/ingress-nginx/**/*"
+
+  system-scaling:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "k8s-configs/cluster-tools/base/system-scaling/**/*"
+        - "code-gen/templates/common/base/cluster-tools/system-scaling/**/*"
+
+  logging:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "k8s-configs/cluster-tools/base/logging/**/*"
         - "code-gen/templates/common/base/cluster-tools/logging/**/*"
 
-  monitoring: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  monitoring:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "k8s-configs/cluster-tools/base/monitoring/**/*"
         - "code-gen/templates/common/base/cluster-tools/monitoring/**/*"
 
-  pingaccess: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  pingaccess:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "k8s-configs/ping-cloud/base/pingaccess/**/*"
         - "k8s-configs/ping-cloud/prod/large/pingaccess/**/*"
         - "k8s-configs/ping-cloud/prod/medium/pingaccess/**/*"
         - "k8s-configs/ping-cloud/prod/small/pingaccess/**/*"
         - "k8s-configs/ping-cloud/prod/x-small/pingaccess/**/*"
         - "code-gen/templates/common/base/ping-cloud/pingaccess/**/*"
-        - "k8s-configs/ping-cloud/base/pingaccess/**/*"
         - "code-gen/templates/p1as-pingaccess/**/*"
 
-  pingcentral: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  pingcentral:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "k8s-configs/ping-cloud/base/pingcentral/**/*"
         - "k8s-configs/ping-cloud/prod/large/pingcentral/**/*"
         - "k8s-configs/ping-cloud/prod/medium/pingcentral/**/*"
         - "k8s-configs/ping-cloud/prod/small/pingcentral/**/*"
         - "k8s-configs/ping-cloud/prod/x-small/pingcentral/**/*"
-        - "k8s-configs/ping-cloud/base/pingcentral/**/*"
 
-  pingcloud-services: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  pingcloud-services:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "k8s-configs/ping-cloud/base/pingcloud-services/**/*"
 
-  pingdatasync: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  pingdatasync:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
       changes:
         - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
         - "k8s-configs/ping-cloud/prod/large/pingdatasync/**/*"
         - "k8s-configs/ping-cloud/prod/medium/pingdatasync/**/*"
         - "k8s-configs/ping-cloud/prod/small/pingdatasync/**/*"
         - "k8s-configs/ping-cloud/prod/x-small/pingdatasync/**/*"
-        - "k8s-configs/ping-cloud/base/pingdatasync/**/*"
 
-  pingdelegator: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  pingdelegator:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
       changes:
         - "k8s-configs/ping-cloud/base/pingdelegator/**/*"
         - "k8s-configs/ping-cloud/prod/large/pingdelegator/**/*"
@@ -335,24 +333,24 @@ integration-tests:
         - "k8s-configs/ping-cloud/prod/x-small/pingdelegator/**/*"
         - "code-gen/templates/cde/base/ping-cloud/pingdelegator/**/*"
 
-  pingdirectory: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  pingdirectory:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "code-gen/templates/p1as-pingdirectory/**/*"
 
-  pingfederate: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  pingfederate:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "code-gen/templates/p1as-pingfederate/**/*"
 
-  pingone: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  pingone:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "k8s-configs/ping-cloud/base/pingone/**/*"
 
-  self-service: 
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
+  self-service:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "push"'
+      changes:
         - "code-gen/templates/p1as-self-service/**/*"
 
 
@@ -414,6 +412,20 @@ cluster-tools:
         - ingress-nginx
         - system-scaling
   rules: !reference [.mr-rules-map, cluster-tools]
+
+# ingress-nginx integration test
+ingress-nginx:
+  extends: .integration-tests-base
+  variables:
+    TEST: ingress-nginx
+  rules: !reference [.mr-rules-map, ingress-nginx]
+
+# system-scaling integration test
+system-scaling:
+  extends: .integration-tests-base
+  variables:
+    TEST: system-scaling
+  rules: !reference [.mr-rules-map, system-scaling]
 
 # logging integration test
 logging:
