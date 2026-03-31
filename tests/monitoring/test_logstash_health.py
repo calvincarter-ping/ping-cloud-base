@@ -132,17 +132,19 @@ class TestLogstash(unittest.TestCase):
             f"Missing plugins in pod {pod}: {', '.join(missing_plugins)}"
         )
 
-    def _collect_failure_counters(self, obj):
-        counters = []
+    def _has_any_failures(self, obj):
+        """Return True if any failure counter in the stats JSON is > 0."""
         if isinstance(obj, dict):
             for key, value in obj.items():
-                if key in self.FAILURE_COUNTER_KEYS and isinstance(value, (int, float)):
-                    counters.append((key, value))
-                counters.extend(self._collect_failure_counters(value))
+                if key in self.FAILURE_COUNTER_KEYS and isinstance(value, (int, float)) and value > 0:
+                    return True
+                if self._has_any_failures(value):
+                    return True
         elif isinstance(obj, list):
             for item in obj:
-                counters.extend(self._collect_failure_counters(item))
-        return counters
+                if self._has_any_failures(item):
+                    return True
+        return False
 
     def test_s3_pipeline_stats_events_and_failures(self):
         label = self.LOGSTASH_S3_LABEL
@@ -187,14 +189,10 @@ class TestLogstash(unittest.TestCase):
                     f"The S3 pipeline is a pass-through — all ingested events must be flushed to S3.",
                 )
 
-                # Validate failure counters when exposed by this Logstash build/plugin set.
-                failure_counters = self._collect_failure_counters(stats_json)
-                for counter_name, counter_value in failure_counters:
-                    self.assertGreaterEqual(
-                        counter_value,
-                        0,
-                        f"{counter_name} is negative for s3 pipeline in pod {pod}: {counter_value}"
-                    )
+                self.assertFalse(
+                    self._has_any_failures(stats_json),
+                    f"s3 pipeline in pod {pod} has failures reported in stats.",
+                )
 
     def test_main_customer_pipeline_events_and_failures(self):
         """
@@ -250,13 +248,10 @@ class TestLogstash(unittest.TestCase):
                         "Possible pipeline misconfiguration or stats corruption.",
                     )
 
-                    failure_counters = self._collect_failure_counters(stats_json)
-                    for counter_name, counter_value in failure_counters:
-                        self.assertGreaterEqual(
-                            counter_value,
-                            0,
-                            f"{counter_name} is negative for '{pipeline_name}' pipeline in pod {pod}: {counter_value}",
-                        )
+                    self.assertFalse(
+                        self._has_any_failures(stats_json),
+                        f"'{pipeline_name}' pipeline in pod {pod} has failures reported in stats.",
+                    )
 
 
     def _get_pod_env_var(self, pod_name, var_name):
