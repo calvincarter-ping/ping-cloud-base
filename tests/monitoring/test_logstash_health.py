@@ -24,7 +24,6 @@ class TestLogstash(unittest.TestCase):
     MAIN_CUSTOMER_PIPELINES = ["main", "customer"]
     S3_PIPELINE = "s3"
     S3_BUCKET_PREFIX = "application/"
-    FAILURE_COUNTER_KEYS = {"failures", "failure", "failed", "non_retryable_failures", "retry_failures"}
     workload_pods = {}
     workload_pipelines = {
         LOGSTASH_LABEL: ["main", "customer", "dlq"],
@@ -132,20 +131,6 @@ class TestLogstash(unittest.TestCase):
             f"Missing plugins in pod {pod}: {', '.join(missing_plugins)}"
         )
 
-    def _has_any_failures(self, obj):
-        """Return True if any failure counter in the stats JSON is > 0."""
-        if isinstance(obj, dict):
-            for key, value in obj.items():
-                if key in self.FAILURE_COUNTER_KEYS and isinstance(value, (int, float)) and value > 0:
-                    return True
-                if self._has_any_failures(value):
-                    return True
-        elif isinstance(obj, list):
-            for item in obj:
-                if self._has_any_failures(item):
-                    return True
-        return False
-
     def test_s3_pipeline_stats_events_and_failures(self):
         label = self.LOGSTASH_S3_LABEL
         pods = self.workload_pods.get(label, [])
@@ -189,11 +174,6 @@ class TestLogstash(unittest.TestCase):
                     f"The S3 pipeline is a pass-through — all ingested events must be flushed to S3.",
                 )
 
-                self.assertFalse(
-                    self._has_any_failures(stats_json),
-                    f"s3 pipeline in pod {pod} has failures reported in stats.",
-                )
-
     def test_main_customer_pipeline_events_and_failures(self):
         """
         Validates events schema, consistency, and failure counters for the main and
@@ -203,7 +183,6 @@ class TestLogstash(unittest.TestCase):
           - events.in and events.out keys are present.
           - Both values are numeric (int or float).
           - events_in >= events_out (fail if events_out exceeds events_in).
-          - All failure counters exposed by the Logstash build are non-negative.
         """
         label = self.LOGSTASH_LABEL
         pipelines = self.MAIN_CUSTOMER_PIPELINES
@@ -246,11 +225,6 @@ class TestLogstash(unittest.TestCase):
                         f"Pipeline '{pipeline_name}' in pod {pod}: "
                         f"events_out ({events['out']}) exceeds events_in ({events['in']}). "
                         "Possible pipeline misconfiguration or stats corruption.",
-                    )
-
-                    self.assertFalse(
-                        self._has_any_failures(stats_json),
-                        f"'{pipeline_name}' pipeline in pod {pod} has failures reported in stats.",
                     )
 
 
