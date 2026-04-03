@@ -20,7 +20,7 @@ yaml.preserve_quotes = True
 # constants
 GLOBAL_KEY = "global"
 SECRETS_KEY = "secrets"
-CUSTOM_SECRETS_KEY= "customSecrets"
+CUSTOM_SECRETS_KEY = "customSecrets"
 SEALED_SECRETS_VAR = "sealedSecrets"
 
 
@@ -57,62 +57,109 @@ class SealSecrets:
                 print("Unable to write new values file '%s'" % self.values_file)
                 print(e)
 
-    def seal_secret(self, k8s_secret: str, value: str, k8s_namespace: str, secret_key_root: str, application_name: str = None):
+    def seal_secret(
+        self,
+        k8s_secret: str,
+        value: str,
+        k8s_namespace: str,
+        secret_key_root: str,
+        application_name: str = None,
+    ):
 
         if value is not None and value.strip() != "":
             # Try to base64 decode the value
             try:
-                decoded_value = b64.b64decode(value.encode("ascii"), validate=True).decode("ascii")
+                decoded_value = b64.b64decode(
+                    value.encode("ascii"), validate=True
+                ).decode("ascii")
             except UnicodeDecodeError as err:
                 if self.values[GLOBAL_KEY][secret_key_root]:
                     # Value couldn't be base64 decoded, so it may already be sealed or an invalid value
                     # Move on to the next secret
-                    print("Warning: secret '%s: %s: %s' could not be base64 decoded. It is either already "
-                            "sealed or an invalid value."
-                            % (secret_key_root, k8s_namespace, k8s_secret))
+                    print(
+                        "Warning: secret '%s: %s: %s' could not be base64 decoded. It is either already "
+                        "sealed or an invalid value."
+                        % (secret_key_root, k8s_namespace, k8s_secret)
+                    )
                     return
                 else:
-                    raise Exception("Error sealing secret. See following output:\n%s" % err)
+                    raise Exception(
+                        "Error sealing secret. See following output:\n%s" % err
+                    )
 
             print("Sealing secret '%s: %s'" % (k8s_namespace, k8s_secret))
 
             # Run seal secret command to get the sealed value
-            p1 = subprocess.run(args=["kubeseal", "--scope", "namespace-wide", "--cert", self.cert, "--raw", "--namespace",
-                                        k8s_namespace], input=decoded_value,
-                                capture_output=True, text=True)
+            p1 = subprocess.run(
+                args=[
+                    "kubeseal",
+                    "--scope",
+                    "namespace-wide",
+                    "--cert",
+                    self.cert,
+                    "--raw",
+                    "--namespace",
+                    k8s_namespace,
+                ],
+                input=decoded_value,
+                capture_output=True,
+                text=True,
+            )
 
             # Check if sealing the secret failed
             if p1.returncode != 0:
-                raise Exception("Error sealing secret. See following output:\n%s" % p1.stderr)
+                raise Exception(
+                    "Error sealing secret. See following output:\n%s" % p1.stderr
+                )
 
             sealed_value = p1.stdout
 
             # Update yaml with sealed value
             if not application_name:
-                self.values[GLOBAL_KEY][secret_key_root][k8s_namespace][k8s_secret] = sealed_value
+                self.values[GLOBAL_KEY][secret_key_root][k8s_namespace][
+                    k8s_secret
+                ] = sealed_value
                 # Update sealed secrets list with key
-                self.sealed_secrets.append("%s: %s: %s" % (secret_key_root, k8s_namespace, k8s_secret))
+                self.sealed_secrets.append(
+                    "%s: %s: %s" % (secret_key_root, k8s_namespace, k8s_secret)
+                )
             else:
-                self.values[GLOBAL_KEY][secret_key_root][k8s_namespace][application_name][k8s_secret] = sealed_value
+                self.values[GLOBAL_KEY][secret_key_root][k8s_namespace][
+                    application_name
+                ][k8s_secret] = sealed_value
                 # Update sealed secrets list with key
-                self.sealed_secrets.append("%s: %s: %s: %s" % (secret_key_root, k8s_namespace, application_name, k8s_secret))
-
+                self.sealed_secrets.append(
+                    "%s: %s: %s: %s"
+                    % (secret_key_root, k8s_namespace, application_name, k8s_secret)
+                )
 
     def iterate_and_seal(self, secret_key_root: str):
-          # Loop through the secrets
+        # Loop through the secrets
         for k8s_namespace in self.values[GLOBAL_KEY][secret_key_root]:
-            # Loop through the secrets or applications in the namespace.  Usage of value depends on if it is a customSecret or not.  
-            for k8s_secret_or_app in self.values[GLOBAL_KEY][secret_key_root][k8s_namespace]:
+            # Loop through the secrets or applications in the namespace.  Usage of value depends on if it is a customSecret or not.
+            for k8s_secret_or_app in self.values[GLOBAL_KEY][secret_key_root][
+                k8s_namespace
+            ]:
                 # Get the value
-                contents = self.values[GLOBAL_KEY][secret_key_root][k8s_namespace][k8s_secret_or_app]
+                contents = self.values[GLOBAL_KEY][secret_key_root][k8s_namespace][
+                    k8s_secret_or_app
+                ]
                 # If the contents variable is a str, this is a base secret and we can seal it.
                 if isinstance(contents, str):
-                    self.seal_secret(k8s_secret_or_app, contents, k8s_namespace, secret_key_root)
+                    self.seal_secret(
+                        k8s_secret_or_app, contents, k8s_namespace, secret_key_root
+                    )
                 # If the contents variable is a dict, this is a customSecret and we need to loop through the keys to seal each one
                 elif isinstance(contents, dict):
                     for k8s_secret in contents:
                         secret_value = contents[k8s_secret]
-                        self.seal_secret(k8s_secret, secret_value, k8s_namespace, secret_key_root, k8s_secret_or_app)
+                        self.seal_secret(
+                            k8s_secret,
+                            secret_value,
+                            k8s_namespace,
+                            secret_key_root,
+                            k8s_secret_or_app,
+                        )
 
     def seal_secrets(self):
         """
@@ -126,14 +173,14 @@ class SealSecrets:
         secrets_exist = False
         # Check that secrets exist
         print("Using certificate file '%s' for encrypting secrets" % self.cert)
-        for key in [SECRETS_KEY,CUSTOM_SECRETS_KEY]:
+        for key in [SECRETS_KEY, CUSTOM_SECRETS_KEY]:
             if key in self.values[GLOBAL_KEY]:
                 secrets_exist = True
                 self.iterate_and_seal(key)
 
         if not secrets_exist:
-                print("No secrets found to seal")
-                exit(0)
+            print("No secrets found to seal")
+            exit(0)
         else:
             # Update sealedSecrets variable to true
             self.values[GLOBAL_KEY][SEALED_SECRETS_VAR] = True
@@ -143,7 +190,7 @@ class SealSecrets:
 
             print("The following secrets were successfully sealed:")
             print(self.sealed_secrets)
-                    
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
@@ -156,4 +203,6 @@ if __name__ == "__main__":
         seal = SealSecrets(cert_file, values_file)
         seal.seal_secrets()
     else:
-        raise Exception("Error in usage. No cert file passed in.\nUsage: python3 seal-secret-values.py [CERT_FILE] [VALUES_FILE]")
+        raise Exception(
+            "Error in usage. No cert file passed in.\nUsage: python3 seal-secret-values.py [CERT_FILE] [VALUES_FILE]"
+        )
