@@ -73,7 +73,7 @@ class SealSecrets:
                     value.encode("ascii"), validate=True
                 ).decode("ascii")
             except UnicodeDecodeError as err:
-                if self.values[GLOBAL_KEY][secret_key_root]:
+                if self.values[GLOBAL_KEY][SEALED_SECRETS_VAR]:
                     # Value couldn't be base64 decoded, so it may already be sealed or an invalid value
                     # Move on to the next secret
                     print(
@@ -174,7 +174,8 @@ class SealSecrets:
         # Check that secrets exist
         print("Using certificate file '%s' for encrypting secrets" % self.cert)
         for key in [SECRETS_KEY, CUSTOM_SECRETS_KEY]:
-            if key in self.values[GLOBAL_KEY]:
+            if self.values[GLOBAL_KEY].get(key):
+                print("Sealing secrets under key '%s'..." % key)
                 secrets_exist = True
                 self.iterate_and_seal(key)
 
