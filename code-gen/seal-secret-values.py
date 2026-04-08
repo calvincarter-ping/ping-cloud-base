@@ -136,6 +136,17 @@ class SealSecrets:
     def iterate_and_seal(self, secret_key_root: str):
         # Loop through the secrets
         for k8s_namespace in self.values[GLOBAL_KEY][secret_key_root]:
+            try:
+                self.values[GLOBAL_KEY][secret_key_root][k8s_namespace].values()
+            except AttributeError:
+                print(
+                    "Warning: namespace '%s' under key '%s' is empty. No secrets to seal."
+                    % (k8s_namespace, secret_key_root)
+                )
+                raise Exception(
+                    "Error sealing secrets. See following output:\nNamespace '%s' under key '%s' is empty."
+                    % (k8s_namespace, secret_key_root)
+                )
             # Loop through the secrets or applications in the namespace.  Usage of value depends on if it is a customSecret or not.
             for k8s_secret_or_app in self.values[GLOBAL_KEY][secret_key_root][
                 k8s_namespace
