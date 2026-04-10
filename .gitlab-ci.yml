@@ -243,7 +243,7 @@ pa-was-integration-tests:
       - tests/pingone/latest_logs/
     when: on_failure
 
-# Full suite for API/trigger/parent_pipeline sources only.
+# Full suite for web/api/trigger/parent_pipeline sources.
 # MR and branch push use per-component jobs below; schedule uses nightly-build-tests.
 integration-tests:
   extends: .integration-tests-base
@@ -257,11 +257,9 @@ integration-tests:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "push"'
       when: never
-    - if: '$CI_PIPELINE_SOURCE == "web"'
-      when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
-    - when: on_success  # api / trigger / parent_pipeline only
+    - when: on_success  # web / api / trigger / parent_pipeline
 
 .mr-rules-map:
   argocd:
