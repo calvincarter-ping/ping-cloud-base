@@ -114,6 +114,11 @@ spec:
             - /data
         - group: ""
           kind: ConfigMap
+          name: kms-maintenance-mode
+          jsonPointers:
+          - /data
+        - group: ""
+          kind: ConfigMap
           name: restart-strategy
           namespace: ping-cloud
           jsonPointers:
