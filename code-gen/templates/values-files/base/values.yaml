@@ -182,6 +182,8 @@ global:
 
   isBelugaEnv: ${IS_BELUGA_ENV}
 
+  isGA: ${IS_GA}
+
   ########################################################
   # DevOps License environment variables
   ########################################################
@@ -258,8 +260,6 @@ global:
     image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.3-release-branch-latest
   grpRadiusProxy:
     image: public.ecr.aws/r2h3l6e4/pingcloud-services/grp-radiusproxy/dev:v2.3-release-branch-latest
-
-  isGA: ${IS_GA}
 
 
 
