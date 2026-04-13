@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. "${CI_SCRIPTS_DIR}"/test/test_utils.sh
+
 configmap_data=$(kubectl get configmap -n ping-cloud pingaccess-admin-p14c -o jsonpath='{.data}')
 secret_data=$(kubectl get secret -n ping-cloud pingaccess-admin-p14c -o jsonpath='{.data}')
 client_id=$(echo "${configmap_data}" | jq -r '."P14C_CLIENT_ID"')
