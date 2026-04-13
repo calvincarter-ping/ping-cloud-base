@@ -875,6 +875,7 @@ echo "Initial ARGOCD_ENVIRONMENTS: ${ARGOCD_ENVIRONMENTS}"
 
 echo "Initial TARGET_DIR: ${TARGET_DIR}"
 echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
+echo "Initial IS_GA: ${IS_GA}"
 
 echo "Initial ACCOUNT_BASE_PATH: ${ACCOUNT_BASE_PATH}"
 
@@ -922,6 +923,7 @@ echo ---
 
 # Use defaults for other variables, if not present.
 export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
+export IS_GA="${IS_GA:-false}"
 
 TENANT_DOMAIN="${TENANT_DOMAIN:-ci-cd.ping-oasis.com}"
 export TENANT_NAME="${TENANT_NAME:-${TENANT_DOMAIN%%.*}}"
@@ -1210,6 +1212,7 @@ echo "Using SELF_SERVICE_TEMPLATES_ENABLED: ${SELF_SERVICE_TEMPLATES_ENABLED}"
 echo "Using ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD: ${ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD}"
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
+echo "Using IS_GA: ${IS_GA}"
 
 echo "Using ACCOUNT_BASE_PATH: ${ACCOUNT_BASE_PATH}"
 echo "Using ARGOCD_CDE_ROLE_SSM_TEMPLATE: ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}"
