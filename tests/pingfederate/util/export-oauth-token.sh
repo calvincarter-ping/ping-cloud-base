@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. "${CI_SCRIPTS_DIR}"/test/test_utils.sh
+
 secret_data=$(kubectl get secret -n ping-cloud pingfederate-admin-p14c -o jsonpath='{.data}')
 client_id=$(echo "${secret_data}" | jq -r '."PF_OIDC_CLIENT_ID"' | base64 --decode)
 client_secret=$(echo "${secret_data}" | jq -r '."PF_OIDC_CLIENT_SECRET"' | base64 --decode)
