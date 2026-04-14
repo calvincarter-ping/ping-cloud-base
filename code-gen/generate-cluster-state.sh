@@ -924,7 +924,6 @@ echo ---
 
 # Use defaults for other variables, if not present.
 export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
-export IS_GA="${IS_GA:-false}"
 
 TENANT_DOMAIN="${TENANT_DOMAIN:-ci-cd.ping-oasis.com}"
 export TENANT_NAME="${TENANT_NAME:-${TENANT_DOMAIN%%.*}}"
