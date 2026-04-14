@@ -5,7 +5,7 @@ cloudwatch:
   irsaCwAgentAnnotationKeyValue: "${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}"
   image:
     repository: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/cloudwatch-agent
-    tag: 1.300026.3b189
+    tag: 1.300064.1b1344
 
   resources:
     limits:
