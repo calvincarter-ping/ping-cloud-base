@@ -7,7 +7,7 @@ if skipTest "${0}"; then
   log "Skipping test ${0}"
   exit 0
 fi
-
+#TODO add tests for nri prometehus
 NERDGRAPH_ENDPOINT="https://api.newrelic.com/graphql"
 
 NEW_RELIC_API_KEY=$(get_ssm_val "/pcpt/sre/new-relic/api-query-key")

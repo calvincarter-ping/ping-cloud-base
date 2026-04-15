@@ -1,0 +1,3 @@
+1. Verify chub deploy
+2. Verify 2nd region deploy (manifests)
+3. Update NR test
