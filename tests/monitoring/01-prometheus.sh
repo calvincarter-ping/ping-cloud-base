@@ -54,25 +54,39 @@ testPrometheusJobExporterRunning() {
   assertEquals "Prometheus job exporter pod not running" 0 $?
 }
 
-# Verify machine_cpu_cores{job="kubernetes-cadvisor"} is present.
-# Proves kubernetes-cadvisor job is scraping node cadvisor endpoints.
-# Used by kubernetes-dashboard for CPU utilisation calculations.
-testPrometheusCAdvisorMetricsCollected() {
-  log "Verifying machine_cpu_cores is present (collected by agent from kubernetes-cadvisor job)"
+# Verify external labels are correctly resolved and attached to metrics remote-written from the agent.
+# k8s_cluster_name and k8s_cluster_region are set in values.yaml using ${CLUSTER_NAME} etc. syntax,
+# expanded at runtime via --enable-feature=expand-external-labels from the pod's environment.
+# This test verifies the labels actually appear on metrics received by the Prometheus server.
+# NOTE: p1as-observability only validates the config keys exist (env vars not available there).
+testPrometheusExternalLabelsPresent() {
+  log "Verifying k8s_cluster_name and k8s_cluster_region are set on remote-written metrics"
 
+  response=""
   for i in {1..10}; do
-    response=$(curl -k -s "${PROMETHEUS}/api/v1/query?query=machine_cpu_cores%7Bjob%3D%22kubernetes-cadvisor%22%7D" 2>/dev/null)
-    if echo "${response}" | grep -q '"resultType":"vector"' && \
-       echo "${response}" | grep -q '"result":\[{'; then
-      cpu_cores=$(echo "${response}" | jq -r '.data.result[0].value[1] // "unknown"' 2>/dev/null)
-      log "machine_cpu_cores{job=kubernetes-cadvisor}: ${cpu_cores} cores reported"
+    response=$(curl -k -s \
+      'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22prometheus%22%7D' 2>/dev/null)
+    if echo "${response}" | jq -e '.data.result | length > 0' >/dev/null 2>&1; then
+      k8s_cluster_name=$(echo "${response}" | jq -r '.data.result[0].metric.k8s_cluster_name // ""')
+      k8s_cluster_region=$(echo "${response}" | jq -r '.data.result[0].metric.k8s_cluster_region // ""')
+      log "External labels on metrics — k8s_cluster_name: '${k8s_cluster_name}' | k8s_cluster_region: '${k8s_cluster_region}'"
       break
     fi
-    log "Attempt ${i}/10 - waiting for machine_cpu_cores..."
+    log "Attempt ${i}/10 - waiting for up{job=prometheus} metric..."
     sleep 10
   done
 
-  assertContains "machine_cpu_cores from kubernetes-cadvisor job should be present" "${response}" "machine_cpu_cores"
+  assertNotNull "k8s_cluster_name label must be present on remote-written metrics" "${k8s_cluster_name}"
+  assertNotNull "k8s_cluster_region label must be present on remote-written metrics" "${k8s_cluster_region}"
+
+  if [[ -z "${k8s_cluster_name}" ]] || [[ "${k8s_cluster_name}" == "--" ]]; then
+    assertEquals "k8s_cluster_name must be a real cluster name (not empty or placeholder '--')" \
+      "${k8s_cluster_name}" "ACTUAL_VALUE"
+  fi
+  if [[ -z "${k8s_cluster_region}" ]] || [[ "${k8s_cluster_region}" == "--" ]]; then
+    assertEquals "k8s_cluster_region must be a real region (not empty or placeholder '--')" \
+      "${k8s_cluster_region}" "ACTUAL_VALUE"
+  fi
 }
 
 # Verify users_count metrics from the prometheus-job-exporter are present.
@@ -92,8 +106,9 @@ testPrometheusJobExporterMetricsScraped() {
     sleep 10
   done
 
-  assertContains "users_count_1 should be scraped and present in Prometheus server" \
-    "${response}" "users_count"
+  result_count=$(echo "${response}" | jq '.data.result | length' 2>/dev/null)
+  assertNotEquals "users_count_1 should have at least one result in Prometheus server (non-empty data.result)" \
+    "0" "${result_count}"
 }
 
 # Verify opensearch_cluster_status metric is scraped from OpenSearch service.
@@ -113,8 +128,9 @@ testPrometheusOpenSearchMetricsScraped() {
     sleep 10
   done
 
-  assertContains "opensearch_cluster_status should be scraped and present in Prometheus server" \
-    "${response}" "opensearch_cluster_status"
+  result_count=$(echo "${response}" | jq '.data.result | length' 2>/dev/null)
+  assertNotEquals "opensearch_cluster_status should have at least one result in Prometheus server (non-empty data.result)" \
+    "0" "${result_count}"
 }
 
 # When arguments are passed to a script you must
