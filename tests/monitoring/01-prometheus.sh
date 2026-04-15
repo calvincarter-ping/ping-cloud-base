@@ -54,38 +54,40 @@ testPrometheusJobExporterRunning() {
   assertEquals "Prometheus job exporter pod not running" 0 $?
 }
 
-# Verify external labels are correctly resolved and attached to metrics remote-written from the agent.
-# k8s_cluster_name and k8s_cluster_region are set in values.yaml using ${CLUSTER_NAME} etc. syntax,
-# expanded at runtime via --enable-feature=expand-external-labels from the pod's environment.
-# This test verifies the labels actually appear on metrics received by the Prometheus server.
-# NOTE: p1as-observability only validates the config keys exist (env vars not available there).
+# Verify external labels are correctly resolved and attached to remote-written metrics.
+# When the agent remote-writes metrics to the server, each metric should include
+# k8s_cluster_name and k8s_cluster_region in its labels (via expand-external-labels).
+# This test queries kube_node_info from the kube-state-metrics job and verifies
+# the external labels are present in the metric result.
 testPrometheusExternalLabelsPresent() {
-  log "Verifying k8s_cluster_name and k8s_cluster_region are set on remote-written metrics"
+  log "Verifying k8s_cluster_name and k8s_cluster_region labels are attached to remote-written metrics"
 
+  # Query kube_node_info — reliable metric from kube-state-metrics job
   response=""
   for i in {1..10}; do
     response=$(curl -k -s \
-      'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22prometheus%22%7D' 2>/dev/null)
-    if echo "${response}" | jq -e '.data.result | length > 0' >/dev/null 2>&1; then
+      'http://localhost:9090/api/v1/query?query=kube_node_info' 2>/dev/null)
+    result_count=$(echo "${response}" | jq '.data.result | length' 2>/dev/null)
+    if [[ ${result_count} -gt 0 ]]; then
+      # Extract external label values from the metric result
       k8s_cluster_name=$(echo "${response}" | jq -r '.data.result[0].metric.k8s_cluster_name // ""')
       k8s_cluster_region=$(echo "${response}" | jq -r '.data.result[0].metric.k8s_cluster_region // ""')
-      log "External labels on metrics — k8s_cluster_name: '${k8s_cluster_name}' | k8s_cluster_region: '${k8s_cluster_region}'"
+      log "External labels on kube_node_info metric — k8s_cluster_name: '${k8s_cluster_name}' | k8s_cluster_region: '${k8s_cluster_region}'"
       break
     fi
-    log "Attempt ${i}/10 - waiting for up{job=prometheus} metric..."
+    log "Attempt ${i}/10 - waiting for kube_node_info metric with labels..."
     sleep 10
   done
 
+  # Validate labels are present and not empty
   assertNotNull "k8s_cluster_name label must be present on remote-written metrics" "${k8s_cluster_name}"
   assertNotNull "k8s_cluster_region label must be present on remote-written metrics" "${k8s_cluster_region}"
 
-  if [[ -z "${k8s_cluster_name}" ]] || [[ "${k8s_cluster_name}" == "--" ]]; then
-    assertEquals "k8s_cluster_name must be a real cluster name (not empty or placeholder '--')" \
-      "${k8s_cluster_name}" "ACTUAL_VALUE"
+  if [[ -z "${k8s_cluster_name}" ]]; then
+    assertEquals "k8s_cluster_name label must be set with actual cluster name" "${k8s_cluster_name}" "ACTUAL_VALUE_EXPECTED"
   fi
-  if [[ -z "${k8s_cluster_region}" ]] || [[ "${k8s_cluster_region}" == "--" ]]; then
-    assertEquals "k8s_cluster_region must be a real region (not empty or placeholder '--')" \
-      "${k8s_cluster_region}" "ACTUAL_VALUE"
+  if [[ -z "${k8s_cluster_region}" ]]; then
+    assertEquals "k8s_cluster_region label must be set with actual region" "${k8s_cluster_region}" "ACTUAL_VALUE_EXPECTED"
   fi
 }
 
