@@ -38,7 +38,7 @@ prometheus-agent:
     extraVolumes: []
     extraVolumeMounts: []
 
-nriBundle:
+nri-bundle:
   newrelic-prometheus-agent:
     #Extra volumes and volume mounts are intentionally left blank to remove the opensearch-newrelic-credentials secret from child regions.
     extraVolumes: []

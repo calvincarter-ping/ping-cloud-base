@@ -15,7 +15,7 @@ prometheus-agent:
     extraVolumes: []
     extraVolumeMounts: []
 
-nriBundle:
+nri-bundle:
   newrelic-prometheus-agent:
     extraVolumes: []
     extraVolumeMounts: []
