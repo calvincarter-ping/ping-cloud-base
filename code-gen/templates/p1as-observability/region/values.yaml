@@ -4,7 +4,7 @@ cloudwatch:
 #The IRSA role ARN to be used for the CWAgent serviceAccount, for the customer environment
   irsaCwAgentAnnotationKeyValue: "${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}"
   image:
-    repository: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/cloudwatch-agent
+    repository: 705370621539.dkr.ecr.us-west-2.amazonaws.com/dev/p1as-cloudwatch
     tag: 1.300064.1b1344
 
   resources:
