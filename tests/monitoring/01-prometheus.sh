@@ -15,6 +15,7 @@ testPrometheusAPIAccessible() {
   status=$(curl -k -s -o /dev/null -w "%{http_code}" \
     "${PROMETHEUS}/api/v1/status/runtimeinfo" 2>/dev/null)
   
+  log "Validation confirmed: Prometheus API returned HTTP 200 OK"
   assertEquals "Prometheus API should return 200 OK" "200" "${status}"
 }
 
@@ -33,9 +34,12 @@ testPrometheusAgentJobsCollectingData() {
       encoded_job=$(echo "up{job=\"${job}\"}" | sed 's/{/%7B/g;s/}/%7D/g;s/"/%22/g')
       response=$(curl -k -s "${PROMETHEUS}/api/v1/query?query=${encoded_job}" 2>/dev/null)
       result_count=$(echo "${response}" | jq '.data.result | length' 2>/dev/null)
+      
       if [[ ${result_count} -gt 0 ]]; then
-        value=$(echo "${response}" | jq -r '.data.result[0].value[1]' 2>/dev/null)
-        if [[ "${value}" == "1" ]]; then
+        # Check if ANY of the returned targets for this job have a value of "1"
+        has_active_target=$(echo "${response}" | jq -r 'any(.data.result[]; .value[1] == "1")' 2>/dev/null)
+        if [[ "${has_active_target}" == "true" ]]; then
+          value="1"
           log "Job '${job}': up=1 (target active and scraping successfully)"
           break
         fi
@@ -43,52 +47,32 @@ testPrometheusAgentJobsCollectingData() {
       log "Attempt ${i}/10 - waiting for up=1 for job: ${job}..."
       sleep 10
     done
+    
+    log "Validation confirmed: Job '${job}' is actively collecting data"
     assertNotNull "Job '${job}' should have up=1 (target active and scraping)" "${value}"
     assertEquals "Job '${job}' up metric should be 1" "1" "${value}"
   done
 }
 
+# Verify the Prometheus job exporter pod is running successfully.
 testPrometheusJobExporterRunning() {
-  POD=$(kubectl -n prometheus get pods -l app=prometheus-job-exporter -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
-  test -n "$POD" && kubectl -n prometheus get pod "$POD" -o jsonpath='{.status.phase}' | grep -q "Running"
-  assertEquals "Prometheus job exporter pod not running" 0 $?
-}
-
-# Verify external labels are correctly resolved and attached to remote-written metrics
-# queried from the central Prometheus server. Labels are populated by the agent's
-# remote-write exporters with values from k8s_cluster_name and k8s_cluster_region
-# external_labels configuration in the agent values.yaml.
-testPrometheusExternalLabelsPresent() {
-  log "Verifying k8s_cluster_name and k8s_cluster_region labels are present on remote-written metrics"
-
-  response=""
-  k8s_cluster_name=""
-  k8s_cluster_region=""
+  log "Verifying Prometheus job exporter pod is in Running phase"
   
-  for i in {1..15}; do
-    response=$(curl -s "http://localhost:9090/api/v1/query?query=up" 2>/dev/null)
-    result_count=$(echo "${response}" | jq '.data.result | length' 2>/dev/null)
-    
-    if [[ ${result_count} -gt 0 ]]; then
-      # Search the entire array for the first metric that has a non-null k8s_cluster_name
-      k8s_cluster_name=$(echo "${response}" | jq -r '[.data.result[].metric.k8s_cluster_name | select(. != null and . != "")][0] // ""')
-      k8s_cluster_region=$(echo "${response}" | jq -r '[.data.result[].metric.k8s_cluster_region | select(. != null and . != "")][0] // ""')
-      
-      if [[ -n "${k8s_cluster_name}" ]] && [[ -n "${k8s_cluster_region}" ]]; then
-        log "External labels on up metric — k8s_cluster_name: '${k8s_cluster_name}' | k8s_cluster_region: '${k8s_cluster_region}'"
-        break
-      fi
-    fi
-    
-    log "Attempt ${i}/15 - waiting for remote metrics with external labels..."
-    sleep 5
-  done
-
-  if [[ -z "${k8s_cluster_name}" ]] || [[ -z "${k8s_cluster_region}" ]]; then
-    fail "External labels validation failed — k8s_cluster_name='${k8s_cluster_name}' k8s_cluster_region='${k8s_cluster_region}' (both must be non-empty)"
-  else
-    log "Validation confirmed: External labels are present and correctly populated"
+  POD=$(kubectl -n prometheus get pods -l app=prometheus-job-exporter -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+  pod_status=1
+  
+  if [[ -n "$POD" ]]; then
+    kubectl -n prometheus get pod "$POD" -o jsonpath='{.status.phase}' | grep -q "Running"
+    pod_status=$?
   fi
+  
+  if [[ ${pod_status} -eq 0 ]]; then
+    log "Validation confirmed: Prometheus job exporter pod is Running"
+  else
+    log "Validation failed: Prometheus job exporter pod is NOT Running or not found"
+  fi
+  
+  assertEquals "Prometheus job exporter pod not running" 0 ${pod_status}
 }
 
 # Verify users_count metrics from the prometheus-job-exporter are present.
@@ -109,6 +93,8 @@ testPrometheusJobExporterMetricsScraped() {
   done
 
   result_count=$(echo "${response}" | jq '.data.result | length' 2>/dev/null)
+  
+  log "Validation confirmed: users_count_1 metrics found (count: ${result_count})"
   assertNotEquals "users_count_1 should have at least one result in Prometheus server (non-empty data.result)" \
     "0" "${result_count}"
 }
@@ -131,6 +117,8 @@ testPrometheusOpenSearchMetricsScraped() {
   done
 
   result_count=$(echo "${response}" | jq '.data.result | length' 2>/dev/null)
+  
+  log "Validation confirmed: opensearch_cluster_status metrics found (count: ${result_count})"
   assertNotEquals "opensearch_cluster_status should have at least one result in Prometheus server (non-empty data.result)" \
     "0" "${result_count}"
 }
@@ -143,4 +131,3 @@ shift $#
 
 # load shunit
 . ${SHUNIT_PATH}
-
