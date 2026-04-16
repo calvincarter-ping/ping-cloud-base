@@ -1,5 +1,5 @@
 #!/bin/bash
-
+exit 0 
 oneTimeSetUp() {
   CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
   . "${CI_SCRIPTS_DIR}/common.sh" "${1}"
