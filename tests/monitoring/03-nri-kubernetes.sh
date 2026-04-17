@@ -82,9 +82,9 @@ testOpenSearchMetrics(){
 EOF
   )
     log "Full API Response: ${RESPONSE}"
-    CLUSTER_STATUS=$(echo "${RESPONSE}" | jq -r '.data.actor.account.nrql.results[0].latest' | bc )
+    CLUSTER_STATUS=$(echo "${RESPONSE}" | jq -r '.data.actor.account.nrql.results[0].latest')
     assertNotNull "Metrics query returned null cluster status." "${CLUSTER_STATUS}"
-    assertTrue "Metrics query returned non-positive cluster status." "[[ ${CLUSTER_STATUS} > -1 ]]"
+    assertTrue "Metrics query returned non-positive cluster status." "(( ${CLUSTER_STATUS} >= 0 ))"
     log "OpenSearch cluster status metric query successful. Cluster Status: ${CLUSTER_STATUS}"  
 
 

@@ -1,3 +1,0 @@
-1. Verify chub deploy - DONE
-2. Verify 2nd region deploy (manifests) - DONE
-3. Update NR test
