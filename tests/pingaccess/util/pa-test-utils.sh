@@ -23,6 +23,7 @@ function strip_double_quotes() {
   echo ${temp}
 }
 
+# PA-WAS uses this method and needs basic auth
 curl_auth_header() {
   local password="${1}"
   local token="${2}"

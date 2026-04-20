@@ -25,6 +25,7 @@ testUrls() {
   return_code=0
   for i in {1..10}
   do
+    # Auth is not needed to hit swagger endpoint
     testUrlsExpect2xx "${PINGACCESS_CONSOLE}" "${PINGACCESS_SWAGGER}"
     return_code=$?
 
