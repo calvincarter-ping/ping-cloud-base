@@ -18,13 +18,6 @@ spec:
   externalName: opensearch.${PRIMARY_DNS_ZONE}
   $patch: replace
 ---
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: opensearch-gp3
-provisioner: ebs.csi.aws.com
-$patch: delete
----
 apiVersion: opensearch.opster.io/v1
 kind: OpenSearchCluster
 metadata:
