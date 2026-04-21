@@ -6,7 +6,8 @@ resources:
 - ${DASH_REPO_URL}/os-dashboards?ref=${DASH_REPO_BRANCH}
 # This patch must be enabled manually to use KMS encryption.
 # Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
-#- kms-storageclass.yaml
+#- kms-storageclass-logstash.yaml
+#- kms-storageclass-opensearch.yaml
 
 components:
 # Logging tier patches are selected by LOGGING_TIER and split by component for independent control of Fluent Bit, Logstash, and OpenSearch.
@@ -117,7 +118,8 @@ patchesStrategicMerge:
 
 # This patch must be enabled manually to use KMS encryption.
 # Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
-#- kms-patch.yaml
+#- kms-patch-logstash.yaml
+#- kms-patch-opensearch.yaml
 
 patchesJson6902:
 - target:
