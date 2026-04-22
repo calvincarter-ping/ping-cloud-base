@@ -5,7 +5,7 @@ cloudwatch:
   irsaCwAgentAnnotationKeyValue: "${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}"
   image:
     repository: 705370621539.dkr.ecr.us-west-2.amazonaws.com/dev/p1as-cloudwatch
-    tag: 1.300064.1b1344
+    tag: 1.300048.1b904
 
   resources:
     limits:
