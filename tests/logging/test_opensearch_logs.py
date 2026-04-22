@@ -8,7 +8,35 @@ import urllib3
 from opensearchpy import OpenSearch
 from k8s_utils import K8sUtils
 
+PORT_FORWARD_READY_TIMEOUT_SECONDS = 20
+REQUEST_TIMEOUT_SECONDS = 2
+OPENSEARCH_ASSERT_TIMEOUT_SECONDS = 60
+OPENSEARCH_ASSERT_INTERVAL_SECONDS = 5
+
+
 class TestOpenSearchLogs(unittest.TestCase):
+    @classmethod
+    def wait_for_opensearch_port_forward(cls, username, password):
+        deadline = time.time() + PORT_FORWARD_READY_TIMEOUT_SECONDS
+        while time.time() < deadline:
+            if cls.port_forward_process.poll() is not None:
+                raise Exception("Port-forward failed. Exiting test.")
+            try:
+                response = requests.get(
+                    "https://localhost:9200",
+                    verify=False,
+                    auth=(username, password),
+                    timeout=REQUEST_TIMEOUT_SECONDS,
+                )
+                if response.status_code == 200:
+                    print("Port-forward established successfully.")
+                    return
+            except requests.exceptions.RequestException:
+                pass
+            time.sleep(1)
+
+        raise Exception("Timed out waiting for OpenSearch port-forward.")
+
     @classmethod
     def setUpClass(cls):
         cls.k8s = K8sUtils()
@@ -16,10 +44,8 @@ class TestOpenSearchLogs(unittest.TestCase):
         # Port-forward the OpenSearch service (opensearch-cluster-headless)
         cls.port_forward_process = subprocess.Popen(
             ["kubectl", "port-forward", "service/opensearch-cluster-headless", "9200:9200", 
-             "-n", "elastic-stack-logging"], stdout=subprocess.PIPE
+             "-n", "elastic-stack-logging"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-         # Give port-forwarding time to establish
-        time.sleep(5) 
         # Get OpenSearch Admin user/password from the secret in the 'opensearch-admin-credentials' secret
         opensearch_creds_secret = cls.k8s.get_namespaced_secret(
             "opensearch-admin-credentials", "elastic-stack-logging"
@@ -27,11 +53,7 @@ class TestOpenSearchLogs(unittest.TestCase):
         username = base64.b64decode(opensearch_creds_secret.data['username']).decode('utf-8')
         password = base64.b64decode(opensearch_creds_secret.data['password']).decode('utf-8')
         print(username, password)
-        response = requests.get(f"https://localhost:{9200}", verify=False, auth=(username, password))
-        if response.status_code == 200:
-            print("Port-forward established successfully.")
-        else:
-            raise Exception("Port-forward failed. Exiting test.")
+        cls.wait_for_opensearch_port_forward(username, password)
         # Create OpenSearch client
         cls.opensearch_client = OpenSearch(
             hosts=[{'host': 'localhost', 'port': 9200}],
@@ -47,6 +69,11 @@ class TestOpenSearchLogs(unittest.TestCase):
     def tearDownClass(cls):
         # Terminate the port-forward process after the test suite runs
         cls.port_forward_process.terminate()
+        try:
+            cls.port_forward_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            cls.port_forward_process.kill()
+            cls.port_forward_process.wait(timeout=5)
 
     def test_fluentbit_ingestion_field_timestamp(self):
         # Search logs in OpenSearch index template
@@ -57,8 +84,15 @@ class TestOpenSearchLogs(unittest.TestCase):
             },
             "_source": ["fluentbit_ingest_timestamp"]
         }
-        # Fetch indexes by regex
-        response = self.opensearch_client.search(index=index_name, body=query)
+        response = None
+        deadline = time.time() + OPENSEARCH_ASSERT_TIMEOUT_SECONDS
+        while time.time() < deadline:
+            response = self.opensearch_client.search(index=index_name, body=query)
+            if response['hits']['hits']:
+                break
+            time.sleep(OPENSEARCH_ASSERT_INTERVAL_SECONDS)
+
+        self.assertTrue(response and response['hits']['hits'], "No log documents found in OpenSearch within timeout")
 
         # Verify that the fluentbit_ingestion_field has a time in milliseconds
         for hit in response['hits']['hits']:

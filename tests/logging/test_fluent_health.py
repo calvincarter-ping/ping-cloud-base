@@ -8,6 +8,11 @@ from k8s_utils import K8sUtils
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+PORT_FORWARD_READY_TIMEOUT_SECONDS = 20
+REQUEST_TIMEOUT_SECONDS = 10
+METRIC_WAIT_TIMEOUT_SECONDS = 30
+METRIC_WAIT_INTERVAL_SECONDS = 5
+
 
 class PrometheusPortForward:
     process = None
@@ -19,19 +24,48 @@ class PrometheusPortForward:
         PrometheusPortForward.process = subprocess.Popen(
             ["kubectl", "port-forward", "svc/prometheus-headless", "9090:9090", "-n", "prometheus"],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
+            text=True,
         )
-        time.sleep(3)
+        deadline = time.time() + PORT_FORWARD_READY_TIMEOUT_SECONDS
+        while time.time() < deadline:
+            if PrometheusPortForward.process.poll() is not None:
+                stderr = (PrometheusPortForward.process.stderr.read() or "").strip()
+                raise RuntimeError(f"Prometheus port-forward exited early: {stderr or 'unknown error'}")
+            try:
+                response = requests.get("http://localhost:9090/-/ready", verify=False, timeout=2)
+                if response.ok:
+                    return
+            except requests.exceptions.RequestException:
+                pass
+            time.sleep(1)
+
+        PrometheusPortForward.stop()
+        raise RuntimeError("Timed out waiting for Prometheus port-forward to become ready.")
 
     @staticmethod
     def stop():
-        if PrometheusPortForward.process:
-            PrometheusPortForward.process.terminate()
+        process = PrometheusPortForward.process
+        PrometheusPortForward.process = None
+        if not process:
+            return
+
+        process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
 
 
 def query_metric(metric_name, prometheus_url):
     try:
-        response = requests.get(f"{prometheus_url}?query={metric_name}", verify=False)
+        response = requests.get(
+            prometheus_url,
+            params={"query": metric_name},
+            verify=False,
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
         if response.status_code == 200:
             result = response.json().get('data', {}).get('result', [])
             if not result:
@@ -48,7 +82,12 @@ def query_metric(metric_name, prometheus_url):
 
 def query_result(metric_query, prometheus_url):
     try:
-        response = requests.get(f"{prometheus_url}?query={metric_query}", verify=False)
+        response = requests.get(
+            prometheus_url,
+            params={"query": metric_query},
+            verify=False,
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
         if response.status_code == 200:
             return response.json().get('data', {}).get('result', [])
         print(f"Error querying Prometheus: {response.status_code}, {response.text}")
@@ -178,13 +217,17 @@ class TestFluentBitMetrics(unittest.TestCase):
             ]
             for alias in expected_aliases:
                 found = False
-                # Fluent Bit metric labels vary by deployment; try several likely label keys.
-                for label_key in ["alias", "name", "output", "instance"]:
-                    query = f'fluentbit_output_proc_records_total{{{label_key}=~".*{alias}.*"}}'
-                    result = query_result(query, self.prometheus_url)
-                    if result:
-                        found = True
-                        break
+                deadline = time.time() + METRIC_WAIT_TIMEOUT_SECONDS
+                while time.time() < deadline and not found:
+                    # Fluent Bit metric labels vary by deployment; try several likely label keys.
+                    for label_key in ["alias", "name", "output", "instance"]:
+                        query = f'fluentbit_output_proc_records_total{{{label_key}=~".*{alias}.*"}}'
+                        result = query_result(query, self.prometheus_url)
+                        if result:
+                            found = True
+                            break
+                    if not found:
+                        time.sleep(METRIC_WAIT_INTERVAL_SECONDS)
                 self.assertTrue(found, f"No fluentbit_output_proc_records_total series found for output alias {alias}")
         finally:
             PrometheusPortForward.stop()
