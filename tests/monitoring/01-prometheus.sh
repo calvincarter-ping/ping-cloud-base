@@ -41,8 +41,40 @@ testPrometheusAgentJobsCollectingData() {
   done
 }
 
+# Verify scrape jobs are collecting actual metrics.
+testPrometheusMetricCollection() {
+  log "Verifying actual metric collection from key scrape jobs"
+
+  local metrics="
+    kube-state-metrics:kube_node_info
+    kubernetes-apiservers:apiserver_request_total
+    kubernetes-nodes:kubelet_running_pods
+    kubernetes-cadvisor:container_cpu_usage_seconds_total
+  "
+
+  for entry in ${metrics}; do
+    job="${entry%%:*}"
+    metric="${entry##*:}"
+    result_count="0"
+    for i in {1..5}; do
+      response=$(curl -k -s -G "${PROMETHEUS}/api/v1/query" \
+        --data-urlencode "query=${metric}{job=\"${job}\"}" 2>/dev/null)
+      result_count=$(echo "${response}" | jq '.data.result | length' 2>/dev/null)
+      result_count="${result_count:-0}"
+      if [[ "${result_count}" -gt 0 ]]; then
+        log "Job '${job}': ${metric} has ${result_count} series"
+        break
+      fi
+      log "Attempt ${i}/5 - waiting for ${metric} from job ${job}..."
+      sleep 10
+    done
+    assertNotEquals "Job '${job}' should have ${metric} data (proves actual metric collection)" \
+      "0" "${result_count}"
+  done
+}
+
 # Verify the Prometheus server receives remote-written data from the agent.
-# kube-state-metrics is agent-only — its presence on the server proves remote-write works.
+# kube-state-metrics is agent-only, its presence on the server proves remote-write works.
 testPrometheusServerReceivesRemoteWrites() {
   log "Verifying Prometheus server receives remote-written data from agent"
 
