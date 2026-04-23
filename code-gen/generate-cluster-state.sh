@@ -637,6 +637,64 @@ is_true_or_array() {
   fi
 }
 
+########################################################################################################################
+# Returns 0 if selfServiceTemplatesEnabled is set to true in the provided values.yaml file, 1 otherwise.
+#
+# Arguments
+#   ${1} -> The path to the values.yaml file to check.
+########################################################################################################################
+is_self_service_templates_enabled_in_values() {
+  local values_file="$1"
+
+  if test ! -f "${values_file}"; then
+    return 1
+  fi
+
+  grep -Eq '^[[:space:]]*selfServiceTemplatesEnabled:[[:space:]]*true([[:space:]]|$)' "${values_file}"
+}
+
+########################################################################################################################
+# Ensures a self-service README.md exists in the PingFederate template and language-packs profile directories.
+# If a README.md already exists it is preserved. If the PingFederate profile directory is absent (e.g. customer-hub),
+# the function logs a message and returns without error.
+#
+# Arguments
+#   ${1} -> The environment profiles directory (e.g. ${PROFILES_DIR}/${ENV_OR_BRANCH}).
+########################################################################################################################
+ensure_self_service_readmes() {
+  local env_profiles_dir="$1"
+  local pf_conf_dir="${env_profiles_dir}/pingfederate/instance/server/default/conf"
+
+  if test ! -d "${pf_conf_dir}"; then
+    echo "Skipping self-service README creation. PingFederate profile path not found: ${pf_conf_dir}"
+    return
+  fi
+
+  local self_service_dirs=(
+    "${pf_conf_dir}/template"
+    "${pf_conf_dir}/language-packs"
+  )
+
+  local readme_content='# This directory is now managed by Self-Service
+#
+# Template and language-pack files have been transferred to the Self-Service API.
+# Any files placed in this directory will be ignored.
+# Use the Self-Service UI or API to manage templates and language packs.'
+
+  for dir in "${self_service_dirs[@]}"; do
+    mkdir -p "${dir}"
+    local readme_file="${dir}/README.md"
+
+    if test -f "${readme_file}"; then
+      echo "Preserving existing README.md: ${readme_file}"
+      continue
+    fi
+
+    printf '%s\n' "${readme_content}" > "${readme_file}"
+    echo "Added self-service README.md: ${readme_file}"
+  done
+}
+
 # Organizes the files from code-gen directory to a tmp directory for push-cluster-state script
 organize_code_for_csr() {
   # find all the apps under code-gen/templates directory
@@ -1573,6 +1631,15 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   echo "Substituting env vars, this may take some time..."
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 
+  VALUES_FILE="${ENV_DIR}/values-files/base/values.yaml"
+  if is_self_service_templates_enabled_in_values "${VALUES_FILE}"; then
+    echo "selfServiceTemplatesEnabled=true detected in ${VALUES_FILE}"
+    SELF_SERVICE_TEMPLATES_IN_VALUES=true
+  else
+    echo "selfServiceTemplatesEnabled=true not detected in ${VALUES_FILE}"
+    SELF_SERVICE_TEMPLATES_IN_VALUES=false
+  fi
+
   # Regional enablement - add admins, backups, etc. to primary and adding pingaccess-was and pingcentral to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
@@ -1648,6 +1715,10 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     # Remove the pingcentral profiles
     echo "Not CI/CD or CHUB deploy, removing PingCentral profiles"
     rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"
+  fi
+
+  if "${SELF_SERVICE_TEMPLATES_IN_VALUES}"; then
+    ensure_self_service_readmes "${ENV_PROFILES_DIR}"
   fi
 
   echo "=====> Done creating environment '${ENV}'"
