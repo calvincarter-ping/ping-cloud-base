@@ -1,6 +1,15 @@
 # Changelog
 
+### 2.2.2
+
+- generate-cluster-state.sh adds/preserves profile repo README.md files when self-service PingFederate templates feature flag enabled
+
+_Changes:_
+
+- [X] PDO-10221 Create existing customer transition script - self-service PingFederate templates
+
 ### 2.2.1
+
 - remove modsecurity from ingress-nginx-public and pa-was ingress
 
 _Changes:_
