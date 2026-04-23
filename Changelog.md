@@ -82,6 +82,13 @@ _Changes:_
 
 - [X] PDO-11379 Upgrade Ingress NGINX Controller to version 1.14.4
 
+### 2.2.1
+- remove modsecurity from ingress-nginx-public and pa-was ingress
+
+_Changes:_
+
+- [X] PDO-11379 Upgrade Ingress NGINX Controller to version 1.14.4
+
 ### 2.2.0
 
 - OSD: Enable Save Query and CSV Export of Logs
