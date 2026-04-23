@@ -41,6 +41,7 @@ _Changes:_
 - Remove metrics-server and kube-state-metrics from PCB
 - Enhance prometheus and prometheus-agent integration, system test
 - Add patch to conditionally deploy logstash-elastic STS (customer pipeline) in customer-hub accounts
+- Add support for NewRelic Prometheus to scrape OpenSearch metrics
 
 _Changes:_
 
@@ -75,7 +76,11 @@ _Changes:_
 - [X] PDO-11104 Update p1as-beluga-lib and seal-secret-values to handle dynamic secrets
 - [X] PDO-11307 Prometheus: Migrate job-exporter and json-exporter to ping-cloud-common repo
 - [X] PDO-11356 P14C_INTEGRATION_IMAGE_TAG not applied to pingaccess-p1as-sso image
+<<<<<<< HEAD
 - [X] PDO-11365 Logstash: Update to make logstash sts (customer pipeline) optional in customer-hub
+=======
+- [X] PDO-11340 Expose OpenSearch Metrics for Monitoring and Alerting on NewRelic
+>>>>>>> e9396b2b9 (Merge branch 'pdo-11340-os-metrics' into 'v2.3-release-branch')
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
 
 ### 2.2.1
