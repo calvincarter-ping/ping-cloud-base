@@ -35,7 +35,6 @@
 - Add support for NewRelic Prometheus to scrape OpenSearch metrics
 - Enhance prometheus and prometheus-agent integration, system test
 - Add patch to conditionally deploy logstash-elastic STS (customer pipeline) in customer-hub accounts
-- Update cloudwatch agent to latest version
 
 _Changes:_
 
@@ -62,7 +61,6 @@ _Changes:_
 - [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)
 - [X] PDO-10816 Upgrade external-dns to version v0.20.0
 - [X] PDO-10819 Upgrade kube-state-metrics to version 2.18.0
-- [X] PDO-10842 Upgrade CloudWatch Agent to the latest version
 - [X] PDO-10877 Update Security Contexts for ping-cloud namespace workloads - part2
 - [X] PDO-11030 OpenSearch: Enable conditional deploy of PingFederate Impossible Login Distance Map from Dashboards
 - [X] PDO-11071 OpenSearch: Implement Logstash → Write Alias + ISM Rollover (40GB or Daily), Read-Only + Delete
