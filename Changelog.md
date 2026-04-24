@@ -39,6 +39,7 @@ _Changes:_
 - Update seal-secret-values.py to handle customSecrets entries for Helm charts
 - p1as-karpenter GA vs non-ga settings
 - Remove metrics-server and kube-state-metrics from PCB
+- Update Security Contexts for Argocd
 
 _Changes:_
 
@@ -73,6 +74,7 @@ _Changes:_
 - [X] PDO-11307 Prometheus: Migrate job-exporter and json-exporter to ping-cloud-common repo
 - [X] PDO-11356 P14C_INTEGRATION_IMAGE_TAG not applied to pingaccess-p1as-sso image
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
+- [x] PDO-11586 Update Security Contexts for Argocd
 
 ### 2.2.1
 
