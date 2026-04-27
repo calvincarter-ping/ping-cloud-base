@@ -39,7 +39,6 @@ _Changes:_
 - Update seal-secret-values.py to handle customSecrets entries for Helm charts
 - p1as-karpenter GA vs non-ga settings
 - Remove metrics-server and kube-state-metrics from PCB
-- Add support for NewRelic Prometheus to scrape OpenSearch metrics
 - Enhance prometheus and prometheus-agent integration, system test
 
 _Changes:_
