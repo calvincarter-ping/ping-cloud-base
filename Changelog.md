@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.2.2
+
+- Upgrade PingAccess to v9.0.2
+
+_Changes:_
+
+- [X] PDO-11519 Upgrade PingAccess to v9.0.2
+
 ### 2.2.1
 - remove modsecurity from ingress-nginx-public and pa-was ingress
 
