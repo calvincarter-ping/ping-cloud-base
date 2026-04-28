@@ -75,7 +75,9 @@ kubelinter:
   variables:
     UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   script:
-    - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/security-context-lint.sh $UBER_YAML
+    - |
+      export SKIP_CONFIGURE_KUBE=true
+      ${SHARED_CI_SCRIPTS_DIR}/k8s/security/security-context-lint.sh $UBER_YAML
   tags:
     - default-gitlab-runner-ping-cloud
 
