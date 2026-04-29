@@ -10,9 +10,6 @@ resources:
   - ../base/custom-resources
   - custom-resources
 
-helmGlobals:
-  configHome: /helm-working-dir
-
 helmCharts:
   - name: p1as-pingaccess-was
     additionalValuesFiles:
