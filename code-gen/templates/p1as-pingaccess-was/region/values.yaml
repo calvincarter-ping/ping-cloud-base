@@ -4,6 +4,13 @@ pingaccessWas:
     # Only use if you want to provide your own SSM path to perpetual license
     # The default is that automation will determine SSM path to retrieve product license
     overrideProductLicense: ""
+  ########################################################
+  # Public Hostnames
+  ########################################################
+  paWasAdminPublicHostname: "pingaccess-was-admin.${PRIMARY_TENANT_DOMAIN}"
+  paWasClusterPublicHostname: "pingaccess-was-cluster.${PRIMARY_TENANT_DOMAIN}"
+  paWasEnginePublicHostname: "pingaccess-was.${PRIMARY_TENANT_DOMAIN}"
+
 
   admin:
     verbose: "false"
