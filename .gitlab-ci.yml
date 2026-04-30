@@ -90,13 +90,13 @@ kube-linter-microservices:
     - deploy
   parallel:
     matrix:
-    - MICROSERVICE
-      - p1as-beluga-tools
-      - p1as-cluster-tools
-      - p1as-observability
-      - p1as-pingdirectory
-      - p1as-pingfederate
-      - p1as-self-service
+      - MICROSERVICE:
+          - p1as-beluga-tools
+          - p1as-cluster-tools
+          - p1as-observability
+          - p1as-pingdirectory
+          - p1as-pingfederate
+          - p1as-self-service
   script:
     - |
       export SKIP_CONFIGURE_KUBE=true
