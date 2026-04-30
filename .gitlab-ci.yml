@@ -65,7 +65,7 @@ copy-images:
   only:
     - /^.*-release-branch$/
 
-kubelinter:
+kubelinter-uber-yaml:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
   needs:
@@ -80,6 +80,29 @@ kubelinter:
       ${SHARED_CI_SCRIPTS_DIR}/k8s/security/security-context-lint.sh $UBER_YAML
   tags:
     - default-gitlab-runner-ping-cloud
+
+kube-linter-microservices:
+  stage: security
+  image: ${K8S_DEPLOY_TOOLS}
+  needs:
+    - deploy
+  dependencies:
+    - deploy
+  parallel:
+    matrix:
+    - MICROSERVICE
+      - p1as-beluga-tools
+      - p1as-cluster-tools
+      - p1as-observability
+      - p1as-pingdirectory
+      - p1as-pingfederate
+      - p1as-self-service
+  script:
+    - |
+      export SKIP_CONFIGURE_KUBE=true
+      UBER_YAML=$(find "$CI_PROJECT_DIR/out/$MICROSERVICE/" -type f -name "uber.yaml")
+      ${SHARED_CI_SCRIPTS_DIR}/k8s/security/security-context-lint.sh $UBER_YAML
+  
 
 check-ext-images:
   stage: security
