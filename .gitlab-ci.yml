@@ -99,6 +99,7 @@ kube-linter-microservices:
           - p1as-pingdirectory
           - p1as-pingfederate
           - p1as-self-service
+          - p1as-pingaccess
   script:
     - |
       export SKIP_CONFIGURE_KUBE=true
