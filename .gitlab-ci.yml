@@ -83,6 +83,8 @@ kubelinter-uber-yaml:
 
 kube-linter-microservices:
   stage: security
+  tags:
+    - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   needs:
     - deploy
