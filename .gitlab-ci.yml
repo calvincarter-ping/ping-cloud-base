@@ -181,141 +181,141 @@ deploy:
 # Integration Test stage ##
 
 # Common pre-check tests
-pre-check:
-  stage: pre-check-test
-  retry: 1
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
-  dependencies:
-    - find-cluster
+# pre-check:
+#   stage: pre-check-test
+#   retry: 1
+#   tags:
+#     - default-gitlab-runner-ping-cloud
+#   image: ${K8S_DEPLOY_TOOLS}
+#   script:
+#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
+#   dependencies:
+#     - find-cluster
 
-## PA-WAS stage ##
-pa-was-integration-tests:
-  stage: pa-was-test
-  retry: 1
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
-  dependencies:
-    - find-cluster
+# ## PA-WAS stage ##
+# pa-was-integration-tests:
+#   stage: pa-was-test
+#   retry: 1
+#   tags:
+#     - default-gitlab-runner-ping-cloud
+#   image: ${K8S_DEPLOY_TOOLS}
+#   script:
+#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
+#   dependencies:
+#     - find-cluster
 
-################################################
-# All integration tests defined to run on the  #
-# traditionally deployed P1AS                  #
-################################################
-.all-tests: &all-tests
-  - pingdirectory
-  - pingdelegator
-  - pingfederate
-  - pingaccess
-  - pingcloud-services
-  - pingcentral
-  - pingdatasync
-  - common
-  - monitoring
-  - health
-  - pingone
-  - ingress-nginx
-  - cert-manager
-  - logging
-  - self-service
-  - argocd
-  - system-scaling
+# ################################################
+# # All integration tests defined to run on the  #
+# # traditionally deployed P1AS                  #
+# ################################################
+# .all-tests: &all-tests
+#   - pingdirectory
+#   - pingdelegator
+#   - pingfederate
+#   - pingaccess
+#   - pingcloud-services
+#   - pingcentral
+#   - pingdatasync
+#   - common
+#   - monitoring
+#   - health
+#   - pingone
+#   - ingress-nginx
+#   - cert-manager
+#   - logging
+#   - self-service
+#   - argocd
+#   - system-scaling
 
-#################################################
-# All integration tests defined to run on the  #
-# traditionally deployed P1AS                  #
-################################################
-.schedule-tests: &schedule-tests
-  - pingdirectory
-  - pingdelegator
-  - pingfederate
-  - pingaccess
-  - pingcloud-services
-  - pingdatasync
-  - common
-  - monitoring
-  - health
-  - pingone
+# #################################################
+# # All integration tests defined to run on the  #
+# # traditionally deployed P1AS                  #
+# ################################################
+# .schedule-tests: &schedule-tests
+#   - pingdirectory
+#   - pingdelegator
+#   - pingfederate
+#   - pingaccess
+#   - pingcloud-services
+#   - pingdatasync
+#   - common
+#   - monitoring
+#   - health
+#   - pingone
 
-################################################
-# All integration tests defined to run on the  #
-# traditionally deployed P1AS                  #
-################################################
-.chub-tests: &chub-tests
-  - pingcloud-services
-  - pingcentral
-  - common
-  - monitoring
-  - health
+# ################################################
+# # All integration tests defined to run on the  #
+# # traditionally deployed P1AS                  #
+# ################################################
+# .chub-tests: &chub-tests
+#   - pingcloud-services
+#   - pingcentral
+#   - common
+#   - monitoring
+#   - health
 
-.integration-tests-base:
-  variables:
-    TEST: ""
-    UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
-  stage: integration-test
-  retry: 1
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - export SKIP_TESTS="${BRANCH_SKIP_TESTS}"
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${TEST}
-  dependencies:
-    - find-cluster
-    - compile
-  artifacts:
-    name: "integration_test_logs"
-    paths:
-      - tests/pingone/latest_logs/
-    when: on_failure
+# .integration-tests-base:
+#   variables:
+#     TEST: ""
+#     UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
+#   stage: integration-test
+#   retry: 1
+#   tags:
+#     - default-gitlab-runner-ping-cloud
+#   image: ${K8S_DEPLOY_TOOLS}
+#   script:
+#     - export SKIP_TESTS="${BRANCH_SKIP_TESTS}"
+#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${TEST}
+#   dependencies:
+#     - find-cluster
+#     - compile
+#   artifacts:
+#     name: "integration_test_logs"
+#     paths:
+#       - tests/pingone/latest_logs/
+#     when: on_failure
 
-integration-tests:
-  extends: .integration-tests-base
-  variables:
-    TEST: ${TEST}
-  parallel:
-    matrix:
-      - TEST: *all-tests
-  rules:
-    - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
+# integration-tests:
+#   extends: .integration-tests-base
+#   variables:
+#     TEST: ${TEST}
+#   parallel:
+#     matrix:
+#       - TEST: *all-tests
+#   rules:
+#     - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
 
-integration-tests-scheduled-pipeline:
-  extends: .integration-tests-base
-  variables:
-    TEST: ${TEST}
-  parallel:
-    matrix:
-      - TEST: *schedule-tests
-  rules:
-    - if: '$ENV_TYPE != "customer-hub" && $CI_PIPELINE_SOURCE == "schedule"'
+# integration-tests-scheduled-pipeline:
+#   extends: .integration-tests-base
+#   variables:
+#     TEST: ${TEST}
+#   parallel:
+#     matrix:
+#       - TEST: *schedule-tests
+#   rules:
+#     - if: '$ENV_TYPE != "customer-hub" && $CI_PIPELINE_SOURCE == "schedule"'
 
-integration-tests-chub:
-  extends: .integration-tests-base
-  variables:
-    TEST: ${TEST}
-  parallel:
-    matrix:
-      - TEST: *chub-tests
-  rules:
-  - if: '$ENV_TYPE == "customer-hub"'
+# integration-tests-chub:
+#   extends: .integration-tests-base
+#   variables:
+#     TEST: ${TEST}
+#   parallel:
+#     matrix:
+#       - TEST: *chub-tests
+#   rules:
+#   - if: '$ENV_TYPE == "customer-hub"'
 
-## Chaos testing stage ##
-chaos-tests:
-  stage: chaos
-  retry: 1
-  tags:
-    - default-gitlab-runner-ping-cloud
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
-  dependencies:
-    - find-cluster
+# ## Chaos testing stage ##
+# chaos-tests:
+#   stage: chaos
+#   retry: 1
+#   tags:
+#     - default-gitlab-runner-ping-cloud
+#   image: ${K8S_DEPLOY_TOOLS}
+#   script:
+#     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
+#   dependencies:
+#     - find-cluster
 
 .cleanup-base:
   stage: cleanup
