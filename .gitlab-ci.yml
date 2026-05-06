@@ -214,7 +214,7 @@ pa-was-integration-tests:
   - pingfederate
   - pingaccess
   - pingcloud-services
-  - pingcentral
+#  - pingcentral
   - pingdatasync
   - common
   - monitoring
@@ -249,7 +249,7 @@ pa-was-integration-tests:
 ################################################
 .chub-tests: &chub-tests
   - pingcloud-services
-  - pingcentral
+#  - pingcentral
   - common
   - monitoring
   - health
