@@ -134,7 +134,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: perpetual-license
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-11519-pa-upgrade-9.0.3
         imagePullPolicy: Always
         command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
         env:
@@ -178,7 +178,7 @@ spec:
           - python3 -u /app/p1_app_to_k8s.py -a pingaccess -t /app/templates/pingaccess-admin-p14c-secret.yaml && python3 -u /app/p1_app_to_k8s.py -a pingaccess -t /app/templates/pingaccess-admin-p14c-configmap.yaml
       containers:
       - name: pingaccess
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-11519-pa-upgrade-9.0.3
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
